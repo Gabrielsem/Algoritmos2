@@ -51,17 +51,11 @@ int comparar(int vector1[], int n1, int vector2[], int n2) {
 }
 
 void seleccion(int vector[], int n) {
-
-	int max;
-	int aux;
-
 	for(int i = 0; i < n-1; i++){
 		
-		max=maximo(vector,n-i);
+		int max=maximo(vector,n-i);
 
-		aux = vector[max];
-		vector[max] = vector[n-1-i];
-		vector[n-1-i] = aux;
+		swap(vector+n-1-i,vector+max);
 
 	}
 }
