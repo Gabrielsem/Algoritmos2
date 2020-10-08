@@ -9,6 +9,7 @@ void swap(int *x, int *y) {
 
 int maximo(int vector[], int n) {
 	int max = 0;
+
 	if( n <= 0)
 		return -1;
 
@@ -26,26 +27,22 @@ int maximo(int vector[], int n) {
 int comparar(int vector1[], int n1, int vector2[], int n2) {
 
 	int i = 0;
-	int j = 0;
 
-	while( (i < n1) && (j < n2) ){
-		if(vector1[i] == vector2[j]){
+	while( (i < n1) && (i < n2) ){
+		if(vector1[i] == vector2[i]){
 			i++;
-			j++;
-		} else if (vector1[i] < vector2[j]){
+		} else if (vector1[i] < vector2[i]){
 			return -1;
 		} else {
 			return 1;
 		}
 	}
 
-	if( (i != n1) || (j != n2) ){
-		if( i == n1 )
-			return -1;
+	if( (i == n1) && (i != n2) )
+		return -1;
 
-		if( j == n2)
-			return 1;
-	}
+	if( (i != n1) && (i == n2) )
+		return 1;
 
 	return 0;
 }
