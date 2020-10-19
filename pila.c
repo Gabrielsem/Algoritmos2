@@ -2,6 +2,14 @@
 
 #include <stdlib.h>
 
+/* Definición del struct pila proporcionado por la cátedra.
+ */
+struct pila {
+    void **datos;
+    size_t cantidad;   // Cantidad de elementos almacenados.
+    size_t capacidad;  // Capacidad del arreglo 'datos'.
+};
+
 // Constantes para las funciones, deben ser mayores a 0.
 #define CAPACIDAD_INICIAL 10
 #define FACTOR_REDIMENSION 2
@@ -11,7 +19,7 @@
 //Post: Devuelve verdadero si la pila cumple las condiciones para disminuir su capacidad. Estas son:
 // 1. La cantidad de elementos de la pila es MINIMO_ACHICAR veces menor que su capacidad.
 // 2. La nueva capacidad (FACTOR_REDIMENSION veces menor a la actual) es mayor a CAPACIDAD_INICIAL.
-bool puede_achicar(pila* pila){
+bool puede_achicar(pila_t* pila){
 	return( (pila->cantidad < pila->capacidad/MINIMO_ACHICAR) && (pila->capacidad/FACTOR_REDIMENSION > CAPACIDAD_INICIAL) );
 }
 
