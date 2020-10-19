@@ -20,7 +20,7 @@ struct pila {
 // 1. La cantidad de elementos de la pila es MINIMO_ACHICAR veces menor que su capacidad.
 // 2. La nueva capacidad (FACTOR_REDIMENSION veces menor a la actual) es mayor a CAPACIDAD_INICIAL.
 bool puede_achicar(pila_t* pila){
-	return( (pila->cantidad < pila->capacidad/MINIMO_ACHICAR) && (pila->capacidad/FACTOR_REDIMENSION > CAPACIDAD_INICIAL) );
+	return( (pila->cantidad * MINIMO_ACHICAR <= pila->capacidad) && (pila->capacidad/FACTOR_REDIMENSION > CAPACIDAD_INICIAL) );
 }
 
 //Pre: Pila ya creada
