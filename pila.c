@@ -13,14 +13,14 @@ struct pila {
 // Constantes para las funciones, deben ser mayores a 0.
 #define CAPACIDAD_INICIAL 10
 #define FACTOR_REDIMENSION 2
-#define MINIMO_ACHICAR 4
+#define FRACCION_ACHICAR 4
 
 //Pre: Pila ya creada
 //Post: Devuelve verdadero si la pila cumple las condiciones para disminuir su capacidad. Estas son:
-// 1. La cantidad de elementos de la pila es MINIMO_ACHICAR veces menor que su capacidad.
-// 2. La nueva capacidad (FACTOR_REDIMENSION veces menor a la actual) es mayor a CAPACIDAD_INICIAL.
+// 1. La cantidad de elementos de la pila  es FRACCION_ACHICAR veces menor que su capacidad.
+// 2. La nueva capacidad (la actual dividido FACTOR_REDIMENSION) es mayor a CAPACIDAD_INICIAL.
 bool puede_achicar(pila_t* pila){
-	return( (pila->cantidad * MINIMO_ACHICAR <= pila->capacidad) && (pila->capacidad/FACTOR_REDIMENSION > CAPACIDAD_INICIAL) );
+	return( (pila->cantidad * FRACCION_ACHICAR <= pila->capacidad) && (pila->capacidad/FACTOR_REDIMENSION > CAPACIDAD_INICIAL) );
 }
 
 //Pre: Pila ya creada
@@ -64,8 +64,7 @@ bool pila_esta_vacia(const pila_t *pila){
 	return(pila->cantidad == 0);
 }
 
-//Si la pila esta llena, aumenta su capacidad por FACTOR_REDIMENSION y apila el nuevo elemento, devolviendo verdadero.
-//Si no lo logra devuelve falso y no apila el nuevo elemento.
+//Si la pila esta llena, multiplica su capacidad por FACTOR_REDIMENSION. Si no lo logra, devuelve falso.
 bool pila_apilar(pila_t *pila, void *valor){
 	if( (pila->cantidad == pila->capacidad) && !redimensionar_pila(pila, FACTOR_REDIMENSION * pila->capacidad) ){
 		return false;
