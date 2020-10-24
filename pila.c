@@ -28,7 +28,7 @@ bool puede_achicar(pila_t* pila){
 bool redimensionar_pila(pila_t* pila, size_t nueva_capacidad){
 	void** nuevos_datos = realloc(pila->datos, nueva_capacidad * sizeof(void*));
 
-	if(nuevos_datos == NULL)
+	if((nueva_capacidad != 0) && (nuevos_datos == NULL))
 		return false;
 
 	pila->capacidad = nueva_capacidad;
