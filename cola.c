@@ -13,7 +13,7 @@ struct cola {
 
 cola_t* cola_crear(){
 
-	cola_t* cola = malloc(sizeof(cola));
+	cola_t* cola = malloc(sizeof(cola_t));
 	if(cola == NULL)
 		return NULL;
 
@@ -46,7 +46,7 @@ bool cola_esta_vacia(const cola_t *cola){
 
 bool cola_encolar(cola_t *cola, void *valor){
 
-	nodo_t* nodo = malloc(sizeof(nodo));
+	nodo_t* nodo = malloc(sizeof(nodo_t));
 	if(nodo == NULL)
 		return false;
 
@@ -71,6 +71,9 @@ void *cola_desencolar(cola_t *cola){
 
 	if(cola->primero == NULL)
 		return NULL;
+
+	if(cola->ultimo == cola->primero)
+		cola->ultimo = NULL;
 	
 	void* dato = cola->primero->dato;	
 	nodo_t* siguiente = cola->primero->siguiente;
