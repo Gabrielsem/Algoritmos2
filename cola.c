@@ -11,6 +11,30 @@ struct cola {
 	nodo_t* ultimo;
 };
 
+//Pre: -
+//Post:	Crea un nodo con el dato indicado, inicializando el siguiente en NULL.
+//		Devuelve NULL si falló la creación, sino un puntero al nodo.
+static nodo_t* crear_nodo(void* dato){
+	nodo_t* nodo = malloc(sizeof(nodo_t));
+	if(nodo == NULL)
+		return NULL;
+
+	nodo->dato = dato;
+	nodo->siguiente = NULL;
+	return nodo;
+}
+
+//Pre: -
+//Post: Borra el primer elemento de la cola, si es que lo tiene, actualizando el puntero al primer elemento.
+void borrar_primero(cola_t* cola){
+
+	if(cola->primero != NULL){
+		nodo_t* siguiente = cola->primero->siguiente;
+		free(cola->primero);
+		cola->primero = siguiente;
+	}
+}
+
 cola_t* cola_crear(){
 
 	cola_t* cola = malloc(sizeof(cola_t));
@@ -25,16 +49,12 @@ cola_t* cola_crear(){
 
 void cola_destruir(cola_t *cola, void (*destruir_dato)(void *)){
 
-	nodo_t* nodo_siguiente;
-	nodo_t* nodo = cola->primero;
-	while(nodo != NULL){
+	while(cola->primero != NULL){
 
 		if(destruir_dato != NULL)
-			destruir_dato(nodo->dato);
+			destruir_dato(cola->primero->dato);
 
-		nodo_siguiente = nodo->siguiente;
-		free(nodo);
-		nodo = nodo_siguiente;
+		borrar_primero(cola);
 	}
 
 	free(cola);
@@ -46,18 +66,15 @@ bool cola_esta_vacia(const cola_t *cola){
 
 bool cola_encolar(cola_t *cola, void *valor){
 
-	nodo_t* nodo = malloc(sizeof(nodo_t));
+	nodo_t* nodo = crear_nodo(valor);
 	if(nodo == NULL)
 		return false;
 
-	nodo->dato = valor;
-	nodo->siguiente = NULL;
-
 	if(cola->primero == NULL)
 		cola->primero = nodo;
+
 	if(cola->ultimo != NULL)
 		cola->ultimo->siguiente = nodo;
-
 	cola->ultimo = nodo;
 
 	return true;
@@ -69,16 +86,11 @@ void *cola_ver_primero(const cola_t *cola){
 
 void *cola_desencolar(cola_t *cola){
 
-	if(cola->primero == NULL)
-		return NULL;
-
 	if(cola->ultimo == cola->primero)
 		cola->ultimo = NULL;
 	
-	void* dato = cola->primero->dato;	
-	nodo_t* siguiente = cola->primero->siguiente;
-	free(cola->primero);
-	cola->primero = siguiente;
+	void* dato = cola_ver_primero(cola);	
+	borrar_primero(cola);
 
 	return dato;
 }
