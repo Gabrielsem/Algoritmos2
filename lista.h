@@ -1,7 +1,7 @@
 #ifndef LISTA_H
 #define LISTA_H
 
-#include <stdlib.h>
+#include <stddef.h>
 #include <stdbool.h>
 
 /* ******************************************************************
