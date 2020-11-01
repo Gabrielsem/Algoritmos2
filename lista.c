@@ -78,7 +78,11 @@ bool lista_insertar_ultimo(lista_t *lista, void *dato){
 	if(!nodo)
 		return false;
 
-	lista->ultimo->siguiente = nodo;
+	if(!lista->ultimo)
+		lista->primero = nodo;
+	else
+		lista->ultimo->siguiente = nodo;
+	
 	lista->ultimo = nodo;
 	(lista->largo)++;
 	return true;
