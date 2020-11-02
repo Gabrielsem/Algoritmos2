@@ -22,7 +22,6 @@ struct lista_iter {
  *                    FUNCIONES USO INTERNO
  * *****************************************************************/
 
-
 //Pre: -
 //Post:	Crea un nodo con el dato indicado, inicializando el siguiente en NULL.
 //		Devuelve NULL si falló la creación, sino un puntero al nodo.
