@@ -294,7 +294,7 @@ static void pruebas_iterar(){
 	for(size_t i = 0; i <= ITERADOR_PARAR; i++){
 		suma_manual += vector[i];
 	}
-	print_test("Se modifica acordemente el extra y corta a tiempo al iterar la lista", suma == suma_manual);
+	print_test("Se modifica acordemente el extra y corta al recibir false en una visita", suma == suma_manual);
 
 	//Verifico que lista_iterar aplique la función que se le pasa a todos los elementos
 	lista_iterar(lista, funcion_iterar_dup, NULL);
@@ -305,7 +305,7 @@ static void pruebas_iterar(){
 		funcion_iterar_dup(&elemento, NULL);
 		aplico_funcion = (vector[i] == elemento);
 	}
-	print_test("Se aplica la función pasada al iterar la lista", aplico_funcion);
+	print_test("Se aplica la función pasada a los elementos al iterar la lista", aplico_funcion);
 
 	lista_destruir(lista, NULL);
 }
@@ -431,6 +431,7 @@ static void pruebas_iter_insertar_borrar(){
 	//Verifico que las primera y ultima posiciones de la lista sean correctas	
 	print_test("Primero de lista es correcto", lista_ver_primero(lista) == (void*) 1);
 	print_test("Ultimo de lista es correcto", lista_ver_ultimo(lista) == (void*) 4);
+	print_test("Se ajusto el largo de la lista", lista_largo(lista) == 4);
 
 	lista_iter_destruir(iter);
 	//Se crea un iterador
@@ -457,6 +458,7 @@ static void pruebas_iter_insertar_borrar(){
 	print_test("Con nuevo iterador, borrar el primer elemento", lista_iter_borrar(iter) == (void*) 1);
 	print_test("Nuevo primero de lista es correcto", lista_ver_primero(lista) == (void*) 3);
 	print_test("Borrar ultimo elemento", lista_iter_borrar(iter) == (void*) 3);
+	print_test("Se ajusto el largo de la lista", lista_largo(lista) == 0);
 
 
 	lista_iter_destruir(iter);
