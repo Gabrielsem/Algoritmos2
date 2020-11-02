@@ -229,6 +229,8 @@ void *lista_iter_borrar(lista_iter_t *iter){
 
 	if(!iter->lista->primero)
 		iter->lista->ultimo = NULL;
+	else if(iter->lista->ultimo == iter->actual)
+		iter->lista->ultimo = iter->anterior;
 
 	nodo_t nodo = *(iter->actual);
 	free(iter->actual);
