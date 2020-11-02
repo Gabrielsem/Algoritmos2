@@ -82,7 +82,7 @@ bool lista_insertar_ultimo(lista_t *lista, void *dato){
 		lista->primero = nodo;
 	else
 		lista->ultimo->siguiente = nodo;
-	
+
 	lista->ultimo = nodo;
 	(lista->largo)++;
 	return true;
@@ -212,6 +212,7 @@ bool lista_iter_insertar(lista_iter_t *iter, void *dato){
 		iter->lista->ultimo = nodo;
 
 	nodo->siguiente = iter->actual;
+	iter->anterior = nodo;
 	(iter->lista->largo)++;
 	return true;
 }
