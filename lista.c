@@ -211,7 +211,7 @@ bool lista_iter_insertar(lista_iter_t *iter, void *dato){
 		iter->lista->ultimo = nodo;
 
 	nodo->siguiente = iter->actual;
-	iter->anterior = nodo;
+	iter->actual = nodo;
 	(iter->lista->largo)++;
 	return true;
 }

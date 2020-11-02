@@ -414,9 +414,11 @@ static void pruebas_iter_insertar_borrar(){
 	print_test("Borrar con iterador en lista vacía da NULL", !lista_iter_borrar(iter));
 	//Inserto dos elementos en lista vacía
 	print_test("Iterador en lista vacía inserta elemento", lista_iter_insertar(iter, (void*) 1));
-	print_test("Iterador puede insertar segundo elemento", lista_iter_insertar(iter, (void*) 4));
+	print_test("Avanzar e insertar segundo elemento",
+		lista_iter_avanzar(iter) && lista_iter_insertar(iter, (void*) 4));
 	//Verifico que borrar con iterador al final de NULL
-	print_test("Borrar con iterador al final da NULL", !lista_iter_borrar(iter));
+	print_test("Avanzar y borrar con iterador al final da NULL",
+	lista_iter_avanzar(iter) && !lista_iter_borrar(iter));
 
 	lista_iter_destruir(iter);
 	//Se crea un iterador
@@ -426,12 +428,14 @@ static void pruebas_iter_insertar_borrar(){
 	}
 
 	//Tras avanzar, inserto 2 nuevos elementos en el medio
-	print_test("Con nuevo iterador, avanzar e insertar tercer y cuarto elemento en el medio",
-		lista_iter_avanzar(iter) && lista_iter_insertar(iter, (void*) 2) && lista_iter_insertar(iter, (void*) 3));
+	print_test("Con nuevo iterador, avanzar e insertar un tercer elemento en el medio",
+		lista_iter_avanzar(iter) && lista_iter_insertar(iter, (void*) 2));
+	print_test("Avanzar e insertar un cuarto elemento en el medio",
+		lista_iter_avanzar(iter) && lista_iter_insertar(iter, (void*) 3));
 	//Verifico que las primera y ultima posiciones de la lista sean correctas	
 	print_test("Primero de lista es correcto", lista_ver_primero(lista) == (void*) 1);
 	print_test("Ultimo de lista es correcto", lista_ver_ultimo(lista) == (void*) 4);
-	print_test("Se ajusto el largo de la lista", lista_largo(lista) == 4);
+	print_test("Se ajustó el largo de la lista", lista_largo(lista) == 4);
 
 	lista_iter_destruir(iter);
 	//Se crea un iterador
@@ -458,7 +462,7 @@ static void pruebas_iter_insertar_borrar(){
 	print_test("Con nuevo iterador, borrar el primer elemento", lista_iter_borrar(iter) == (void*) 1);
 	print_test("Nuevo primero de lista es correcto", lista_ver_primero(lista) == (void*) 3);
 	print_test("Borrar ultimo elemento", lista_iter_borrar(iter) == (void*) 3);
-	print_test("Se ajusto el largo de la lista", lista_largo(lista) == 0);
+	print_test("Se ajustó el largo de la lista", lista_largo(lista) == 0);
 
 
 	lista_iter_destruir(iter);

@@ -103,7 +103,7 @@ void lista_iter_destruir(lista_iter_t *iter);
 // Pre: el iterador fue creado y no se usaron primitivas de la lista que
 // la modifiquen desde que se creó.
 // Post: Inserta un nuevo elemento en la posición actual del iterador.
-// El iterador queda posicionado en el siguiente elemento. Devuelve
+// El iterador queda posicionado en el elemento insertado. Devuelve
 // true si se pudo insertar, falso en caso de error.
 bool lista_iter_insertar(lista_iter_t *iter, void *dato);
 
