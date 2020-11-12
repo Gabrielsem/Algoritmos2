@@ -34,7 +34,7 @@ bool calc_parse(const char *tok, struct calc_token *parsed) {
     else {
         parsed->type = TOK_OPER;
     }
-
+    parsed->oper.num_operandos = 2;
     if (strlen(tok) == 1) {
         char op = tok[0];
         if (op == '+') {
@@ -54,6 +54,7 @@ bool calc_parse(const char *tok, struct calc_token *parsed) {
         }
         else if (op == '?') {
             parsed->oper.op = OP_TERN;
+            parsed->oper.num_operandos = 3;
         }
         else if (op == '(') {
             parsed->type = TOK_LPAREN;
@@ -70,6 +71,7 @@ bool calc_parse(const char *tok, struct calc_token *parsed) {
     }
     else if (strcmp(tok, "sqrt") == 0) {
         parsed->oper.op = OP_RAIZ;
+        parsed->oper.num_operandos = 1;
     }
     else {
         return false;

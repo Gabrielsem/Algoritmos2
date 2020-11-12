@@ -100,9 +100,9 @@ typedef struct calc_oper {  // Para tokens TOK_OPER
     // precisa. Se recomienda modificar calc_helper.c para que proporcione el
     // número de operandos del operador, por ejemplo en un miembro "arity", o
     // "num_operandos":
-    /**
-     * int num_operandos;
-     */
+
+    int num_operandos;
+
     // Asimismo, la implementación de infix puede generalizarse bastante si el
     // mismo struct del operador incluye también su precedencia y asociatividad,
     // para comparar los atributos del token actual con los del tope de la pila:
