@@ -10,7 +10,7 @@
 lista_t* crear_lista_print(){
 	lista_t *lista = lista_crear();
 	print_test("Creando lista para pruebas", lista != NULL);
-    if(lista == NULL)
+    if(!lista)
 		printf("No se pudo crear lista para pruebas\n");
 	return lista;
 }
@@ -18,7 +18,7 @@ lista_t* crear_lista_print(){
 //Ejecuta lista_iter_crear(), mostrando mensaje de error si falla
 lista_iter_t* crear_lista_iter_print(lista_t* lista){
 	lista_iter_t* iter = lista_iter_crear(lista);
-	if(iter == NULL)
+	if(!iter)
 		printf("No se pudo crear iterador para pruebas\n");
 	return iter;
 }
@@ -81,14 +81,6 @@ static void pruebas_insertar_borrar(){
 
 	//Pruebo que borrar el primer elemento de una lista vacía devuelva NULL
 	print_test("Borrar primero en lista vacía devuelve NULL", lista_borrar_primero(lista) == NULL);
-
-	//Pruebo que agregar al principio y borrar NULL sea válido
-	print_test("Se puede agregar al principio NULL", lista_insertar_primero(lista,NULL) );
-	print_test("Al borrar del principio devuelve NULL", lista_borrar_primero(lista) == NULL);
-
-	//Pruebo que agregar al final y borrar al principio NULL sea válido
-	print_test("Se puede agregar al final NULL", lista_insertar_ultimo(lista,NULL) );
-	print_test("Al borrar del principio devuelve NULL", lista_borrar_primero(lista) == NULL);
 
 	lista_destruir(lista, NULL);
 }
@@ -159,8 +151,8 @@ void pruebas_largo(){
 }
 
 //Pre: i apunta a un size_t
-//Post: Modifica el size_t apuntado (Lo duplica)
-void funcion_destruir(void* i){
+//Post: Duplica el size_t apuntado
+void duplicar(void* i){
 	*((size_t*) i) *= 2;
 }
 
@@ -187,19 +179,19 @@ static void pruebas_destruir(){
 	}
 
 	//Verifico que lista_destruir pasando NULL no modifique elementos
-	lista_destruir(lista_null,NULL);
+	lista_destruir(lista_null, NULL);
 	bool no_modifico = true;
 	for(size_t i = 0; i < CANTIDAD_OTROS; i++)
 		no_modifico = (vector_null[i] == i);
 	print_test("No se modifican elementos al destruir pasando NULL", no_modifico);
 
 	//Verifico que lista_destruir aplique la función que se le pasa a todos los elementos
-	lista_destruir(lista_funcion,funcion_destruir);
+	lista_destruir(lista_funcion, duplicar);
 	bool aplico_funcion = true;
 	size_t elemento;
 	for(size_t i = 0; i < CANTIDAD_OTROS; i++){
 		elemento = i;
-		funcion_destruir(&elemento);
+		duplicar(&elemento);
 		aplico_funcion = (vector_funcion[i] == elemento);
 	}
 	print_test("Se aplica la función pasada al destruir lista", aplico_funcion);
@@ -469,6 +461,39 @@ static void pruebas_iter_insertar_borrar(){
 	lista_destruir(lista, NULL);
 }
 
+static void pruebas_null(){
+
+	//Se crea una lista
+	lista_t *lista = crear_lista_print();
+    if(lista == NULL){
+		return;
+	}
+
+	//Pruebo que agregar al principio y borrar NULL sea válido, actualizando el largo
+	print_test("Se puede agregar al principio NULL", lista_insertar_primero(lista, NULL) );
+	print_test("Largo de la lista es 1", lista_largo(lista) == 1);
+	print_test("Al borrar del principio devuelve NULL", lista_borrar_primero(lista) == NULL);
+
+	//Pruebo que agregar al final y borrar al principio NULL sea válido, actualizando el larog
+	print_test("Se puede agregar al final NULL", lista_insertar_ultimo(lista, NULL) );
+	print_test("Largo de la lista es 1", lista_largo(lista) == 1);
+	print_test("Al borrar del principio devuelve NULL", lista_borrar_primero(lista) == NULL);
+
+		//Se crea un iterador
+	lista_iter_t* iter = crear_lista_iter_print(lista);
+	if(iter == NULL){
+		return;
+	}
+
+	//Pruebo que se pueda insertar y borrar NULL con el iterador, actualizando el larog
+	print_test("Se puede insertar NULL con iterador", lista_iter_insertar(iter, NULL));
+	print_test("Largo de la lista es 1", lista_largo(lista) == 1);
+	print_test("Se puede borrar NULL con iterador", lista_iter_borrar(iter) == NULL);
+
+	lista_iter_destruir(iter);
+	lista_destruir(lista, NULL);
+}
+
 void pruebas_lista_estudiante() {
 	printf("\n-PRUEBAS lista_esta_vacia()-\n");
 	pruebas_esta_vacia();
@@ -490,7 +515,8 @@ void pruebas_lista_estudiante() {
 	pruebas_iter_final();
 	printf("\n-PRUEBAS lista_iter_insertar() y lista_iter_borrar (iterador externo)-\n");
 	pruebas_iter_insertar_borrar();
-	return;
+	printf("\n-PRUEBAS con NULL-\n");
+	pruebas_null();
 }
 
 #ifndef CORRECTOR 
