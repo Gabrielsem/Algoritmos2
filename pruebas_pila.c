@@ -90,7 +90,7 @@ static void prueba_pila_apilar_desapilar(){
 	pila_destruir(pila);
 }
 
-static void pruebas_pila_null(){
+static void pruebas_pila_ver_tope(){
 	//Se crea una pila
 	pila_t *pila = pila_crear();
 	print_test("Creando pila para probar pila_ver_tope()", pila != NULL);
@@ -116,7 +116,7 @@ static void pruebas_pila_null(){
 	pila_destruir(pila);
 }
 
-static void pruebas_pila_ver_tope(){
+static void pruebas_pila_null(){
 	//Se crea una pila
 	pila_t *pila = pila_crear();
 	print_test("Creando pila para pruebas apilando NULL", pila != NULL);
@@ -146,9 +146,9 @@ void pruebas_pila_estudiante() {
 	printf(NEGRO"=== PRUEBAS pila_apilar() y pila_desapilar() ==="RESET_COLOR"\n");
     prueba_pila_apilar_desapilar();
 	printf(NEGRO"=========== PRUEBAS pila_ver_tope() ==========="RESET_COLOR"\n");
-    pruebas_pila_null();
-   	printf(NEGRO"=== PRUEBAS apilando NULL ==="RESET_COLOR"\n");
     pruebas_pila_ver_tope();
+   	printf(NEGRO"=== PRUEBAS apilando NULL ==="RESET_COLOR"\n");
+    pruebas_pila_null();
     printf(NEGRO"ERRORES TOTALES: %i"RESET_COLOR"\n",failure_count());
 }
 
