@@ -24,17 +24,6 @@ static nodo_t* crear_nodo(void* dato){
 	return nodo;
 }
 
-//Pre: -
-//Post: Borra el primer elemento de la cola, si es que lo tiene, actualizando el puntero al primer elemento.
-void borrar_primero(cola_t* cola){
-
-	if(cola->primero != NULL){
-		nodo_t* siguiente = cola->primero->siguiente;
-		free(cola->primero);
-		cola->primero = siguiente;
-	}
-}
-
 cola_t* cola_crear(){
 
 	cola_t* cola = malloc(sizeof(cola_t));
@@ -49,19 +38,19 @@ cola_t* cola_crear(){
 
 void cola_destruir(cola_t *cola, void (*destruir_dato)(void *)){
 
-	while(cola->primero != NULL){
-
+	while(cola->primero){
+		
+		void* dato = cola_desencolar(cola);
 		if(destruir_dato != NULL)
-			destruir_dato(cola->primero->dato);
+			destruir_dato(dato);
 
-		borrar_primero(cola);
 	}
 
 	free(cola);
 }
 
 bool cola_esta_vacia(const cola_t *cola){
-	return (cola->primero == NULL);
+	return cola->primero == NULL;
 }
 
 bool cola_encolar(cola_t *cola, void *valor){
@@ -85,12 +74,17 @@ void *cola_ver_primero(const cola_t *cola){
 }
 
 void *cola_desencolar(cola_t *cola){
+	
+	void* dato = cola_ver_primero(cola);
 
 	if(cola->ultimo == cola->primero)
 		cola->ultimo = NULL;
-	
-	void* dato = cola_ver_primero(cola);	
-	borrar_primero(cola);
+
+	if(cola->primero){
+		nodo_t* siguiente = cola->primero->siguiente;
+		free(cola->primero);
+		cola->primero = siguiente;
+	}
 
 	return dato;
 }

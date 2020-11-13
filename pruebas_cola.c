@@ -11,7 +11,7 @@ static void prueba_cola_vacia() {
 	//Se crea una cola
 	cola_t *cola = cola_crear();
 	print_test("Creando cola para probar cola_esta_vacia()", cola != NULL);
-    	if(cola == NULL){
+    if(cola == NULL){
 		printf("No se pudo crear cola para probar cola_esta_vacia()\n");
 		return;
 	}
@@ -85,10 +85,6 @@ static void prueba_cola_encolar_desencolar(){
 	//Pruebo que desencolar una cola vacía devuelva NULL
 	print_test("Desencolar cola vacía devuelve NULL", cola_desencolar(cola) == NULL);
 
-	//Pruebo que encolar y desencolar NULL sea válido
-	print_test("Se puede encolar NULL", cola_encolar(cola,NULL) );
-	print_test("Se puede desencolar NULL", cola_desencolar(cola) == NULL);
-
 	pruebas_volumen(cola);
 	
 	cola_destruir(cola, NULL);
@@ -122,8 +118,8 @@ static void pruebas_cola_ver_primero(){
 }
 
 //Pre: i apunta a un size_t
-//Post: Modifica el size_t apuntado (Lo duplica)
-void funcion_destruir(void* i){
+//Post: Duplica el size_t apuntado
+void duplicar(void* i){
 	*((size_t*) i) *= 2;
 }
 
@@ -158,16 +154,40 @@ static void pruebas_cola_destruir(){
 	print_test("No se modifican elementos al destruir pasando NULL", no_modifico);
 
 	//Verifico que destruir_cola aplique la función que se le pasa a todos los elementos
-	cola_destruir(cola_funcion,funcion_destruir);
+	cola_destruir(cola_funcion, duplicar);
 	bool aplico_funcion = true;
 	size_t elemento;
 	for(size_t i = 0; i < CANTIDAD_DESTRUIR; i++){
 		elemento = i;
-		funcion_destruir(&elemento);
+		duplicar(&elemento);
 		aplico_funcion = (vector_funcion[i] == elemento);
 	}
 	print_test("Se aplica la función pasada al destuir cola", aplico_funcion);
 
+}
+
+static void pruebas_cola_null(){
+	//Se crea una cola
+	cola_t *cola = cola_crear();
+	print_test("Creando cola para probar encolar NULL", cola != NULL);
+	if(cola == NULL){
+		printf("No se pudo crear cola para probar encolar NULL\n");
+		return;
+	}
+
+	//Pruebo que encolar y desencolar NULL sea válido
+	print_test("Se puede encolar NULL", cola_encolar(cola, NULL) );
+
+	//Pruebo que cola con NULL apilado no este vacía
+	print_test("Cola con NULL no esta vacía", !cola_esta_vacia(cola));
+
+	//Pruebo que primero de cola con NULL apilado sea NULL
+	print_test("Cola con NULL no esta vacía", !cola_ver_primero(cola));
+
+	//Pruebo que desencolar NULL sea válido
+	print_test("Se puede desencolar NULL", cola_desencolar(cola) == NULL);
+
+	cola_destruir(cola, NULL);
 }
 
 
@@ -180,6 +200,8 @@ void pruebas_cola_estudiante() {
 	pruebas_cola_ver_primero();
 	printf("\n-PRUEBAS cola_destruir()-\n");
 	pruebas_cola_destruir();
+	printf("\n-PRUEBAS encolando NULL-\n");
+	pruebas_cola_null();
 	printf("\n-ERRORES TOTALES: %i-\n",failure_count());
 }
 
