@@ -85,16 +85,12 @@ static void prueba_pila_apilar_desapilar(){
 	//Pruebo que desapilar una pila vacía devuelva NULL
 	print_test("Desapilar pila vacía devuelve NULL", pila_desapilar(pila) == NULL);
 
-	//Pruebo que apilar y desapilar NULL sea válido
-	print_test("Se puede apilar NULL", pila_apilar(pila,NULL) );
-	print_test("Se puede desapilar NULL", pila_desapilar(pila) == NULL);
-
 	pruebas_volumen(pila);
 	
 	pila_destruir(pila);
 }
 
-static void pruebas_pila_ver_tope(){
+static void pruebas_pila_null(){
 	//Se crea una pila
 	pila_t *pila = pila_crear();
 	print_test("Creando pila para probar pila_ver_tope()", pila != NULL);
@@ -120,6 +116,29 @@ static void pruebas_pila_ver_tope(){
 	pila_destruir(pila);
 }
 
+static void pruebas_pila_ver_tope(){
+	//Se crea una pila
+	pila_t *pila = pila_crear();
+	print_test("Creando pila para pruebas apilando NULL", pila != NULL);
+	if(pila == NULL){
+		printf("No se pudo crear pila para pruebas apilando NULL\n");
+		return;
+	}
+
+	//Pruebo que apilar NULL sea válido
+	print_test("Se puede apilar NULL", pila_apilar(pila,NULL));
+
+	//Pruebo que pila con NULL apilado no este vacía.
+	print_test("Pila con NULL apilado no esta vacía", !pila_esta_vacia(pila));
+
+	//Pruebo ver tope con pila con NULL.
+	print_test("Pila con NULL apilado tiene tope correcto", !pila_ver_tope(pila));
+
+	//Pruebo que desapilar NULL sea válido
+	print_test("Se puede desapilar NULL", pila_desapilar(pila) == NULL);
+
+	pila_destruir(pila);
+}
 
 void pruebas_pila_estudiante() {
 	printf(NEGRO"========== PRUEBAS pila_esta_vacia() =========="RESET_COLOR"\n");
@@ -127,6 +146,8 @@ void pruebas_pila_estudiante() {
 	printf(NEGRO"=== PRUEBAS pila_apilar() y pila_desapilar() ==="RESET_COLOR"\n");
     prueba_pila_apilar_desapilar();
 	printf(NEGRO"=========== PRUEBAS pila_ver_tope() ==========="RESET_COLOR"\n");
+    pruebas_pila_null();
+   	printf(NEGRO"=== PRUEBAS apilando NULL ==="RESET_COLOR"\n");
     pruebas_pila_ver_tope();
     printf(NEGRO"ERRORES TOTALES: %i"RESET_COLOR"\n",failure_count());
 }
