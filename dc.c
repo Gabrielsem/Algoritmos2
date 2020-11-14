@@ -5,9 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#define CORRECTOR 1
 #define MSG_ERROR "ERROR"
-#define MAX_LINEA 300
 
 // FUNCIONES PARA CADA OPERACION
 // Cada operación utiliza los operandos del vector numeros y se guarda el resultado en la variable.

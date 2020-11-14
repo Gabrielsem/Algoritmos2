@@ -50,7 +50,7 @@ void pruebas_split(){
 	free_strv(prueba);
 
 	prueba = split(string_4, ',');
-	print_test("Pasar \0 como separador", !strcmp(prueba[0], "asd") && !prueba[1] );
+	print_test("Pasar \\0 como separador", !strcmp(prueba[0], "asd") && !prueba[1] );
 	free_strv(prueba);
 
 	prueba = split(string_5, ',');
@@ -108,11 +108,8 @@ void pruebas_tp1() {
 	pruebas_join();
 }
 
-#ifndef CORRECTOR 
-
 int main(void) {
     pruebas_tp1();
     return failure_count() > 0; 
 }
 
-#endif

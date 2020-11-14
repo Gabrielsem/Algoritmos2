@@ -12,4 +12,4 @@ valgrind_str: pruebas
 	valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./pruebas
 
 valgrind_dc: dc
-	valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./dc
+	valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./dc < cuentas.txt
