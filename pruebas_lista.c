@@ -1,6 +1,8 @@
 #include "lista.h"
 #include "testing.h"
+#include "pila.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define CANTIDAD_VOLUMEN 5000 //Cantidad de elementos para pruebas de volumen
 #define CANTIDAD_OTROS 10 //Cantidad de elementos para otras pruebas
@@ -196,6 +198,91 @@ static void pruebas_destruir(){
 	}
 	print_test("Se aplica la función pasada al destruir lista", aplico_funcion);
 
+}
+
+static void pruebas_destruir_free(){
+
+	//Se crea una lista
+	lista_t *lista = crear_lista_print();
+    if(lista == NULL){
+		return;
+	}
+	
+	//Se hace malloc de 2 caracteres, se insertan y luego se pasa free al destruir la cola
+	char* caracter_1 = malloc(sizeof(char));
+	if(!caracter_1){
+		printf("No se pudo pedir memoria para probar lista_destruir()\n");
+		lista_destruir(lista, NULL);
+		return;
+	}
+	char* caracter_2 = malloc(sizeof(char));
+	if(!caracter_2){
+		printf("No se pudo pedir memoria para probar lista_destruir()\n");
+		free(caracter_1);
+		lista_destruir(lista, NULL);
+		return;
+	}
+
+	if(!lista_insertar_primero(lista, (void*) caracter_1) ||
+	!lista_insertar_primero(lista, (void*) caracter_2)){
+
+		printf("No se pudo insertar elementos para probar lista_destruir()\n");
+		free(caracter_1);
+		free(caracter_2);
+		lista_destruir(lista, NULL);
+		return;
+	}
+
+	lista_destruir(lista, free);
+	print_test("Destruir lista con 2 elementos pasandole free (ver valgrind)", true);
+}
+
+static void pila_destruir_wr(void* pila){
+	pila_destruir((pila_t*) pila);
+}
+
+static void pruebas_destruir_pila(){
+
+	//Se crea una lista
+	lista_t *lista = crear_lista_print();
+    if(lista == NULL){
+		return;
+	}
+
+	//Se hace crean 2 pilas, se apila un elemento en una de ellas,
+	//se encolan y luego se pasa destruir_pila al destruir la cola
+	pila_t* pila_1 = pila_crear();
+	if(!pila_1){
+		printf("Error creando pilas para probar lista_destruir()\n");
+		lista_destruir(lista, NULL);
+		return;
+	}
+	pila_t* pila_2 = pila_crear();
+	if(!pila_1){
+		printf("Error creando pilas para probar lista_destruir()\n");
+		lista_destruir(lista, NULL);
+		pila_destruir(pila_1);
+		return;
+	}
+	if(!pila_apilar(pila_1, (void*) 123)){
+		printf("Error apilando un elemento para probar lista_destruir()\n");
+		lista_destruir(lista, NULL);
+		pila_destruir(pila_1);
+		pila_destruir(pila_2);
+		return;
+	}
+
+	if(!lista_insertar_primero(lista, (void*) pila_1) ||
+	!lista_insertar_primero(lista, (void*) pila_2)){
+		printf("No se pudo insertar pilas para probar lista_destruir()\n");
+		pila_destruir(pila_1);
+		pila_destruir(pila_2);
+		lista_destruir(lista, NULL);
+		return;
+	}
+
+	lista_destruir(lista, pila_destruir_wr);
+	print_test("Destruir lista con 2 pilas pasandole pila_destruir (ver valgrind)", true);
 }
 
 //Pruebas con CANTIDAD_VOLUMEN elementos
@@ -505,6 +592,8 @@ void pruebas_lista_estudiante() {
 	pruebas_largo();
 	printf("\n-PRUEBAS lista_destruir()-\n");
 	pruebas_destruir();
+	pruebas_destruir_free();
+	pruebas_destruir_pila();
 	printf("\n-PRUEBAS DE VOLUMEN-\n");
 	pruebas_volumen();
 	printf("\n-PRUEBAS lista_iterar() (iterador interno)-\n");
