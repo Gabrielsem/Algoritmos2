@@ -1,7 +1,9 @@
 #include "cola.h"
 #include "testing.h"
+#include "pila.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #define CANTIDAD_VOLUMEN 5000
 #define CANTIDAD_DESTRUIR 10
@@ -128,8 +130,10 @@ static void pruebas_cola_destruir(){
 	//Se crean dos colas para las pruebas
 	cola_t *cola_funcion = cola_crear();
 	cola_t *cola_null = cola_crear();
-	print_test("Creando colas para probar cola_destruir()", (cola_funcion != NULL) && (cola_null != NULL));
-	if((cola_null == NULL) || (cola_funcion == NULL)){
+	print_test("Creando colas para probar cola_destruir()", cola_funcion && cola_null);
+	if(!cola_funcion || !cola_null){
+		if(cola_funcion) cola_destruir(cola_funcion, NULL);
+		if(cola_null) cola_destruir(cola_null, NULL);
 		printf("No se pudo crear colas para probar cola_destruir()\n");
 		return;
 	}
@@ -146,14 +150,14 @@ static void pruebas_cola_destruir(){
 		}
 	}
 
-	//Verifico que destruir_cola pasando NULL no modifique elementos
+	//Verifico que cola_destruir pasando NULL no modifique elementos
 	cola_destruir(cola_null,NULL);
 	bool no_modifico = true;
 	for(size_t i = 0; i < CANTIDAD_DESTRUIR; i++)
 		no_modifico = (vector_null[i] == i);
 	print_test("No se modifican elementos al destruir pasando NULL", no_modifico);
 
-	//Verifico que destruir_cola aplique la función que se le pasa a todos los elementos
+	//Verifico que cola_destruir aplique la función que se le pasa a todos los elementos
 	cola_destruir(cola_funcion, duplicar);
 	bool aplico_funcion = true;
 	size_t elemento;
@@ -164,6 +168,91 @@ static void pruebas_cola_destruir(){
 	}
 	print_test("Se aplica la función pasada al destuir cola", aplico_funcion);
 
+}
+
+static void pruebas_cola_destruir_free(){
+
+	//Se crea una cola para las pruebas
+	cola_t *cola_free = cola_crear();
+	print_test("Creando cola para probar cola_destruir() con memoria dinámica", cola_free);
+	if(!cola_free){
+		printf("No se pudo crear cola para probar cola_destruir()\n");
+		return;
+	}
+	
+	//Se hace malloc de 2 caracteres, se encolan y luego se pasa free al destruir la cola
+	char* caracter_1 = malloc(sizeof(char));
+	if(!caracter_1){
+		printf("No se pudo pedir memoria para probar cola_destruir()\n");
+		cola_destruir(cola_free, NULL);
+		return;
+	}
+	char* caracter_2 = malloc(sizeof(char));
+	if(!caracter_2){
+		printf("No se pudo pedir memoria para probar cola_destruir()\n");
+		free(caracter_1);
+		cola_destruir(cola_free, NULL);
+		return;
+	}
+
+	if(!cola_encolar(cola_free, (void*) caracter_1) || !cola_encolar(cola_free, (void*) caracter_2)){
+		printf("No se pudo encolar elementos para probar cola_destruir()\n");
+		free(caracter_1);
+		free(caracter_2);
+		cola_destruir(cola_free, NULL);
+		return;
+	}
+
+	cola_destruir(cola_free, free);
+	print_test("Destruir cola con 2 elementos pasandole free (ver valgrind)", true);
+}
+
+static void pila_destruir_wr(void* pila){
+	pila_destruir((pila_t*) pila);
+}
+
+static void pruebas_cola_destruir_pila(){
+	//Se crea una cola para las pruebas
+	cola_t *cola_pila = cola_crear();
+	print_test("Creando cola para probar cola_destruir() con pilas", cola_pila);
+	if(!cola_pila){
+		printf("No se pudo crear cola para probar cola_destruir()\n");
+		return;
+	}
+
+	//Se hace crean 2 pilas, se apila un elemento en una de ellas,
+	//se encolan y luego se pasa destruir_pila al destruir la cola
+	pila_t* pila_1 = pila_crear();
+	if(!pila_1){
+		printf("Error creando pilas para probar cola_destruir()\n");
+		cola_destruir(cola_pila, NULL);
+		return;
+	}
+	pila_t* pila_2 = pila_crear();
+	if(!pila_1){
+		printf("Error creando pilas para probar cola_destruir()\n");
+		cola_destruir(cola_pila, NULL);
+		pila_destruir(pila_1);
+		return;
+	}
+	if(!pila_apilar(pila_1, (void*) 123)){
+		printf("Error apilando un elemento para probar cola_destruir()\n");
+		cola_destruir(cola_pila, NULL);
+		pila_destruir(pila_1);
+		pila_destruir(pila_2);
+		return;
+	}
+
+	if(!cola_encolar(cola_pila, (void*) pila_1) || !cola_encolar(cola_pila, (void*) pila_2)){
+		printf("No se pudo encolar pilas para probar cola_destruir()\n");
+		pila_destruir(pila_1);
+		pila_destruir(pila_2);
+		cola_destruir(cola_pila, NULL);
+		return;
+	}
+
+	cola_destruir(cola_pila, pila_destruir_wr);
+	print_test("Destruir cola con 2 pilas pasandole pila_destruir (ver valgrind)", true);
 }
 
 static void pruebas_cola_null(){
@@ -200,6 +289,8 @@ void pruebas_cola_estudiante() {
 	pruebas_cola_ver_primero();
 	printf("\n-PRUEBAS cola_destruir()-\n");
 	pruebas_cola_destruir();
+	pruebas_cola_destruir_free();
+	pruebas_cola_destruir_pila();
 	printf("\n-PRUEBAS encolando NULL-\n");
 	pruebas_cola_null();
 	printf("\n-ERRORES TOTALES: %i-\n",failure_count());
