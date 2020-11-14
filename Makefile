@@ -5,7 +5,8 @@ str: testing.c testing.h pruebas_str.c strutil.h strutil.c
 
 dc: calc_helper.c calc_helper.h strutil.h strutil.c dc.c pila.c pila.h
 	gcc -g -Wall -Wconversion -Wtype-limits -pedantic -Werror -o dc calc_helper.c calc_helper.h strutil.h strutil.c dc.c pila.c pila.h -lm
-	./dc
+	cat cuentas.txt
+	./dc < cuentas.txt
 
 valgrind_str: pruebas
 	valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./pruebas

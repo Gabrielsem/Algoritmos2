@@ -28,8 +28,9 @@ bool puede_achicar(pila_t* pila){
 bool redimensionar_pila(pila_t* pila, size_t nueva_capacidad){
 	void** nuevos_datos = realloc(pila->datos, nueva_capacidad * sizeof(void*));
 
-	if((nueva_capacidad != 0) && (nuevos_datos == NULL))
+	if(nueva_capacidad && !nuevos_datos){
 		return false;
+	}
 
 	pila->capacidad = nueva_capacidad;
 	pila->datos = nuevos_datos;
@@ -61,7 +62,7 @@ void pila_destruir(pila_t *pila){
 }
 
 bool pila_esta_vacia(const pila_t *pila){
-	return(pila->cantidad == 0);
+	return pila->cantidad == 0;
 }
 
 //Si la pila esta llena, multiplica su capacidad por FACTOR_REDIMENSION. Si no lo logra, devuelve falso.
@@ -70,7 +71,7 @@ bool pila_apilar(pila_t *pila, void *valor){
 		return false;
 	}
 	pila->datos[pila->cantidad] = valor;
-	(pila->cantidad)++;
+	pila->cantidad++;
 	return true;
 }
 
@@ -85,7 +86,7 @@ void *pila_ver_tope(const pila_t *pila){
 void *pila_desapilar(pila_t *pila){
 	void* tope = pila_ver_tope(pila);
 	if(pila->cantidad > 0)
-		(pila->cantidad)--;
+		pila->cantidad--;
 
 	if(puede_achicar(pila))
 		redimensionar_pila(pila, pila->capacidad/FACTOR_REDIMENSION);
