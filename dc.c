@@ -1,4 +1,5 @@
 #include "calc_helper.h"
+#include "strutil.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
@@ -83,7 +84,7 @@ bool ternario(calc_num* numeros, calc_num* resultado){
 // Se debe liberar el vector con free_strv() de strutil.h
 char** leer_linea(){
 
-	char* linea;
+	char* linea = NULL;
 	size_t tam = 0;
 	if(getline(&linea, &tam, stdin) != -1){
 
@@ -91,6 +92,7 @@ char** leer_linea(){
 		free(linea);
 		return vector;
 	}
+	free(linea);//Documentación de getline pide liberar aunque falle la función
 	return NULL;
 }
 
@@ -187,6 +189,7 @@ int main(){
 			} else {
 				printf("%s\n", MSG_ERROR);
 			}
+			free_strv(input);
 		}
 	}
 
