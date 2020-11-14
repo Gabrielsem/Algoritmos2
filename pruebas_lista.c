@@ -208,7 +208,7 @@ static void pruebas_destruir_free(){
 		return;
 	}
 	
-	//Se hace malloc de 2 caracteres, se insertan y luego se pasa free al destruir la cola
+	//Se hace malloc de 2 caracteres, se insertan y luego se pasa free al destruir la lista
 	char* caracter_1 = malloc(sizeof(char));
 	if(!caracter_1){
 		printf("No se pudo pedir memoria para probar lista_destruir()\n");
@@ -250,7 +250,7 @@ static void pruebas_destruir_pila(){
 	}
 
 	//Se hace crean 2 pilas, se apila un elemento en una de ellas,
-	//se encolan y luego se pasa destruir_pila al destruir la cola
+	//se insertan y luego se pasa destruir_pila al destruir la lista
 	pila_t* pila_1 = pila_crear();
 	if(!pila_1){
 		printf("Error creando pilas para probar lista_destruir()\n");
