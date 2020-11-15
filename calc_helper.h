@@ -66,6 +66,12 @@ char **infix_split(const char *linea);
  * es, si es un número o un operador; y, caso de ser operador, cuál:
  */
 
+enum asocc {
+    ASSOC_LEFT,
+    ASSOC_RIGHT,
+};
+
+
 enum token_type {
     TOK_NUM,     // Número
     TOK_OPER,    // Operador
@@ -84,6 +90,7 @@ enum oper_type {
     OP_RAIZ,  // raíz cuadrada, "sqrt"
     OP_TERN,  // operador ternario, ?:
 };
+
 
 
 /* El tipo del valor numérico será "long int", que codificamos con un typedef.
@@ -106,10 +113,10 @@ typedef struct calc_oper {  // Para tokens TOK_OPER
     // Asimismo, la implementación de infix puede generalizarse bastante si el
     // mismo struct del operador incluye también su precedencia y asociatividad,
     // para comparar los atributos del token actual con los del tope de la pila:
-    /**
-     * unsigned precedencia;
-     * enum assoc asociatividad;  // p.ej. ASSOC_LEFT, ASSOC_RIGHT (a definir).
-     */
+    
+    unsigned int precedencia;
+    enum asocc asociatividad;  // p.ej. ASSOC_LEFT, ASSOC_RIGHT (a definir).
+    
 } calc_operador;
 
 
