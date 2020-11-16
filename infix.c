@@ -41,7 +41,7 @@ void print_hasta(pila_t* operadores, bool (*corte)(char* operador, char* extra),
 	}
 }
 
-// Recibe el string del token leído actual y del operador anterior apilado.
+// Recibe el string del operador leído actual y del operador anterior apilado.
 // Devuelve true si el operador anterior se debe imprimir antes de apilar
 // el actual (según algoritmo de Shunting-yard), sino false.
 // Pre: Los strings de los operadores deben ser parseables por
@@ -50,6 +50,7 @@ bool debe_escribir(char* op_anterior, char* actual){
 	
 	if(!op_anterior)
 		return false;
+
 	tok_t tok_ant;
 	tok_t tok_act;
 	calc_parse(op_anterior, &tok_ant);
@@ -73,6 +74,7 @@ bool es_lparen(char* operador, char* extra){
 
 // Imprime el string pasado en notación posfija.
 // Pre: El input es un string de elemtentos en orden de notación infija.
+// Imprime MSG_ERROR si falla.
 void print_postfix(char** input){
 
 	pila_t* operadores = pila_crear();
