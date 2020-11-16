@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include "calc_helper.h"
 #include "strutil.h"
 #include <stdio.h>
@@ -42,7 +43,7 @@ bool division(calc_num* numeros, calc_num* resultado){
 bool potencia(calc_num* numeros, calc_num* resultado){
 
 	double valor = pow((double) numeros[1], (double) numeros[0]);
-	if(valor == NAN)
+	if(!isfinite(valor))
 		return false;
 
 	*resultado = (calc_num) valor;
@@ -53,7 +54,7 @@ bool logaritmo(calc_num* numeros, calc_num* resultado){
 
 	double valor_0 = log( (double) numeros[0]);
 	double valor_1 = log( (double) numeros[1]);
-	if((valor_0 == NAN) || (valor_1 == NAN) || (valor_0 == 0)){
+	if(!isfinite(valor_0) || !isfinite(valor_1) || (valor_0 == 0)){
 		return false;
 	}
 	
@@ -64,7 +65,7 @@ bool logaritmo(calc_num* numeros, calc_num* resultado){
 bool raiz(calc_num* numeros, calc_num* resultado){
 
 	double valor = sqrt( (double) numeros[0]);
-	if(valor == NAN)
+	if(!isfinite(valor))
 		return false;
 	
 	*resultado = (calc_num) valor;
@@ -176,6 +177,9 @@ bool calculo(char** input, calc_num* resultado){
 }
 
 int main(){
+
+	double hola = log(-2);
+	printf("???: %i\n%f\n\n", hola == NAN, hola);
 
 	while(!feof(stdin)){
 		char** input = leer_linea();
