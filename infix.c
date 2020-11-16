@@ -22,72 +22,58 @@ char** leer_linea(){
 		free(linea);
 		return vector;
 	}
-	free(linea);//Documentación de getline pide liberar aunque falle la función
+	free(linea); //Documentación de getline pide liberar aunque falle la función
 	return NULL;
 }
 
-// Recibe el token leído actual y el el último string apilado de un operador anterior.
+// Desapila e imprime operadores hasta que un elemento cumpla
+// la condición de corte.
+// Pre: Los strings de la pila deben ser parseables por calc_parse() de
+// calc_helper.h. El corte puede ser NULL, e imprime todos los elementos.
+void print_hasta(pila_t* operadores, bool (*corte)(char* operador, char* extra), char* extra){
+
+	char* anterior = pila_ver_tope(operadores);
+
+	while(anterior && (!corte || corte(anterior, extra))){
+		printf("%s ", anterior);
+		pila_desapilar(operadores);
+		anterior = pila_ver_tope(operadores);
+	}
+}
+
+// Recibe el string del token leído actual y del operador anterior apilado.
 // Devuelve true si el operador anterior se debe imprimir antes de apilar
-// el token actual (según algoritmo de Shunting-yard), sino false.
-// Pre: Token actual válido, el string del siguiente operador es en efecto un
-// operador parseable por calc_parse() de calc_helper.h
-bool debe_escribir(tok_t actual, char* sig_operador){
+// el actual (según algoritmo de Shunting-yard), sino false.
+// Pre: Los strings de los operadores deben ser parseables por
+// calc_parse() de calc_helper.h (el anterior puede ser NULL)
+bool debe_escribir(char* op_anterior, char* actual){
 	
-	if(!sig_operador)
+	if(!op_anterior)
 		return false;
 	tok_t tok_ant;
-	calc_parse(sig_operador, &tok_ant);
+	tok_t tok_act;
+	calc_parse(op_anterior, &tok_ant);
+	calc_parse(actual, &tok_act);
 
 	return( (tok_ant.type == TOK_OPER) && 
-		( (tok_ant.oper.precedencia > actual.oper.precedencia) ||
-		( (tok_ant.oper.precedencia == actual.oper.precedencia) &&
+		( (tok_ant.oper.precedencia > tok_act.oper.precedencia) ||
+		( (tok_ant.oper.precedencia == tok_act.oper.precedencia) &&
 		(tok_ant.oper.asociatividad == ASSOC_LEFT) )));
 }
 
-// Devuelve true si el string es un token de paréntesis izquierdo, sino false.
+// Devuelve true si el string es un token de paréntesis izquierdo
+// (según calc_parse()), sino false. 
 // Pre: el string del es un operador parseable por calc_parse() de calc_helper.h
-bool es_parentesis_izq(char* operador){
+bool es_lparen(char* operador, char* extra){
 
 	tok_t tok;
 	calc_parse(operador, &tok);
 	return tok.type == TOK_LPAREN;
 }
 
-// Desapila los primeros elementos de la pila que deban ser impresos en ese
-// momento según el token operador actual, y los imprime. Apila el string
-// del token actual.
-// Pre: El tok_actual debe ser un token de operador válido, y string_actual
-// debe poder parsearse a ese token con calc_parse() de calc_helper.h
-// Devuelve false en caso de error, sino true.
-bool actualizar_operadores(pila_t* operadores, tok_t tok_actual, char* string_actual){
-
-	char* anterior = pila_desapilar(operadores);
-
-	while(debe_escribir(tok_actual, anterior)){
-		printf("%s ", anterior);
-		anterior = pila_desapilar(operadores);
-	}
-
-	return (!anterior || pila_apilar(operadores, (void*) anterior)) && 
-		pila_apilar(operadores, (void*) string_actual);
-}
-
-// Desapila e imprime hasta encontrar un parentesis izquierdo, y lo descarta.
-// Pre: Los strings de la pila deben ser parseables por calc_parse() de
-// calc_helper.h. 
-void desapilar_parentesis(pila_t* operadores){
-
-	char* anterior = pila_desapilar(operadores);
-
-	while(anterior && !es_parentesis_izq(anterior)){
-		printf("%s ", anterior);
-		anterior = pila_desapilar(operadores);
-	}
-}
-
 // Imprime el string pasado en notación posfija.
 // Pre: El input es un string de elemtentos en orden de notación infija.
-void infix_a_postfix(char** input){
+void print_postfix(char** input){
 
 	pila_t* operadores = pila_crear();
 	if(!operadores){
@@ -106,7 +92,8 @@ void infix_a_postfix(char** input){
 		if(tok.type == TOK_NUM){
 			printf("%s ", *input);
 		} else if (tok.type == TOK_OPER){
-			if(!actualizar_operadores(operadores, tok, *input)){
+			print_hasta(operadores, debe_escribir, *input);
+			if(!pila_apilar(operadores, (void*) *input)){
 				pila_destruir(operadores);
 				printf("%s\n", MSG_ERROR);
 				return;
@@ -118,14 +105,13 @@ void infix_a_postfix(char** input){
 				return;
 			}
 		} else if (tok.type == TOK_RPAREN){
-			desapilar_parentesis(operadores);
+			print_hasta(operadores, es_lparen, NULL);
+			pila_desapilar(operadores); //Descarto el paréntesis
 		}
 		input++;
 	}
 
-	while(!pila_esta_vacia(operadores)){
-		printf("%s ", (char*) pila_desapilar(operadores));
-	}
+	print_hasta(operadores, NULL, NULL);
 	pila_destruir(operadores);
 }
 
@@ -134,7 +120,7 @@ int main(){
 	while(!feof(stdin)){
 		char** input = leer_linea();
 		if(input){
-			infix_a_postfix(input);
+			print_postfix(input);
 			printf("\n");
 			free_strv(input);
 		}
