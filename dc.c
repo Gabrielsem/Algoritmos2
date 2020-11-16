@@ -77,7 +77,6 @@ bool ternario(calc_num* numeros, calc_num* resultado){
 	return true;
 }
 
-
 // Lee una línea del standard input, devolviendo un vector a memoria dinamica
 // con strings de cada palabra de la línea por separado. Devuelve NULL si falla.
 // Se debe liberar el vector con free_strv() de strutil.h
@@ -91,7 +90,7 @@ char** leer_linea(){
 		free(linea);
 		return vector;
 	}
-	free(linea);//Documentación de getline pide liberar aunque falle la función
+	free(linea); //Documentación de getline pide liberar aunque falle la función
 	return NULL;
 }
 
@@ -114,7 +113,7 @@ operacion_f operacion(enum oper_type op){
 			return logaritmo;
 		case OP_RAIZ:
 			return raiz;
-		default://OP_TERN
+		default: //OP_TERN
 			return ternario;
 	}
 }
@@ -159,12 +158,11 @@ bool calculo(char** input, calc_num* resultado){
 
 		if(tok.type == TOK_NUM){
 			apilar_num(pila, tok.value);
-		} else {
-			if(!operar(pila, tok.oper)){
-				pilanum_destruir(pila);
-				return false;
-			}
+		} else if(!operar(pila, tok.oper)){
+			pilanum_destruir(pila);
+			return false;
 		}
+
 		input++;
 	}
 
