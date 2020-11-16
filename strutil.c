@@ -5,11 +5,12 @@
 
 //----AUXILIARES----
 
-//Devuelve la cantidad de apariciones del caracter en el string
+// Devuelve la cantidad de apariciones del caracter en el string.
+// Devuelve 0 si el caracter es '\0'.
 size_t apariciones(const char* str, char caracter){
 
 	if(caracter == '\0')
-		return 1;
+		return 0;
 
 	size_t contador = 0;
 	char* sig_aparicion = strchr(str, caracter);

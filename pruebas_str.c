@@ -46,11 +46,11 @@ void pruebas_split(){
 	free_strv(prueba);
 
 	prueba = split(string_4, ',');
-	print_test("No está el separador", !strcmp(prueba[0], "asd") && !prueba[1] );
+	print_test("No está el separador", !strcmp(prueba[0], string_4) && !prueba[1] );
 	free_strv(prueba);
 
-	prueba = split(string_4, ',');
-	print_test("Pasar \\0 como separador", !strcmp(prueba[0], "asd") && !prueba[1] );
+	prueba = split(string_1, '\0');
+	print_test("Pasar \\0 como separador", !strcmp(prueba[0], string_1) && !prueba[1] );
 	free_strv(prueba);
 
 	prueba = split(string_5, ',');
