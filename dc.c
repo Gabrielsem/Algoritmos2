@@ -53,8 +53,9 @@ bool logaritmo(calc_num* numeros, calc_num* resultado){
 
 	double valor_0 = log( (double) numeros[0]);
 	double valor_1 = log( (double) numeros[1]);
-	if((valor_0 == NAN) || (valor_1 == NAN) )
+	if((valor_0 == NAN) || (valor_1 == NAN) || (valor_0 == 0)){
 		return false;
+	}
 	
 	*resultado = (calc_num) (valor_1/valor_0);
 	return true;
