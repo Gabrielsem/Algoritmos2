@@ -32,12 +32,12 @@ char** leer_linea(){
 // El corte puede ser NULL, e imprime todos los elementos.
 void print_hasta(pila_t* operadores, bool (*continuar)(char* operador, char* extra), char* extra){
 
-	char* oper = pila_ver_tope(operadores);
+	char* op = pila_ver_tope(operadores);
 
-	while(oper && (!continuar || continuar(oper, extra))){
-		printf("%s ", oper);
+	while(op && (!continuar || continuar(op, extra))){
+		printf("%s ", op);
 		pila_desapilar(operadores);
-		oper = pila_ver_tope(operadores);
+		op = pila_ver_tope(operadores);
 	}
 }
 
