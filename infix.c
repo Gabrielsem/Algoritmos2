@@ -46,7 +46,7 @@ void print_hasta(pila_t* operadores, bool (*continuar)(char* operador, char* ext
 // el actual (según algoritmo de Shunting-yard), sino false.
 // Pre: Los strings de los operadores deben ser parseables por
 // calc_parse() de calc_helper.h (el anterior puede ser NULL)
-bool debe_escribir(char* op_anterior, char* op_actual){
+bool debe_escribir_oper(char* op_anterior, char* op_actual){
 	
 	if(!op_anterior)
 		return false;
@@ -96,7 +96,7 @@ void print_postfix(char** input){
 		if(tok.type == TOK_NUM){
 			printf("%s ", *input);
 		} else if (tok.type == TOK_OPER){
-			print_hasta(operadores, debe_escribir, *input);
+			print_hasta(operadores, debe_escribir_oper, *input);
 			if(!pila_apilar(operadores, (void*) *input)){
 				pila_destruir(operadores);
 				printf("%s\n", MSG_ERROR);

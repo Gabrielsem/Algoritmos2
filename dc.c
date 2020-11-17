@@ -43,8 +43,9 @@ bool division(calc_num* numeros, calc_num* resultado){
 bool potencia(calc_num* numeros, calc_num* resultado){
 
 	double valor = pow((double) numeros[1], (double) numeros[0]);
-	if(!isfinite(valor))
+	if(!isfinite(valor) || ((numeros[1] == 0) && (numeros[0] == 0))){
 		return false;
+	}
 
 	*resultado = (calc_num) valor;
 	return true;
