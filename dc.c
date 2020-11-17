@@ -178,9 +178,6 @@ bool calculo(char** input, calc_num* resultado){
 
 int main(){
 
-	double hola = log(-2);
-	printf("???: %i\n%f\n\n", hola == NAN, hola);
-
 	while(!feof(stdin)){
 		char** input = leer_linea();
 		calc_num resultado;
