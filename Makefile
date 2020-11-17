@@ -21,3 +21,5 @@ valgrind_dc: dc
 
 valgrind_infix: infix
 	valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./infix < cuentas_infix.txt
+
+.PHONY: str dc infix
