@@ -16,28 +16,28 @@ char** leer_linea(){
 
 	char* linea = NULL;
 	size_t tam = 0;
-	if(getline(&linea, &tam, stdin) != -1){
 
+	if(getline(&linea, &tam, stdin) != -1){
 		char** vector = infix_split(linea);
 		free(linea);
 		return vector;
 	}
+
 	free(linea); //Documentación de getline pide liberar aunque falle la función
 	return NULL;
 }
 
-// Desapila e imprime operadores hasta que un elemento cumpla
-// la condición de corte.
-// Pre: Los strings de la pila deben ser parseables por calc_parse() de
-// calc_helper.h. El corte puede ser NULL, e imprime todos los elementos.
-void print_hasta(pila_t* operadores, bool (*corte)(char* operador, char* extra), char* extra){
+// Desapila e imprime operadores hasta que la función continuar
+// de falso para un operador. No desapila ese operador.
+// El corte puede ser NULL, e imprime todos los elementos.
+void print_hasta(pila_t* operadores, bool (*continuar)(char* operador, char* extra), char* extra){
 
-	char* anterior = pila_ver_tope(operadores);
+	char* oper = pila_ver_tope(operadores);
 
-	while(anterior && (!corte || corte(anterior, extra))){
-		printf("%s ", anterior);
+	while(oper && (!continuar || continuar(oper, extra))){
+		printf("%s ", oper);
 		pila_desapilar(operadores);
-		anterior = pila_ver_tope(operadores);
+		oper = pila_ver_tope(operadores);
 	}
 }
 
@@ -46,7 +46,7 @@ void print_hasta(pila_t* operadores, bool (*corte)(char* operador, char* extra),
 // el actual (según algoritmo de Shunting-yard), sino false.
 // Pre: Los strings de los operadores deben ser parseables por
 // calc_parse() de calc_helper.h (el anterior puede ser NULL)
-bool debe_escribir(char* op_anterior, char* actual){
+bool debe_escribir(char* op_anterior, char* op_actual){
 	
 	if(!op_anterior)
 		return false;
@@ -54,7 +54,7 @@ bool debe_escribir(char* op_anterior, char* actual){
 	tok_t tok_ant;
 	tok_t tok_act;
 	calc_parse(op_anterior, &tok_ant);
-	calc_parse(actual, &tok_act);
+	calc_parse(op_actual, &tok_act);
 
 	return( (tok_ant.type == TOK_OPER) && 
 		( (tok_ant.oper.precedencia > tok_act.oper.precedencia) ||
@@ -62,14 +62,16 @@ bool debe_escribir(char* op_anterior, char* actual){
 		(tok_ant.oper.asociatividad == ASSOC_LEFT) )));
 }
 
-// Devuelve true si el string es un token de paréntesis izquierdo
-// (según calc_parse()), sino false. 
+// Devuelve true si el string es un operador válido 
+// según calc_parse(), sino false. Paréntesis no se considera operador. 
 // Pre: el string del es un operador parseable por calc_parse() de calc_helper.h
-bool es_lparen(char* operador, char* extra){
+// El extra es solo para cumplir formato de la función print_hasta, se puede
+// pasar NULL.
+bool es_operador(char* operador, char* extra){
 
 	tok_t tok;
 	calc_parse(operador, &tok);
-	return tok.type == TOK_LPAREN;
+	return tok.type == TOK_OPER;
 }
 
 // Imprime el string pasado en notación posfija.
@@ -107,7 +109,7 @@ void print_postfix(char** input){
 				return;
 			}
 		} else if (tok.type == TOK_RPAREN){
-			print_hasta(operadores, es_lparen, NULL);
+			print_hasta(operadores, es_operador, NULL);
 			pila_desapilar(operadores); //Descarto el paréntesis
 		}
 		input++;
