@@ -94,6 +94,11 @@ bool redim_hash(hash_t* hash){
 	return true;
 }
 
+bool es_valido_guardar(elemento_t* elemento, char extra){
+	if(elemento->estado == VACIO || elemento->estado == BORRADO) return true;
+	return false;
+}
+
 /* ******************************************************************
  *                         PRIMITIVAS HASH
  * *****************************************************************/
@@ -117,10 +122,19 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 }
 
 bool hash_guardar(hash_t *hash, const char *clave, void *dato){
+	size_t pos_ini = hash_func(clave,hash->capacidad);
+	size_t pos_final = size_t buscar_elemento(hash->elementos, hash->capacidad,pos_ini, es_valido_guardar)
+	if(pos_final == hash->capacidad) return false;
+	elemento_t *elemento = hash->elementos+pos_final;
+	elemento->clave = clave;
+	elemento->dato = dato;
+	hash->cantidad++;
 	return true;
 }
 
 void *hash_borrar(hash_t *hash, const char *clave){
+	size_t pos_ini = hash_func(clave,hash->capacidad);
+	size_t pos_final = size_t buscar_elemento(hash->elementos, hash->capacidad,pos_ini, es_valido_guardar)
 	return NULL;
 }
 
