@@ -154,17 +154,26 @@ hash_iter_t *hash_iter_crear(const hash_t *hash){
 }
 
 bool hash_iter_avanzar(hash_iter_t *iter){
+	iter->pos++;
+	if(iter->pos >= iter->hash->cap){
+		iter->pos = iter->hash->cap;
+		return false;
+	}
+	
+	iter->pos = buscar_elem(iter->hash->elementos, iter->hash->cap, iter->pos, esta_ocupado, NULL);
 	return true;
 }
 
 const char *hash_iter_ver_actual(const hash_iter_t *iter){
-	return NULL;
+	if(iter->pos == iter->hash->cap)
+		return NULL;
+	return iter->hash->elementos[iter->pos].clave;
 }
 
 bool hash_iter_al_final(const hash_iter_t *iter){
-	return true;
+	return iter->pos == iter->hash->cap;
 }
 
 void hash_iter_destruir(hash_iter_t *iter){
-	return;
+	free(iter);
 }
