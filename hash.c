@@ -21,10 +21,10 @@ typedef struct elemento {
 	char* clave;
 	void* dato;
 	enum estados estado;
-} elemento_t;
+} elem_t;
 
 struct hash {
-	elemento_t* elementos;
+	elem_t* elementos;
 	size_t capacidad;
 	size_t cantidad;
 	hash_destruir_dato_t function_destruir;
@@ -35,6 +35,9 @@ struct hash_iter {
 	size_t pos;
 };
 
+//Tipo de función que recibe buscar_elem(), declarada más abajo
+typedef bool (*buscar_f)(elem_t elemento, char* extra);
+
 /* ******************************************************************
  *                        FUNCIONES INTERNAS
  * *****************************************************************/
@@ -43,7 +46,7 @@ struct hash_iter {
 // (djb2, http://www.cse.yorku.ca/~oz/hash.html)
 // Tiene algunas modificaciones para comodidad y
 // para que no tire warnings el compilador.
-size_t hash_func(unsigned char *str, size_t capacidad){
+size_t hash_func(char *str, size_t capacidad){
     size_t hash = 5381;
     int c;
 
@@ -53,9 +56,39 @@ size_t hash_func(unsigned char *str, size_t capacidad){
     return hash % capacidad;
 }
 
+// Recibe un arreglo de elementos con su capacidad, y una posición inicial.
+// Se recorre el arreglo a partir de esa posición, volviendo a la posición
+// 0 si se llega al final. Se le aplica la función es_elem a cada elemento
+// hasta que la función devuelva true, y se devuelve la posición de ese elemento.
+// Si la función nunca devuelve true y ya se recorrieron todos los elementos,
+// se devuelve la capacidad del vector (como posición inválida).
+// pos_ini debe ser menor a cap
+size_t buscar_elem(elem_t* elementos, size_t cap, size_t pos_ini , buscar_f es_elem, char* extra){
+	size_t i = pos_ini;
+
+	do {
+		if(es_elem(elementos[i], extra))
+			return i;
+
+		i++;
+		if(i == cap)
+			i = 0;
+
+	} while (i != pos_ini);
+
+	return cap;
+}
+
+// Devuelve verdadero si el elemento esta vacío o borrado.
+// El extra es para cumplir con el formato de buscar_f,
+// se le puede pasar NULL.
+bool esta_libre(elem_t elem, char* extra){
+	return (elem.estado == VACIO) || (elem.estado == BORRADO); 
+}
+
 // Inicializa esa cantidad de elementos del vector elementos,
 // poniendo su estado en VACIO.
-void inicializar_elementos(elemento_t* elementos, size_t cantidad){
+void inicializar_elementos(elem_t* elementos, size_t cantidad){
 	for(int i = 0; i < cantidad; i++){
 		elementos[i].estado = VACIO;
 	}
@@ -70,7 +103,7 @@ void inicializar_elementos(elemento_t* elementos, size_t cantidad){
 // - Sino, devuelve la capacidad actual del hash.
 size_t nueva_capacidad(const hash_t* hash){
 	size_t capacidad = hash->capacidad;
-	float proporcion = hash->cantidad / hash->capacidad;
+	float proporcion = (float) (hash->cantidad / hash->capacidad);
 
 	if(proporcion < PROP_ACHICAR){
 		capacidad = hash->capacidad/FACTOR_REDIM;
@@ -85,12 +118,31 @@ size_t nueva_capacidad(const hash_t* hash){
 	return capacidad;
 }
 
+// Redimensiona el hash si es necesario.
+// Devuelve verdadero si lo logró o no era necesario,
+// sino falso.
 bool redim_hash(hash_t* hash){
 	size_t nueva_cap = nueva_capacidad(hash);
 	if(nueva_cap == hash->capacidad)
 		return true;
 
-	//hago cosas
+	elem_t* nuevos_elem = malloc(sizeof(elem_t)*nueva_cap);
+	if(!nuevos_elem)
+		return false;
+
+	inicializar_elementos(nuevos_elem, nueva_cap);
+
+	for(int i = 0; i < hash->capacidad; i++){
+		if(hash->elementos[i].estado == OCUPADO){
+			size_t pos = hash_func(hash->elementos[i].clave, hash->capacidad);
+			pos = buscar_elem(nuevos_elem, nueva_cap, pos, esta_libre, NULL);
+			nuevos_elem[pos] = hash->elementos[i];
+		}
+	}
+
+	free(hash->elementos);
+	hash->elementos = nuevos_elem;
+	hash->capacidad = nueva_cap;
 	return true;
 }
 
@@ -103,7 +155,7 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 	if(!hash)
 		return NULL;
 
-	elemento_t* elementos = malloc(sizeof(elemento_t)*CAPACIDAD_INICIAL);
+	elem_t* elementos = malloc(sizeof(elem_t)*CAPACIDAD_INICIAL);
 	if(!elementos){
 		free(hash);
 		return NULL;
@@ -154,7 +206,7 @@ hash_iter_t *hash_iter_crear(const hash_t *hash){
 }
 
 bool hash_iter_avanzar(hash_iter_t *iter){
-	return true;
+	return true;	
 }
 
 const char *hash_iter_ver_actual(const hash_iter_t *iter){
