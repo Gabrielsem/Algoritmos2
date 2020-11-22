@@ -1,6 +1,6 @@
 
 hash: testing.c testing.h main.c hash.h hash_pruebas.c
-	gcc -g -Wall -Wconversion -Wtype-limits -pedantic -Werror -o pruebas testing.c testing.h main.c hash.h hash_pruebas.c
+	gcc -g -Wall -Wconversion -Wtype-limits -pedantic -Werror -o pruebas testing.c testing.h main.c hash.h hash_pruebas.c hash.c
 	./pruebas
 
 valgrind: pruebas
