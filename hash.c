@@ -33,9 +33,6 @@ struct hash_iter {
 	size_t pos;
 };
 
-typedef struct hash hash_t;
-typedef struct hash_iter hash_iter_t;
-
 /* ******************************************************************
  *                        FUNCIONES INTERNAS
  * *****************************************************************/
