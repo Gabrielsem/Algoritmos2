@@ -25,6 +25,7 @@ typedef struct elemento {
 struct hash {
 	elemento_t* elementos;
 	size_t capacidad;
+	size_t cantidad;
 	hash_destruir_dato_t function_destruir;
 };
 
@@ -62,6 +63,7 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 
 	inicializar_elementos(elementos, CAPACIDAD_INICIAL);
 	hash->capacidad = CAPACIDAD_INICIAL;
+	hash->cantidad = 0;
 	hash->function_destruir = destruir_dato;
 	return hash;
 }
