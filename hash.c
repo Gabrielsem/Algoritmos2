@@ -35,6 +35,8 @@ struct hash_iter {
 	size_t pos;
 };
 
+typedef bool (*buscar_f)(elem_t elemento, char* extra);
+
 /* ******************************************************************
  *                        FUNCIONES INTERNAS
  * *****************************************************************/
