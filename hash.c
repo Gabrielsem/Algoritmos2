@@ -126,23 +126,23 @@ bool redim_hash(hash_t* hash){
 	if(cap == hash->cap)
 		return true;
 
-	elem_t* nuevos_elem = malloc(sizeof(elem_t)*nueva_cap);
+	elem_t* nuevos_elem = malloc(sizeof(elem_t)*cap);
 	if(!nuevos_elem)
 		return false;
 
-	inicializar_elementos(nuevos_elem, nueva_cap);
+	inicializar_elementos(nuevos_elem, cap);
 
-	for(int i = 0; i < hash->capacidad; i++){
+	for(int i = 0; i < hash->cap; i++){
 		if(hash->elementos[i].estado == OCUPADO){
-			size_t pos = hash_func(hash->elementos[i].clave, hash->capacidad);
-			pos = buscar_elem(nuevos_elem, nueva_cap, pos, esta_libre, NULL);
+			size_t pos = hash_func(hash->elementos[i].clave, hash->cap);
+			pos = buscar_elem(nuevos_elem, cap, pos, esta_libre, NULL);
 			nuevos_elem[pos] = hash->elementos[i];
 		}
 	}
 
 	free(hash->elementos);
 	hash->elementos = nuevos_elem;
-	hash->capacidad = nueva_cap;
+	hash->cap = cap;
 	return true;
 }
 
