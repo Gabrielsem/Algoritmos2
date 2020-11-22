@@ -43,7 +43,7 @@ struct hash_iter {
 // (djb2, http://www.cse.yorku.ca/~oz/hash.html)
 // Tiene algunas modificaciones para comodidad y
 // para que no tire warnings el compilador.
-size_t hash_func(unsigned char *str, size_t cap){
+size_t hash_func(char *str, size_t cap){
     size_t hash = 5381;
     int c;
 
