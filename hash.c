@@ -53,6 +53,17 @@ size_t hash_func(char *str, size_t cap){
     return hash % cap;
 }
 
+size_t buscar_elem(elem_t* elementos, size_t cap, size_t pos_ini , buscar_f es_elem, char* extra){
+	return cap;
+}
+
+// Devuelve verdadero si el elemento está ocupado.
+// El extra es para cumplir con el formato de buscar_f,
+// se le puede pasar NULL.
+bool esta_ocupado(elem_t elem, char* extra){
+	return elem.estado == OCUPADO;
+}
+
 // Inicializa esa cantidad de elementos del vector elementos,
 // poniendo su estado en VACIO.
 void inicializar_elementos(elem_t* elementos, size_t cant){
