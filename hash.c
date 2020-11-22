@@ -25,8 +25,8 @@ typedef struct elemento {
 
 struct hash {
 	elem_t* elementos;
-	size_t capacidad;
-	size_t cantidad;
+	size_t cap;
+	size_t cant;
 	hash_destruir_dato_t function_destruir;
 };
 
@@ -46,14 +46,14 @@ typedef bool (*buscar_f)(elem_t elemento, char* extra);
 // (djb2, http://www.cse.yorku.ca/~oz/hash.html)
 // Tiene algunas modificaciones para comodidad y
 // para que no tire warnings el compilador.
-size_t hash_func(char *str, size_t capacidad){
+size_t hash_func(char *str, size_t cap){
     size_t hash = 5381;
     int c;
 
     while ((c = *str++))
         hash = ((hash << 5) + hash) + (size_t) c; /* hash * 33 + c */
 
-    return hash % capacidad;
+    return hash % cap;
 }
 
 // Recibe un arreglo de elementos con su capacidad, y una posición inicial.
@@ -88,8 +88,8 @@ bool esta_libre(elem_t elem, char* extra){
 
 // Inicializa esa cantidad de elementos del vector elementos,
 // poniendo su estado en VACIO.
-void inicializar_elementos(elem_t* elementos, size_t cantidad){
-	for(int i = 0; i < cantidad; i++){
+void inicializar_elementos(elem_t* elementos, size_t cant){
+	for(int i = 0; i < cant; i++){
 		elementos[i].estado = VACIO;
 	}
 }
@@ -101,29 +101,29 @@ void inicializar_elementos(elem_t* elementos, size_t cantidad){
 // - Si es mayor a PROP_AGRANDAR, devuelve la capacidad actual
 //   del hash multiplicado por FACTOR_REDIM.
 // - Sino, devuelve la capacidad actual del hash.
-size_t nueva_capacidad(const hash_t* hash){
-	size_t capacidad = hash->capacidad;
-	float proporcion = (float) (hash->cantidad / hash->capacidad);
+size_t nueva_cap(const hash_t* hash){
+	size_t cap = hash->cap;
+	float proporcion = (float)(hash->cant / hash->cap);
 
 	if(proporcion < PROP_ACHICAR){
-		capacidad = hash->capacidad/FACTOR_REDIM;
-		if(capacidad < CAPACIDAD_INICIAL)
-			capacidad = CAPACIDAD_INICIAL;
+		cap = hash->cap/FACTOR_REDIM;
+		if(cap < CAPACIDAD_INICIAL)
+			cap = CAPACIDAD_INICIAL;
 	}
 
 	if(proporcion > PROP_AGRANDAR){
-		capacidad = hash->capacidad * FACTOR_REDIM;
+		cap = hash->cap * FACTOR_REDIM;
 	}
 
-	return capacidad;
+	return cap;
 }
 
 // Redimensiona el hash si es necesario.
 // Devuelve verdadero si lo logró o no era necesario,
 // sino falso.
 bool redim_hash(hash_t* hash){
-	size_t nueva_cap = nueva_capacidad(hash);
-	if(nueva_cap == hash->capacidad)
+	size_t cap = nueva_cap(hash);
+	if(cap == hash->cap)
 		return true;
 
 	elem_t* nuevos_elem = malloc(sizeof(elem_t)*nueva_cap);
@@ -162,8 +162,8 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 	}
 
 	inicializar_elementos(elementos, CAPACIDAD_INICIAL);
-	hash->capacidad = CAPACIDAD_INICIAL;
-	hash->cantidad = 0;
+	hash->cap = CAPACIDAD_INICIAL;
+	hash->cant = 0;
 	hash->function_destruir = destruir_dato;
 	return hash;
 }
