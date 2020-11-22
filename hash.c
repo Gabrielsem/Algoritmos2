@@ -83,7 +83,7 @@ size_t buscar_elem(elem_t* elementos, size_t cap, size_t pos_ini , buscar_f es_e
 // El extra es para cumplir con el formato de buscar_f,
 // se le puede pasar NULL.
 bool esta_libre(elem_t elem, char* extra){
-	return (elem.estado == VACIO) || (elem.estado == BORRADO); 
+	return (elem.estado == VACIO) || (elem.estado == BORRADO);
 }
 
 // Inicializa esa cantidad de elementos del vector elementos,
