@@ -94,8 +94,12 @@ bool redim_hash(hash_t* hash){
 	return true;
 }
 
-bool es_valido_guardar(elem_t* elemento, char extra){
+bool es_valido_guardar(elem_t* elemento, char* extra){
 	if(elemento->estado == VACIO || elemento->estado == BORRADO) return true;
+	return false;
+}
+bool es_elemento_buscado(elem_t* elemento, char* extra){
+	if(elemento->clave == extra) return true;
 	return false;
 }
 
@@ -123,34 +127,55 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 
 bool hash_guardar(hash_t *hash, const char *clave, void *dato){
 	size_t pos_ini = hash_func(clave,hash->cap);
-	size_t pos_final = size_t buscar_elemento(hash->elementos, hash->cap,pos_ini, es_valido_guardar)
+	size_t pos_final = size_t buscar_elemento(hash->elementos, hash->cap,pos_ini, es_valido_guardar,NULL);
 	if(pos_final == hash->cap) return false;
 	elem_t *elemento = hash->elementos+pos_final;
 	elemento->clave = clave;
 	elemento->dato = dato;
+	elemento-> estado = OCUPADO;
 	hash->cant++;
 	return true;
 }
 
 void *hash_borrar(hash_t *hash, const char *clave){
 	size_t pos_ini = hash_func(clave,hash->cap);
-	size_t pos_final = size_t buscar_elemento(hash->elementos, hash->cap,pos_ini, es_valido_guardar)
-	return NULL;
+	size_t pos_final = size_t buscar_elemento(hash->elementos, hash->cap,pos_ini, es_elemento_buscado,clave);
+	if(pos_final == hash->cap) return NULL;
+	elem_t *elemento = hash->elementos+pos_final;
+	elemento->clave = NULL;
+	elemento-> estado = BORRADO;
+	hash->cant--;
+	return elemento->dato;
 }
 
 void *hash_obtener(const hash_t *hash, const char *clave){
-	return NULL;
+	size_t pos_ini = hash_func(clave,hash->cap);
+	size_t pos_final = size_t buscar_elemento(hash->elementos, hash->cap,pos_ini, es_elemento_buscado,clave);
+	if(pos_final == hash->cap) return NULL;
+	elem_t *elemento = hash->elementos+pos_final;
+	return elemento->dato;
 }
 
 bool hash_pertenece(const hash_t *hash, const char *clave){
+	ize_t pos_ini = hash_func(clave,hash->cap);
+	size_t pos_final = size_t buscar_elemento(hash->elementos, hash->cap,pos_ini, es_elemento_buscado,clave);
+	if(pos_final == hash->cap) return false;
+	elem_t *elemento = hash->elementos+pos_final;
+	if(elemento->estado != OCUPADO) return false;
 	return true;
 }
 
 size_t hash_cantidad(const hash_t *hash){
-	return 0;
+	return hash->cant;
 }
 
 void hash_destruir(hash_t *hash){
+	elem_t* elementos = hash->elementos;
+	
+	for(size_t i = 0, i < hash->cap, i++){
+		if(elementos[i]->estado != OCUPADO) continue;
+
+	}
 	return;
 }
 
