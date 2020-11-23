@@ -94,16 +94,6 @@ bool redim_hash(hash_t* hash){
 	return true;
 }
 
-bool es_valido_guardar(elem_t elemento, char* clave){
-	if(elemento.estado == VACIO || elemento.estado == BORRADO) return true;
-	if(strcmp(elemento.clave, clave) == 0) return true;
-	return false;
-}
-bool es_elemento_buscado(elem_t elemento, char* clave){
-	if(strcmp(elemento.clave, clave) == 0 && elemento.estado == OCUPADO) return true;
-	return false;
-}
-
 /* ******************************************************************
  *                         PRIMITIVAS HASH
  * *****************************************************************/
@@ -125,127 +115,29 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 	hash->funcion_destruir = destruir_dato;
 	return hash;
 }
-/* size_t i = pos_ini;
-do {
-	i++;
-	if(i == cap){
-		i = 0;
-	}
-} while (i != pos_ini);
-*/
+
 bool hash_guardar(hash_t *hash, const char *clave, void *dato){
-	size_t pos_ini = hash_func(clave,hash->cap);
-	size_t i = pos_ini;
-	size_t pos_final = hash->cap; //inicializo en cap porque esta fuera del arreglo
-	size_t pos_posible = hash->cap;
-	elem_t* elementos = hash->elementos;
-	do {
-		if((strcmp(elementos[i]->clave, clave) == 0 && elementos[i]->estado == OCUPADO) || (elementos[i]->estado == VACIO)){
-			pos_final = i;
-			break;
-		}
-		if(elementos[i]->estado == BORRADO && pos_posible == hash->cap){
-			pos_posible = i;
-		}
-		i++;
-		if(i == cap){
-			i = 0;
-		}
-	} while (i != pos_ini);
-
-	if(pos_final == hash->cap) return false;
-
-	if(elementos[pos_final]->estado == OCUPADO){
-		if(pos_posible != hash->cap){
-			elementos[pos_final]->estado = BORRADO;
-			if(hash->funcion_destruir != NULL) hash->funcion_destruir(elementos[pos_posible]->dato);
-			elementos[pos_posible]->clave = clave;
-			elementos[pos_posible]->dato = dato;
-			elementos[pos_posible]->estado = OCUPADO;
-			hash->cant++;
-			return true;
-		}
-		if(hash->funcion_destruir != NULL) hash->funcion_destruir(elementos[pos_final]->dato);
-		elementos[pos_final]->dato = dato;
-		return true;
-	}
-	// en caso de que la pos final sea vacio
-	elementos[pos_final]->clave = clave;
-	elementos[pos_final]->dato = dato;
-	elementos[pos_final]-> estado = OCUPADO;
-	hash->cant++;
 	return true;
 }
 
 void *hash_borrar(hash_t *hash, const char *clave){
-	size_t pos_ini = hash_func(clave,hash->cap);
-	size_t pos_final = hash->cap;
-	size_t i = pos_ini;
-	elem_t* elementos = hash->elementos;
-	do {
-		if((strcmp(elementos[i]->clave, clave) == 0 && elementos[i]->estado == OCUPADO) || (elementos[i]->estado == VACIO)){
-			pos_final = i;
-			break;
-		}
-		i++;
-		if(i == cap){
-			i = 0;
-		}
-	} while (i != pos_ini);
-	if(pos_final == hash->cap) return NULL;
-	elementos[pos_final]-> estado = BORRADO;
-	hash->cant--;
-	return elementos[pos_final]->dato;
+	return NULL;
 }
 
 void *hash_obtener(const hash_t *hash, const char *clave){
-	size_t pos_ini = hash_func(clave,hash->cap);
-	size_t pos_final = hash->cap;
-	size_t i = pos_ini;
-	elem_t* elementos = hash->elementos;
-	do {
-		if((strcmp(elementos[i]->clave, clave) == 0 && elementos[i]->estado == OCUPADO) || (elementos[i]->estado == VACIO)){
-			pos_final = i;
-			break;
-		}
-		i++;
-		if(i == cap){
-			i = 0;
-		}
-	} while (i != pos_ini);
-	if(pos_final == hash->cap) return NULL;
-	return elementos[pos_final]->dato;
+	return NULL;
 }
 
 bool hash_pertenece(const hash_t *hash, const char *clave){
-	size_t pos_ini = hash_func(clave,hash->cap);
-	size_t i = pos_ini;
-	elem_t* elementos = hash->elementos;
-	do {
-		if(strcmp(elementos[i]->clave, clave) == 0 && elementos[i]->estado == OCUPADO) return true;
-		if(elementos[i]->estado == VACIO) return false;
-		i++;
-		if(i == cap){
-			i = 0;
-		}
-	} while (i != pos_ini);
-	if(pos_final == hash->cap) return false;
+	return true;
 }
 
 size_t hash_cantidad(const hash_t *hash){
-	return hash->cant;
+	return 0;
 }
 
 void hash_destruir(hash_t *hash){
-	elem_t* elementos = hash->elementos;
-	if(hash->funcion_destruir != NULL){
-		for(size_t i = 0, i < hash->cap, i++){
-			if(elementos[i]->estado == VACIO) continue;
-			hash->funcion_destruir(elementos[i]->dato);
-		}
-	}
-	free(hash->elementos);
-	free(hash);
+	return;
 }
 
 /* ******************************************************************
