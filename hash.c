@@ -27,7 +27,7 @@ struct hash {
 	elem_t* elementos;
 	size_t cap;
 	size_t cant;
-	hash_destruir_dato_t function_destruir;
+	hash_destruir_dato_t funcion_destruir;
 };
 
 struct hash_iter {
@@ -164,7 +164,7 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 	inicializar_elementos(elementos, CAPACIDAD_INICIAL);
 	hash->cap = CAPACIDAD_INICIAL;
 	hash->cant = 0;
-	hash->function_destruir = destruir_dato;
+	hash->funcion_destruir = destruir_dato;
 	return hash;
 }
 
