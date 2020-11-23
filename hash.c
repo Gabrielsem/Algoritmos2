@@ -35,9 +35,6 @@ struct hash_iter {
 	size_t pos;
 };
 
-//Tipo de función que recibe buscar_elem(), declarada más abajo
-typedef bool (*buscar_f)(elem_t elemento, char* extra);
-
 /* ******************************************************************
  *                        FUNCIONES INTERNAS
  * *****************************************************************/
@@ -54,36 +51,6 @@ size_t hash_func(char *str, size_t cap){
         hash = ((hash << 5) + hash) + (size_t) c; /* hash * 33 + c */
 
     return hash % cap;
-}
-
-// Recibe un arreglo de elementos con su capacidad, y una posición inicial.
-// Se recorre el arreglo a partir de esa posición, volviendo a la posición
-// 0 si se llega al final. Se le aplica la función es_elem a cada elemento
-// hasta que la función devuelva true, y se devuelve la posición de ese elemento.
-// Si la función nunca devuelve true y ya se recorrieron todos los elementos,
-// se devuelve la capacidad del vector (como posición inválida).
-// pos_ini debe ser menor a cap
-size_t buscar_elem(elem_t* elementos, size_t cap, size_t pos_ini , buscar_f es_elem, char* extra){
-	size_t i = pos_ini;
-
-	do {
-		if(es_elem(elementos[i], extra))
-			return i;
-
-		i++;
-		if(i == cap)
-			i = 0;
-
-	} while (i != pos_ini);
-
-	return cap;
-}
-
-// Devuelve verdadero si el elemento esta vacío o borrado.
-// El extra es para cumplir con el formato de buscar_f,
-// se le puede pasar NULL.
-bool esta_libre(elem_t elem, char* extra){
-	return (elem.estado == VACIO) || (elem.estado == BORRADO);
 }
 
 // Inicializa esa cantidad de elementos del vector elementos,
@@ -134,9 +101,19 @@ bool redim_hash(hash_t* hash){
 
 	for(int i = 0; i < hash->cap; i++){
 		if(hash->elementos[i].estado == OCUPADO){
-			size_t pos = hash_func(hash->elementos[i].clave, hash->cap);
-			pos = buscar_elem(nuevos_elem, cap, pos, esta_libre, NULL);
-			nuevos_elem[pos] = hash->elementos[i];
+			size_t pos_ini = hash_func(hash->elementos[i].clave, hash->cap);
+			size_t j = pos_ini;
+
+			do {
+				if(nuevos_elem[j].estado != OCUPADO){
+					break;
+				}
+				j++;
+				if(j == cap)
+					j = 0;
+			} while (j != pos_ini);
+
+			nuevos_elem[j] = hash->elementos[i];
 		}
 	}
 
