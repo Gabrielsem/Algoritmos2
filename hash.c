@@ -112,7 +112,7 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 	inicializar_elementos(elementos, CAPACIDAD_INICIAL);
 	hash->cap = CAPACIDAD_INICIAL;
 	hash->cant = 0;
-	hash->function_destruir = destruir_dato;
+	hash->funcion_destruir = destruir_dato;
 	return hash;
 }
 
