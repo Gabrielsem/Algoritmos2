@@ -27,7 +27,7 @@ struct hash {
 	elem_t* elementos;
 	size_t cap;
 	size_t cant;
-	hash_destruir_dato_t function_destruir;
+	hash_destruir_dato_t funcion_destruir;
 };
 
 struct hash_iter {
