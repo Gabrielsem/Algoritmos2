@@ -170,6 +170,14 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato){
 		return true;
 	}
 	// en caso de que la pos final sea vacio
+	if(pos_posible != hash->cap){
+		if(hash->funcion_destruir != NULL) hash->funcion_destruir(elementos[pos_posible]->dato);
+		elementos[pos_posible]->clave = clave;
+		elementos[pos_posible]->dato = dato;
+		elementos[pos_posible]->estado = OCUPADO;
+		hash->cant++;
+		return true;
+	}
 	elementos[pos_final]->clave = clave;
 	elementos[pos_final]->dato = dato;
 	elementos[pos_final]-> estado = OCUPADO;
