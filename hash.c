@@ -249,7 +249,7 @@ void hash_destruir(hash_t *hash){
 }
 
 /* ******************************************************************
- *                       PRIMITIVAS ITERADOR
+ *                       PRIMITIVAS ITERADOR                        *
  * *****************************************************************/
 
 hash_iter_t *hash_iter_crear(const hash_t *hash){
