@@ -70,7 +70,7 @@ void inicializar_elementos(elem_t* elementos, size_t cant){
 // - Sino, devuelve la capacidad actual del hash.
 size_t nueva_cap(const hash_t* hash){
 	size_t cap = hash->cap;
-	float proporcion = (float)(hash->cant / hash->cap);
+	float proporcion = ((float) hash->cant)/((float) hash->cap);
 
 	if(proporcion < PROP_ACHICAR){
 		cap = hash->cap/FACTOR_REDIM;
