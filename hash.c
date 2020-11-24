@@ -35,6 +35,8 @@ struct hash_iter {
 	size_t pos;
 };
 
+typedef bool (*buscar_f)(elem_t elemento, char* extra);
+
 /* ******************************************************************
  *                        FUNCIONES INTERNAS
  * *****************************************************************/
@@ -183,17 +185,28 @@ hash_iter_t *hash_iter_crear(const hash_t *hash){
 }
 
 bool hash_iter_avanzar(hash_iter_t *iter){
-	return true;	
-}
+	if(iter->pos == iter->hash->cap){
+		return false;
+	}
 
-const char *hash_iter_ver_actual(const hash_iter_t *iter){
-	return NULL;
-}
+	while((iter->pos < iter->hash->cap) && (iter->hash->elementos[iter->pos].estado != OCUPADO)){
+		iter->pos++;
+	}
 
-bool hash_iter_al_final(const hash_iter_t *iter){
 	return true;
 }
 
+const char *hash_iter_ver_actual(const hash_iter_t *iter){
+	if(iter->pos == iter->hash->cap)
+		return NULL;
+	
+	return iter->hash->elementos[iter->pos].clave;
+}
+
+bool hash_iter_al_final(const hash_iter_t *iter){
+	return iter->pos == iter->hash->cap;
+}
+
 void hash_iter_destruir(hash_iter_t *iter){
-	return;
+	free(iter);
 }
