@@ -31,7 +31,7 @@ struct hash {
 };
 
 struct hash_iter {
-	hash_t* hash;
+	const hash_t* hash;
 	size_t pos;
 };
 
@@ -152,6 +152,7 @@ hash_iter_t *hash_iter_crear(const hash_t *hash){
 		return NULL;
 
 	iter->pos = 0;
+	iter->hash = hash;
 	return iter;
 }
 
