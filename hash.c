@@ -1,6 +1,7 @@
 #include "hash.h"
 #include <stdlib.h>
-
+#include <string.h>
+#include <stdbool.h>
 
 /* ******************************************************************
  *                  DEFINICIÓN DE LAS ESTRUCTURAS
@@ -125,63 +126,32 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 	hash->funcion_destruir = destruir_dato;
 	return hash;
 }
-/* size_t i = pos_ini;
-do {
-	i++;
-	if(i == cap){
-		i = 0;
-	}
-} while (i != pos_ini);
-*/
+
 bool hash_guardar(hash_t *hash, const char *clave, void *dato){
-	size_t pos_ini = hash_func(clave,hash->cap);
-	size_t i = pos_ini;
-	size_t pos_final = hash->cap; //inicializo en cap porque esta fuera del arreglo
-	size_t pos_posible = hash->cap;
-	elem_t* elementos = hash->elementos;
-	do {
-		if((strcmp(elementos[i]->clave, clave) == 0 && elementos[i]->estado == OCUPADO) || (elementos[i]->estado == VACIO)){
-			pos_final = i;
+	if (!redim_hash(hash)) return false;
+	size_t pos = hash_func(clave, hash->cap);
+	size_t i = pos;
+	bool encontrado_libre = false;
+	bool encontrado_elem = false;
+	while(hash->elementos[i].estado != VACIO){
+
+		if(!encontrado_libre && (hash->elementos[i].estado == BORRADO)){
+			encontrado_libre = true;
+			pos = i;
+		}
+		if((hash->elementos[i].estado == OCUPADO) && (strcmp(hash->elementos[i].clave, clave) == 0)){
+			encontrado_elem = true;
 			break;
 		}
-		if(elementos[i]->estado == BORRADO && pos_posible == hash->cap){
-			pos_posible = i;
-		}
 		i++;
-		if(i == cap){
+		if(i == hash->cap)
 			i = 0;
-		}
-	} while (i != pos_ini);
-
-	if(pos_final == hash->cap) return false;
-
-	if(elementos[pos_final]->estado == OCUPADO){
-		if(pos_posible != hash->cap){
-			elementos[pos_final]->estado = BORRADO;
-			if(hash->funcion_destruir != NULL) hash->funcion_destruir(elementos[pos_posible]->dato);
-			elementos[pos_posible]->clave = clave;
-			elementos[pos_posible]->dato = dato;
-			elementos[pos_posible]->estado = OCUPADO;
-			hash->cant++;
-			return true;
-		}
-		if(hash->funcion_destruir != NULL) hash->funcion_destruir(elementos[pos_final]->dato);
-		elementos[pos_final]->dato = dato;
-		return true;
 	}
-	// en caso de que la pos final sea vacio
-	if(pos_posible != hash->cap){
-		if(hash->funcion_destruir != NULL) hash->funcion_destruir(elementos[pos_posible]->dato);
-		elementos[pos_posible]->clave = clave;
-		elementos[pos_posible]->dato = dato;
-		elementos[pos_posible]->estado = OCUPADO;
-		hash->cant++;
-		return true;
+	if(!encontrado_libre){
+		pos = i;
 	}
-	elementos[pos_final]->clave = clave;
-	elementos[pos_final]->dato = dato;
-	elementos[pos_final]-> estado = OCUPADO;
-	hash->cant++;
+	if(encontrado_elem)
+
 	return true;
 }
 
