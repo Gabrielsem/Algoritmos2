@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /* ******************************************************************
  *                  DEFINICIÓN DE LAS ESTRUCTURAS
@@ -104,17 +105,13 @@ bool redim_hash(hash_t* hash){
 
 	for(int i = 0; i < hash->cap; i++){
 		if(hash->elementos[i].estado == OCUPADO){
-			size_t pos_ini = hash_func(hash->elementos[i].clave, hash->cap);
-			size_t j = pos_ini;
+			size_t j = hash_func(hash->elementos[i].clave, cap);
 
-			do {
-				if(nuevos_elem[j].estado != OCUPADO){
-					break;
-				}
+			while(nuevos_elem[j].estado != VACIO){
 				j++;
 				if(j == cap)
 					j = 0;
-			} while (j != pos_ini);
+			}
 
 			nuevos_elem[j] = hash->elementos[i];
 		}
