@@ -273,13 +273,13 @@ void hash_destruir(hash_t *hash){
  * *****************************************************************/
 
 bool hash_iter_avanzar(hash_iter_t *iter){
-	if(iter->pos == iter->hash->cap){
+	if(iter->pos == iter->hash->cap)
 		return false;
-	}
 
 	do {
 		iter->pos++;
-	} while((iter->pos < iter->hash->cap) && (iter->hash->elementos[iter->pos].estado != OCUPADO));
+	} while((iter->pos < iter->hash->cap) &&
+	(iter->hash->elementos[iter->pos].estado != OCUPADO));
 
 	return true;
 }
@@ -292,7 +292,10 @@ hash_iter_t *hash_iter_crear(const hash_t *hash){
 	iter->pos = 0;
 	iter->hash = hash;
 
-	hash_iter_avanzar(iter);
+	while((iter->pos < iter->hash->cap) &&
+	(iter->hash->elementos[iter->pos].estado != OCUPADO)) {
+		iter->pos++;
+	}
 
 	return iter;
 }
