@@ -158,8 +158,8 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato){
 
 	char* clave_copia;
 
-	while(hash->elementos[pos].estado != VACIO ||
-	(hash->elementos[pos].estado == OCUPADO && strcmp(hash->elementos[pos].clave,clave) == 0)){
+	while(hash->elementos[pos].estado != VACIO &&
+	!(hash->elementos[pos].estado == OCUPADO && strcmp(hash->elementos[pos].clave, clave) == 0)){
 		
 		if(!hay_borrado && hash->elementos[pos].estado == BORRADO){
 			hay_borrado = true;
@@ -174,7 +174,8 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato){
 	}
 
 	if(hash->elementos[pos].estado == OCUPADO){
-		hash->funcion_destruir(hash->elementos[pos].dato);
+		if(hash->funcion_destruir)
+			hash->funcion_destruir(hash->elementos[pos].dato);
 		clave_copia = hash->elementos[pos].clave;
 		hash->elementos[pos].estado = BORRADO;
 	} else {
@@ -259,13 +260,13 @@ size_t hash_cantidad(const hash_t *hash){
 
 void hash_destruir(hash_t *hash){
 	elem_t* elementos = hash->elementos;
-	if(hash->funcion_destruir != NULL){
 		for(size_t i = 0; i < hash->cap; i++){
 			if(elementos[i].estado != OCUPADO) continue;
-			hash->funcion_destruir(elementos[i].dato);
+
+			if(hash->funcion_destruir)
+				hash->funcion_destruir(elementos[i].dato);
 			free(elementos[i].clave);
 		}
-	}
 	free(hash->elementos);
 	free(hash);
 }
