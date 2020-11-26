@@ -8,8 +8,8 @@
  * *****************************************************************/
 
 #define CAPACIDAD_INICIAL 10
-#define PROP_AGRANDAR 0.7
-#define PROP_ACHICAR 0.15
+#define PORC_AGRANDAR 70
+#define PORC_ACHICAR 15
 #define FACTOR_REDIM 2
 
 enum estados {
@@ -59,29 +59,29 @@ size_t hash_func(const char *str, size_t cap){
 // Inicializa esa cantidad de elementos del vector elementos,
 // poniendo su estado en VACIO.
 void inicializar_elementos(elem_t* elementos, size_t cant){
-	for(int i = 0; i < cant; i++){
+	for(size_t i = 0; i < cant; i++){
 		elementos[i].estado = VACIO;
 	}
 }
 
 // Devuelve una nueva capacidad ideal para ese hash de acuerdo a su carga,
-// según la proporción de la cantidad de elementos con la capacidad del hash:
-// - Si es menor a PROP_ACHICAR, devuelve la capacidad actual
+// según el porcentaje de la cantidad de elementos ocupados en la capacidad del hash:
+// - Si es menor a PORC_ACHICAR, devuelve la capacidad actual
 //   del hash dividido FACTOR_REDIM.
-// - Si es mayor a PROP_AGRANDAR, devuelve la capacidad actual
+// - Si es mayor a PORC_AGRANDAR, devuelve la capacidad actual
 //   del hash multiplicado por FACTOR_REDIM.
 // - Sino, devuelve la capacidad actual del hash.
 size_t nueva_cap(const hash_t* hash){
 	size_t cap = hash->cap;
-	float proporcion = ((float) hash->cant)/((float) hash->cap);
+	size_t porcentaje =  hash->cant*100/hash->cap;
 
-	if(proporcion < PROP_ACHICAR){
+	if(porcentaje < PORC_ACHICAR){
 		cap = hash->cap/FACTOR_REDIM;
 		if(cap < CAPACIDAD_INICIAL)
 			cap = CAPACIDAD_INICIAL;
 	}
 
-	if(proporcion > PROP_AGRANDAR){
+	if(porcentaje > PORC_AGRANDAR){
 		cap = hash->cap * FACTOR_REDIM;
 	}
 
@@ -102,7 +102,7 @@ bool redim_hash(hash_t* hash){
 
 	inicializar_elementos(nuevos_elem, cap);
 
-	for(int i = 0; i < hash->cap; i++){
+	for(size_t i = 0; i < hash->cap; i++){
 		if(hash->elementos[i].estado == OCUPADO){
 			size_t j = hash_func(hash->elementos[i].clave, cap);
 
@@ -120,6 +120,11 @@ bool redim_hash(hash_t* hash){
 	hash->elementos = nuevos_elem;
 	hash->cap = cap;
 	return true;
+}
+
+//Devuelve true si el elemento tiene esa clave, sino false.
+bool misma_clave(elem_t elemento, const char* clave){
+	return elemento.estado == OCUPADO && strcmp(elemento.clave, clave) == 0;
 }
 
 /* ******************************************************************
@@ -149,13 +154,12 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato){
 
 	size_t pos_ini = hash_func(clave, hash->cap);
 	size_t pos = pos_ini;
-	size_t pos_borrado;
+	size_t pos_borrado = 0;
 	bool hay_borrado = false;
 
 	char* clave_copia;
 
-	while(hash->elementos[pos].estado != VACIO &&
-	!(hash->elementos[pos].estado == OCUPADO && strcmp(hash->elementos[pos].clave, clave) == 0)){
+	while(hash->elementos[pos].estado != VACIO && !misma_clave(hash->elementos[pos], clave)){
 		
 		if(!hay_borrado && hash->elementos[pos].estado == BORRADO){
 			hay_borrado = true;
@@ -197,7 +201,7 @@ void *hash_borrar(hash_t *hash, const char *clave){
 	size_t i = pos_ini;
 	elem_t* elementos = hash->elementos;
 	while(elementos[i].estado != VACIO) {
-		if(elementos[i].estado == OCUPADO && strcmp(elementos[i].clave, clave) == 0){
+		if(misma_clave(elementos[i], clave)){
 			elementos[i].estado = BORRADO;
 			hash->cant--;
 			free(elementos[i].clave);
@@ -219,7 +223,7 @@ void *hash_obtener(const hash_t *hash, const char *clave){
 	size_t i = pos_ini;
 	elem_t* elementos = hash->elementos;
 	while(elementos[i].estado != VACIO) {
-		if((elementos[i].estado == OCUPADO && strcmp(elementos[i].clave, clave) == 0)){
+		if(misma_clave(elementos[i], clave)){
 			return elementos[i].dato;
 		}
 
@@ -238,7 +242,7 @@ bool hash_pertenece(const hash_t *hash, const char *clave){
 	size_t i = pos_ini;
 	elem_t* elementos = hash->elementos;
 	while(elementos[i].estado != VACIO) {
-		if(elementos[i].estado == OCUPADO && strcmp(elementos[i].clave, clave) == 0) return true;
+		if(misma_clave(elementos[i], clave)) return true;
 
 		i++;
 		if(i == hash->cap)
