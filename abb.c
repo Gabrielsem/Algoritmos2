@@ -54,11 +54,12 @@ nodo_t* crear_nodo(const char* clave, void* dato){
 /* Busca el lugar donde va un nodo con la clave indicada.
    Devuelve un puntero al lugar donde lo almacena su padre,
    o su posible padre si el elemento no se encuentra.
+   No modifica ningun nodo.
 
    Recibe un puntero al lugar donde debería estar la raiz,
    la clave y la función de comparación.
  */
-nodo_t** buscar_nodo(nodo_t* const* nodo, const char* clave, abb_comparar_clave_t cmp){
+nodo_t** buscar_nodo(nodo_t** nodo, const char* clave, abb_comparar_clave_t cmp){
 	if(!*nodo)
 		return nodo;
 
@@ -162,14 +163,14 @@ void *abb_borrar(abb_t *arbol, const char *clave){
 }
 
 void *abb_obtener(const abb_t *arbol, const char *clave){
-	nodo_t** nodo = buscar_nodo(&(arbol->raiz), clave, arbol->cmp);
+	nodo_t** nodo = buscar_nodo((nodo_t**) &(arbol->raiz), clave, arbol->cmp);
 	if(!*nodo)
 		return NULL;
 	return (*nodo)->dato;
 }
 
 bool abb_pertenece(const abb_t *arbol, const char *clave){
-	return *buscar_nodo(&(arbol->raiz), clave, arbol->cmp);
+	return *buscar_nodo((nodo_t**) &(arbol->raiz), clave, arbol->cmp);
 }
 
 size_t abb_cantidad(abb_t *arbol){
