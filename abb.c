@@ -44,7 +44,10 @@ nodo_t* crear_nodo(const char* clave, void* dato){
 		free(nodo);
 		return NULL;
 	}
+
 	nodo->dato = dato;
+	nodo->izq = NULL;
+	nodo->der = NULL;
 	return nodo;
 }
 
@@ -55,7 +58,7 @@ nodo_t* crear_nodo(const char* clave, void* dato){
    Recibe un puntero al lugar donde debería estar la raiz,
    la clave y la función de comparación.
  */
-nodo_t** buscar_nodo(nodo_t* constper* nodo, const char* clave, abb_comparar_clave_t cmp){
+nodo_t** buscar_nodo(nodo_t* const* nodo, const char* clave, abb_comparar_clave_t cmp){
 	if(!*nodo)
 		return nodo;
 
@@ -116,12 +119,21 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
 }
 
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
-	nodo_t* nodo = crear_nodo(clave, dato);
-	if(!nodo)
-		return false;
+	nodo_t** nodo = buscar_nodo(&(arbol->raiz), clave, arbol->cmp);
 
-	nodo_t** pos_nodo = buscar_nodo(&(arbol->raiz), clave, arbol->cmp);
-	*pos_nodo = nodo;
+	if(*nodo){
+		if(arbol->destruir_dato)
+			arbol->destruir_dato((*nodo)->dato);
+
+	} else {
+		*nodo = crear_nodo(clave, dato);
+		if(!*nodo)
+			return false;
+
+		arbol->cant++;
+	}
+
+	(*nodo)->dato = dato;
 	return true;
 }
 
