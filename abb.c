@@ -30,7 +30,14 @@ struct abb_iter {
 
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
-	abb_t* abb;
+	abb_t* abb = malloc(sizeof(abb_t));
+	if(!abb)
+		return false;
+
+	abb->raiz = NULL;
+	abb->cmp = cmp;
+	abb->destruir = destruir_dato;
+	abb->cant = 0;
 	return abb;
 }
 
