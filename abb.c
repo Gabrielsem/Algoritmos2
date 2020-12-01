@@ -52,12 +52,13 @@ nodo_t* crear_nodo(const char* clave, void* dato){
 }
 
 /* Busca el lugar donde va un nodo con la clave indicada.
-   Devuelve un puntero al lugar donde lo almacena su padre,
-   o su posible padre si el elemento no se encuentra.
+   Devuelve un puntero al lugar donde almacena su puntero el nodo padre,
+   o donde lo almacenaria su posible padre si el elemento no se encuentra.
+   (Es decir, devuelve &(padre->der) o &(padre->izq), segun corresponda).
    No modifica ningun nodo.
 
-   Recibe un puntero al lugar donde debería estar la raiz,
-   la clave y la función de comparación.
+   Recibe un puntero al lugar donde se guarda el puntero a la raiz,
+   la clave a buscar y la función de comparación.
  */
 nodo_t** buscar_nodo(nodo_t** nodo, const char* clave, abb_comparar_clave_t cmp){
 	if(!*nodo)
@@ -73,7 +74,7 @@ nodo_t** buscar_nodo(nodo_t** nodo, const char* clave, abb_comparar_clave_t cmp)
 	return buscar_nodo(&((*nodo)->izq), clave, cmp);
 }
 
-/* Busca el lugar donde va el mayor nodo del sub-árbol del nodo recibido.
+/* Busca el lugar donde esta el puntero al mayor nodo del sub-árbol del nodo recibido.
    Devuelve un puntero al lugar donde lo almacena su padre.
 
    Recibe un puntero al lugar donde esta almacenado el nodo raíz del sub-árbol.
@@ -147,7 +148,9 @@ void *abb_borrar(abb_t *arbol, const char *clave){
 	if((*nodo)->der && (*nodo)->izq){
 		nodo_t** pos_reemplazante = buscar_mayor(&(*nodo)->izq);
 		nuevo_hijo = *pos_reemplazante;
-		*pos_reemplazante = NULL;
+		*pos_reemplazante = nuevo_hijo->izq;
+		nuevo_hijo->der = (*nodo)->der;
+		nuevo_hijo->izq = (*nodo)->izq == nuevo_hijo ? NULL : (*nodo)->izq;
 	} else if ((*nodo)->der) {
 		nuevo_hijo = (*nodo)->der;
 	} else {
