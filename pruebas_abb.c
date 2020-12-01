@@ -5,7 +5,7 @@
  * Licencia: CC-BY-SA 2.5 (ar) ó CC-BY-SA 3.0
  */
 
-#include "hash.h"
+#include "abb.h"
 #include "testing.h"
 
 #include <stdio.h>
@@ -13,6 +13,7 @@
 #include <string.h>
 #include <unistd.h>  // For ssize_t in Linux.
 
+#ifdef CORREGIDO
 
 /* ******************************************************************
  *                        PRUEBAS UNITARIAS
@@ -417,6 +418,8 @@ void pruebas_volumen_catedra(size_t largo)
 {
     prueba_hash_volumen(largo, false);
 }
+
+#endif
 
 int main(){
 	//ADAPTAR FUNCIONES
