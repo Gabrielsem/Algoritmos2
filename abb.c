@@ -16,13 +16,18 @@ struct abb {
 	nodo_t* raiz;
 	size_t cant;
 	abb_comparar_clave_t cmp;
-	abb_destruir_dato_t destruir;
+	abb_destruir_dato_t destruir_dato;
 };
 
 struct abb_iter {
 	size_t cosasfeastetocaavosgabo;
 };
 
+/* ******************************************************************
+ *                  	   FUNCIONES INTERNAS
+ * *****************************************************************/
+
+/* ... */
 
 /* ******************************************************************
  *                  		PRIMITIVAS ABB
