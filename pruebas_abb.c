@@ -302,8 +302,8 @@ static void prueba_abb_iterar()
 
     // Primer valor
     clave = abb_iter_in_ver_actual(iter);
-    valor = (char*)abb_obtener(abb,clave);
-    print_test("Prueba abb iterador ver actual, es una clave valida", abb_pertenece(abb,clave));
+    valor = (char*)abb_obtener(abb, clave);
+    print_test("Prueba abb iterador ver actual, es una clave valida", abb_pertenece(abb, clave));
     print_test("Prueba abb iterador ver actual, no es el mismo puntero", clave != claves[1]);
     print_test("el valor coincide con la clave", strcmp(valores[1], valor) == 0 );
     print_test("Prueba abb iterador avanzar es true", abb_iter_in_avanzar(iter));
@@ -311,8 +311,8 @@ static void prueba_abb_iterar()
 
     // Segundo valor
     clave = abb_iter_in_ver_actual(iter);
-    valor = (char*)abb_obtener(abb,clave);
-    print_test("Prueba abb iterador ver actual, es una clave valida", abb_pertenece(abb,clave));
+    valor = (char*)abb_obtener(abb, clave);
+    print_test("Prueba abb iterador ver actual, es una clave valida", abb_pertenece(abb, clave));
     print_test("Prueba abb iterador ver actual, no es el mismo puntero", clave != claves[0]);
     print_test("el valor coincide con la clave", strcmp(valores[0], valor) == 0 );
     print_test("Prueba abb iterador avanzar es true", abb_iter_in_avanzar(iter));
@@ -320,8 +320,8 @@ static void prueba_abb_iterar()
 
     // Tercer valor
     clave = abb_iter_in_ver_actual(iter);
-    valor = (char*)abb_obtener(abb,clave);
-    print_test("Prueba abb iterador ver actual, es una clave valida", abb_pertenece(abb,clave));
+    valor = (char*)abb_obtener(abb, clave);
+    print_test("Prueba abb iterador ver actual, es una clave valida", abb_pertenece(abb, clave));
     print_test("Prueba abb iterador ver actual, no es el mismo puntero", clave != claves[2]);
     print_test("el valor coincide con la clave", strcmp(valores[2], valor) == 0 );
     abb_iter_in_avanzar(iter);
@@ -410,7 +410,7 @@ void prueba_orden_strcmp() {
     print_test("prueba orden correcto 3 (strcmp)", strcmp(clave, "c") == 0);
     abb_iter_in_avanzar(iter);
     clave = abb_iter_in_ver_actual(iter);
-    print_test("iter al final",abb_iter_in_al_final(iter));
+    print_test("iter al final", abb_iter_in_al_final(iter));
 
     abb_iter_in_destruir(iter);
     abb_destruir(abb);
@@ -441,9 +441,9 @@ void prueba_orden_otra() {
 }
 
 bool prueba_visitar(const char *clave, void *valor, void *n) {
-    if(*((size_t*)n) >= 4) return false;
-    *((size_t*)valor) += *((size_t*)n);;
-    *((size_t*)n) +=1;
+    if(*((size_t*) valor) == 4) return false;
+    *((size_t*) n) += 1;
+    *((size_t*) valor) += *((size_t*) n);;
     return true;
 }
 
@@ -454,12 +454,12 @@ void prueba_iterador_interno() {
     size_t val3 = 3;
     size_t val4 = 4;
     size_t val5 = 5;
-    abb_guardar(abb, "a",&val1);
-    abb_guardar(abb, "b",&val2);
-    abb_guardar(abb, "c",&val3);
-    abb_guardar(abb, "d",&val4);
-    abb_guardar(abb, "e",&val5);
-    size_t n = 1;
+    abb_guardar(abb, "b", &val2);
+    abb_guardar(abb, "a", &val1);
+    abb_guardar(abb, "e", &val5);
+    abb_guardar(abb, "d", &val4);
+    abb_guardar(abb, "c", &val3);
+    size_t n = 0;
     abb_in_order(abb, prueba_visitar, &n);
     print_test("prueba visitar", val1 == 2 && val2 == 4 && val3 == 6 && val4 == 4 && val5 == 5);
 

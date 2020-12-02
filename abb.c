@@ -107,13 +107,10 @@ void destruir_arbol_aux(nodo_t* nodo, abb_destruir_dato_t destruir_dato) {
 	free(nodo);
 }
 
-void abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), void *extra) {
-	if(!nodo) return;
-	abb_in_order_rec(nodo->izq,visitar,extra);
-	if(visitar) {
-		if(!visitar(nodo->clave,nodo->dato,extra)) return;
-	} 
-	abb_in_order_rec(nodo->der,visitar,extra);
+bool abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), void *extra) {
+	if(!nodo) return true;
+	return abb_in_order_rec(nodo->izq,visitar,extra) && visitar(nodo->clave,nodo->dato,extra)
+		&& abb_in_order_rec(nodo->der,visitar,extra);
 }
 
 //apila el nodo recibido y todos sus hijos izq.
@@ -210,6 +207,9 @@ void abb_destruir(abb_t *arbol) {
  * *****************************************************************/
 
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra) {
+	if(!visitar)
+		return;
+	
 	abb_in_order_rec(arbol->raiz, visitar, extra);
 }
 
