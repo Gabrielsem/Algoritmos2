@@ -209,19 +209,19 @@ static void prueba_abb_valor_null(abb_comparar_clave_t cmp)
     abb_destruir(abb);
 }
 
- int inv_strcmp(const char *s1, const char *s2){
+ int inv_strcmp(const char *s1, const char *s2) {
  	return -1 * strcmp(s1, s2);
  }
 
 
 //llena el arbol con fin-inicio elementos de forma tal que quede balanceado
 //si inicializar es true, inicializa los arreglos de valores y claves mientras llena el arbol
-bool llenar_arbol_balanceado(abb_t* abb, size_t** valores, char (*claves)[LARGO_CLAVE], size_t inicio, size_t fin, bool inicializar){
+bool llenar_arbol_balanceado(abb_t* abb, size_t** valores, char (*claves)[LARGO_CLAVE], size_t inicio, size_t fin, bool inicializar) {
 	if(inicio >= fin)
 		return true;
 
 	size_t medio = (inicio+fin)/2;
-	if(inicializar){
+	if(inicializar) {
 		valores[medio] = malloc(sizeof(size_t));
 		sprintf(claves[medio], "%08lu", medio);
 		*(valores[medio]) = medio;
@@ -391,22 +391,23 @@ static void prueba_abb_iterar_volumen(size_t largo)
     abb_iter_in_destruir(iter);
     abb_destruir(abb);
 }
-void prueba_orden_strcmp(){
+
+void prueba_orden_strcmp() {
     abb_t* abb = abb_crear(strcmp, NULL);
-    abb_guardar(abb, "a",NULL);
-    abb_guardar(abb, "b",NULL);
-    abb_guardar(abb, "c",NULL);
+    abb_guardar(abb, "a", NULL);
+    abb_guardar(abb, "b", NULL);
+    abb_guardar(abb, "c", NULL);
 
     abb_iter_t* iter = abb_iter_in_crear(abb);
     const char *clave;
     clave = abb_iter_in_ver_actual(iter);
-    print_test("prueba orden correcto 1(strcmp)", strcmp(clave, "a") == 0);
+    print_test("prueba orden correcto 1 (strcmp)", strcmp(clave, "a") == 0);
     abb_iter_in_avanzar(iter);
     clave = abb_iter_in_ver_actual(iter);
-    print_test("prueba orden correcto 2(strcmp)", strcmp(clave, "b") == 0);
+    print_test("prueba orden correcto 2 (strcmp)", strcmp(clave, "b") == 0);
     abb_iter_in_avanzar(iter);
     clave = abb_iter_in_ver_actual(iter);
-    print_test("prueba orden correcto 3(strcmp)", strcmp(clave, "c") == 0);
+    print_test("prueba orden correcto 3 (strcmp)", strcmp(clave, "c") == 0);
     abb_iter_in_avanzar(iter);
     clave = abb_iter_in_ver_actual(iter);
     print_test("iter al final",abb_iter_in_al_final(iter));
@@ -414,35 +415,38 @@ void prueba_orden_strcmp(){
     abb_iter_in_destruir(iter);
     abb_destruir(abb);
 }
-void prueba_orden_otra(){
+
+void prueba_orden_otra() {
     abb_t* abb = abb_crear(inv_strcmp, NULL);
-    abb_guardar(abb, "a",NULL);
-    abb_guardar(abb, "b",NULL);
-    abb_guardar(abb, "c",NULL);
+    abb_guardar(abb, "a", NULL);
+    abb_guardar(abb, "b", NULL);
+    abb_guardar(abb, "c", NULL);
 
     abb_iter_t* iter = abb_iter_in_crear(abb);
     const char *clave;
     clave = abb_iter_in_ver_actual(iter);
-    print_test("prueba orden correcto 1(otra)", strcmp(clave, "c") == 0);
+    print_test("prueba orden correcto 1 (otra)", strcmp(clave, "c") == 0);
     abb_iter_in_avanzar(iter);
     clave = abb_iter_in_ver_actual(iter);
-    print_test("prueba orden correcto 2(otra)", strcmp(clave, "b") == 0);
+    print_test("prueba orden correcto 2 (otra)", strcmp(clave, "b") == 0);
     abb_iter_in_avanzar(iter);
     clave = abb_iter_in_ver_actual(iter);
-    print_test("prueba orden correcto 3(otra)", strcmp(clave, "a") == 0);
+    print_test("prueba orden correcto 3 (otra)", strcmp(clave, "a") == 0);
     abb_iter_in_avanzar(iter);
     clave = abb_iter_in_ver_actual(iter);
-    print_test("iter al final",abb_iter_in_al_final(iter));
+    print_test("iter al final", abb_iter_in_al_final(iter));
 
     abb_iter_in_destruir(iter);
     abb_destruir(abb);
 }
-bool prueba_visitar(const char *clave, void *valor, void *n){
+
+bool prueba_visitar(const char *clave, void *valor, void *n) {
     if(*((size_t*)n) >= 4) return false;
     *((size_t*)valor) += *((size_t*)n);;
     *((size_t*)n) +=1;
     return true;
 }
+
 void prueba_iterador_interno() {
     abb_t* abb = abb_crear(strcmp, NULL);
     size_t val1 = 1;
@@ -487,12 +491,12 @@ void pruebas_abb()
     prueba_abb_borrar(inv_strcmp);
     prueba_abb_clave_vacia(inv_strcmp);
     prueba_abb_valor_null(inv_strcmp);
-    prueba_orden_strcmp();
-    prueba_orden_otra();
 
     printf("\n\nPruebas iterador\n");
     prueba_iterar_abb_vacio();
     prueba_abb_iterar();
+    prueba_orden_strcmp();
+    prueba_orden_otra();
 
     printf("\n\nPruebas iterador interno\n");
     prueba_iterador_interno();
@@ -504,7 +508,7 @@ void pruebas_abb()
 
 #ifndef CORRECTOR
 
-int main(){
+int main() {
 	pruebas_abb();
 	return 0;
 }

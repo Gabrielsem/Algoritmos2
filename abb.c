@@ -107,7 +107,7 @@ void destruir_arbol_aux(nodo_t* nodo, abb_destruir_dato_t destruir_dato) {
 	free(nodo);
 }
 
-void abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), void *extra){
+void abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), void *extra) {
 	if(!nodo) return;
 	abb_in_order_rec(nodo->izq,visitar,extra);
 	if(visitar) {
@@ -117,7 +117,7 @@ void abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), 
 }
 
 //apila el nodo recibido y todos sus hijos izq.
-void apilar_izq(pila_t* pila, nodo_t* nodo){
+void apilar_izq(pila_t* pila, nodo_t* nodo) {
 	while(nodo) {
 		pila_apilar(pila, nodo);
 		nodo = nodo->izq;
