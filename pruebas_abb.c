@@ -470,7 +470,7 @@ void prueba_iterador_interno() {
  * *****************************************************************/
 
 
-void pruebas_abb()
+void pruebas_abb_estudiante()
 {
     /* Ejecuta todas las pruebas unitarias. */
     printf("\n\nPruebas con strcmp()\n");
@@ -509,7 +509,7 @@ void pruebas_abb()
 #ifndef CORRECTOR
 
 int main() {
-	pruebas_abb();
+	pruebas_abb_estudiante();
 	return 0;
 }
 
