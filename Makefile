@@ -1,6 +1,6 @@
 
 abb: testing.c testing.h abb.h abb.c pruebas_abb.c
-	gcc -g -Wall -Wconversion -Wtype-limits -pedantic -Werror -o pruebas testing.c testing.h abb.h abb.c pruebas_abb.c
+	gcc -g -Wall -Wconversion -Wtype-limits -pedantic -Werror -o pruebas pila.c pila.h testing.c testing.h abb.h abb.c pruebas_abb.c
 	./pruebas
 
 valgrind: pruebas
