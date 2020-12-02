@@ -218,9 +218,9 @@ bool llenar_arbol_balanceado(abb_t* abb, size_t** valores, char (*claves)[LARGO_
 
 	size_t medio = (inicio+fin)/2;
 	if(inicializar){
-		valores[medio] = malloc(sizeof(int));
+		valores[medio] = malloc(sizeof(size_t));
 		sprintf(claves[medio], "%08lu", medio);
-		*valores[medio] = medio;
+		*(valores[medio]) = medio;
 	}
 	bool ok = abb_guardar(abb, claves[medio], valores[medio]);
 
