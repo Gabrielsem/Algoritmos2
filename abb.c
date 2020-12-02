@@ -110,7 +110,9 @@ void destruir_arbol_aux(nodo_t* nodo, abb_destruir_dato_t destruir_dato) {
 void abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), void *extra){
 	if(!nodo) return;
 	abb_in_order_rec(nodo->izq,visitar,extra);
-	if(visitar) visitar(nodo->clave,nodo->dato,extra);
+	if(visitar) {
+		if(!visitar(nodo->clave,nodo->dato,extra)) return;
+	} 
 	abb_in_order_rec(nodo->der,visitar,extra);
 }
 
