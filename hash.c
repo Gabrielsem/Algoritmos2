@@ -96,7 +96,7 @@ bool redim_hash(hash_t* hash) {
 	if(cap == hash->cap)
 		return true;
 
-	elem_t* nuevos_elem = malloc(sizeof(elem_t)*cap);
+	elem_t* nuevos_elem = malloc(sizeof(elem_t) * cap);
 	if(!nuevos_elem)
 		return false;
 
@@ -176,7 +176,7 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato) {
 	if(!hash)
 		return NULL;
 
-	hash->elementos = malloc(sizeof(elem_t)*CAPACIDAD_INICIAL);
+	hash->elementos = malloc(sizeof(elem_t) * CAPACIDAD_INICIAL);
 	if(!hash->elementos) {
 		free(hash);
 		return NULL;
