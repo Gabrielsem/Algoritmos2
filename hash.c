@@ -46,7 +46,7 @@ typedef bool (*buscar_f)(elem_t elemento, char* extra);
 // (djb2, http://www.cse.yorku.ca/~oz/hash.html)
 // Tiene algunas modificaciones para comodidad y
 // para que no tire warnings el compilador.
-size_t hash_func(const char *str, size_t cap){
+size_t hash_func(const char *str, size_t cap) {
     size_t hash = 5381;
     int c;
 
@@ -58,8 +58,8 @@ size_t hash_func(const char *str, size_t cap){
 
 // Inicializa esa cantidad de elementos del vector elementos,
 // poniendo su estado en VACIO.
-void inicializar_elementos(elem_t* elementos, size_t cant){
-	for(size_t i = 0; i < cant; i++){
+void inicializar_elementos(elem_t* elementos, size_t cant) {
+	for(size_t i = 0; i < cant; i++) {
 		elementos[i].estado = VACIO;
 	}
 }
@@ -71,17 +71,17 @@ void inicializar_elementos(elem_t* elementos, size_t cant){
 // - Si es mayor a PORC_AGRANDAR, devuelve la capacidad actual
 //   del hash multiplicado por FACTOR_REDIM.
 // - Sino, devuelve la capacidad actual del hash.
-size_t nueva_cap(const hash_t* hash){
+size_t nueva_cap(const hash_t* hash) {
 	size_t cap = hash->cap;
-	size_t porcentaje =  hash->cant*100/hash->cap;
+	size_t porcentaje =  hash->cant * 100 / hash->cap;
 
-	if(porcentaje < PORC_ACHICAR){
+	if(porcentaje < PORC_ACHICAR) {
 		cap = hash->cap/FACTOR_REDIM;
 		if(cap < CAPACIDAD_INICIAL)
 			cap = CAPACIDAD_INICIAL;
 	}
 
-	if(porcentaje > PORC_AGRANDAR){
+	if(porcentaje > PORC_AGRANDAR) {
 		cap = hash->cap * FACTOR_REDIM;
 	}
 
@@ -91,7 +91,7 @@ size_t nueva_cap(const hash_t* hash){
 // Redimensiona el hash si es necesario.
 // Devuelve verdadero si lo logró o no era necesario,
 // sino falso.
-bool redim_hash(hash_t* hash){
+bool redim_hash(hash_t* hash) {
 	size_t cap = nueva_cap(hash);
 	if(cap == hash->cap)
 		return true;
@@ -102,7 +102,7 @@ bool redim_hash(hash_t* hash){
 
 	inicializar_elementos(nuevos_elem, cap);
 
-	for(size_t i = 0; i < hash->cap; i++){
+	for(size_t i = 0; i < hash->cap; i++) {
 		if(hash->elementos[i].estado == OCUPADO){
 			size_t j = hash_func(hash->elementos[i].clave, cap);
 
@@ -123,21 +123,61 @@ bool redim_hash(hash_t* hash){
 }
 
 //Devuelve true si el elemento tiene esa clave, sino false.
-bool misma_clave(elem_t elemento, const char* clave){
+bool misma_clave(elem_t elemento, const char* clave) {
 	return elemento.estado == OCUPADO && strcmp(elemento.clave, clave) == 0;
+}
+
+// Busca el elemento con esa clave en la tabla de hash.
+// Si lo encuentra, devuelve su posición.
+// Si no la encuentra, devuelve la posición del primer borrado o vacío.
+size_t buscar_elem(elem_t* elementos, size_t cap, const char* clave) {
+	size_t pos_ini = hash_func(clave, cap);
+	size_t pos = pos_ini;
+	size_t pos_borrado;
+	bool hay_borrado = false;
+
+	while(elementos[pos].estado != VACIO && !misma_clave(elementos[pos], clave)) {
+		
+		if(!hay_borrado && elementos[pos].estado == BORRADO) {
+			hay_borrado = true;
+			pos_borrado = pos;		
+		}
+
+		pos++;
+		if(pos == pos_ini) //Si pasa esto no hay vacios, todos borrados y no estaba el elemento
+			break;
+		if(pos == cap)
+			pos = 0;
+	}
+	if(hay_borrado && elementos[pos].estado != OCUPADO)
+		pos = pos_borrado;
+
+	return pos;
+}
+
+// Busca el primer elemento ocupado a partir de la posicion inicial indicada.
+// Devuelve su posicion, o cap si llego al final.
+size_t buscar_sig(elem_t* elementos, size_t pos_ini, size_t cap) {
+	size_t pos = pos_ini;
+
+	while(pos < cap && elementos[pos].estado != OCUPADO) {
+		pos++;
+	}
+
+	return pos;
 }
 
 /* ******************************************************************
  *                         PRIMITIVAS HASH
  * *****************************************************************/
 
-hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
+hash_t *hash_crear(hash_destruir_dato_t destruir_dato) {
 	hash_t* hash = malloc(sizeof(hash_t));
 	if(!hash)
 		return NULL;
 
 	hash->elementos = malloc(sizeof(elem_t)*CAPACIDAD_INICIAL);
-	if(!hash->elementos){
+	if(!hash->elementos) {
 		free(hash);
 		return NULL;
 	}
@@ -149,124 +189,72 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato){
 	return hash;
 }
 
-bool hash_guardar(hash_t *hash, const char *clave, void *dato){
+bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
 	if (!redim_hash(hash)) return false;
 
-	size_t pos_ini = hash_func(clave, hash->cap);
-	size_t pos = pos_ini;
-	size_t pos_borrado = 0;
-	bool hay_borrado = false;
+	size_t pos = buscar_elem(hash->elementos, hash->cap, clave);
 
-	char* clave_copia;
-
-	while(hash->elementos[pos].estado != VACIO && !misma_clave(hash->elementos[pos], clave)){
-		
-		if(!hay_borrado && hash->elementos[pos].estado == BORRADO){
-			hay_borrado = true;
-			pos_borrado = pos;		
-		}
-
-		pos++;
-		if(pos == pos_ini) //Si pasa esto no hay vacios, todos borrados y no estaba el elemento
-			break;
-		if(pos == hash->cap)
-			pos = 0;
-	}
-
-	if(hash->elementos[pos].estado == OCUPADO){
+	if(hash->elementos[pos].estado == OCUPADO) {
 		if(hash->funcion_destruir)
 			hash->funcion_destruir(hash->elementos[pos].dato);
-		clave_copia = hash->elementos[pos].clave;
-		hash->elementos[pos].estado = BORRADO;
+
 	} else {
-		clave_copia = strdup(clave);
-		if(!clave_copia) return false;
+		hash->elementos[pos].clave = strdup(clave);
+		if(!hash->elementos[pos].clave) return false;
+		hash->elementos[pos].estado = OCUPADO;
 		hash->cant++;
 	}
 
-	if(hay_borrado)
-		pos = pos_borrado;
-
 	hash->elementos[pos].dato = dato;
-	hash->elementos[pos].clave = clave_copia;
-	hash->elementos[pos].estado = OCUPADO;
-
 	return true;
 }
 
-void *hash_borrar(hash_t *hash, const char *clave){
+void *hash_borrar(hash_t *hash, const char *clave) {
 	redim_hash(hash);
 
-	size_t pos_ini = hash_func(clave, hash->cap);
-	size_t i = pos_ini;
-	elem_t* elementos = hash->elementos;
-	while(elementos[i].estado != VACIO) {
-		if(misma_clave(elementos[i], clave)){
-			elementos[i].estado = BORRADO;
-			hash->cant--;
-			free(elementos[i].clave);
-			return elementos[i].dato;
-		}
+	size_t pos = buscar_elem(hash->elementos, hash->cap, clave);
 
-		i++;
-		if(i == pos_ini)
-			break;
-		if(i == hash->cap)
-			i = 0;
+	if(hash->elementos[pos].estado == OCUPADO) {
+		hash->elementos[pos].estado = BORRADO;
+		hash->cant--;
+		free(hash->elementos[pos].clave);
+		return hash->elementos[pos].dato;
 	}
 
 	return NULL;
 }
 
-void *hash_obtener(const hash_t *hash, const char *clave){
-	size_t pos_ini = hash_func(clave, hash->cap);
-	size_t i = pos_ini;
-	elem_t* elementos = hash->elementos;
-	while(elementos[i].estado != VACIO) {
-		if(misma_clave(elementos[i], clave)){
-			return elementos[i].dato;
-		}
+void *hash_obtener(const hash_t *hash, const char *clave) {
+	size_t pos = buscar_elem(hash->elementos, hash->cap, clave);
 
-		i++;
-		if(i == hash->cap)
-			i = 0;
-		if(i == pos_ini)
-			break;
+	if(hash->elementos[pos].estado == OCUPADO) {
+		return hash->elementos[pos].dato;
 	}
 
 	return NULL;
 }
 
-bool hash_pertenece(const hash_t *hash, const char *clave){
-	size_t pos_ini = hash_func(clave,hash->cap);
-	size_t i = pos_ini;
-	elem_t* elementos = hash->elementos;
-	while(elementos[i].estado != VACIO) {
-		if(misma_clave(elementos[i], clave)) return true;
+bool hash_pertenece(const hash_t *hash, const char *clave) {
+	size_t pos = buscar_elem(hash->elementos, hash->cap, clave);
 
-		i++;
-		if(i == hash->cap)
-			i = 0;
-		if(i == pos_ini)
-			break;
-	} while (elementos[i].estado != VACIO);
-
-	return false;
+	return hash->elementos[pos].estado == OCUPADO;
 }
 
-size_t hash_cantidad(const hash_t *hash){
+size_t hash_cantidad(const hash_t *hash) {
 	return hash->cant;
 }
 
-void hash_destruir(hash_t *hash){
+void hash_destruir(hash_t *hash) {
 	elem_t* elementos = hash->elementos;
-		for(size_t i = 0; i < hash->cap; i++){
-			if(elementos[i].estado != OCUPADO) continue;
 
-			if(hash->funcion_destruir)
-				hash->funcion_destruir(elementos[i].dato);
-			free(elementos[i].clave);
-		}
+	for(size_t i = 0; i < hash->cap; i++) {
+		if(elementos[i].estado != OCUPADO) continue;
+
+		if(hash->funcion_destruir)
+			hash->funcion_destruir(elementos[i].dato);
+		free(elementos[i].clave);
+	}
+
 	free(hash->elementos);
 	free(hash);
 }
@@ -275,45 +263,38 @@ void hash_destruir(hash_t *hash){
  *                       PRIMITIVAS ITERADOR                        *
  * *****************************************************************/
 
-bool hash_iter_avanzar(hash_iter_t *iter){
+bool hash_iter_avanzar(hash_iter_t *iter) {
 	if(iter->pos == iter->hash->cap)
 		return false;
 
-	do {
-		iter->pos++;
-	} while((iter->pos < iter->hash->cap) &&
-	(iter->hash->elementos[iter->pos].estado != OCUPADO));
+	iter->pos = buscar_sig(iter->hash->elementos, iter->pos + 1, iter->hash->cap);
 
 	return true;
 }
 
-hash_iter_t *hash_iter_crear(const hash_t *hash){
+hash_iter_t *hash_iter_crear(const hash_t *hash) {
 	hash_iter_t* iter = malloc(sizeof(hash_iter_t));
 	if(!iter)
 		return NULL;
 
-	iter->pos = 0;
 	iter->hash = hash;
 
-	while((iter->pos < iter->hash->cap) &&
-	(iter->hash->elementos[iter->pos].estado != OCUPADO)) {
-		iter->pos++;
-	}
+	iter->pos = buscar_sig(hash->elementos, 0, hash->cap);
 
 	return iter;
 }
 
-const char *hash_iter_ver_actual(const hash_iter_t *iter){
+const char *hash_iter_ver_actual(const hash_iter_t *iter) {
 	if(iter->pos == iter->hash->cap)
 		return NULL;
 	
 	return iter->hash->elementos[iter->pos].clave;
 }
 
-bool hash_iter_al_final(const hash_iter_t *iter){
+bool hash_iter_al_final(const hash_iter_t *iter) {
 	return iter->pos == iter->hash->cap;
 }
 
-void hash_iter_destruir(hash_iter_t *iter){
+void hash_iter_destruir(hash_iter_t *iter) {
 	free(iter);
 }
