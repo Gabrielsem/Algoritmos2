@@ -118,7 +118,7 @@ void abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), 
 void apilar_izq(pila_t* pila, nodo_t* nodo){
 	while(nodo) {
 		pila_apilar(pila, nodo);
-		if(nodo->izq) nodo = nodo->izq;
+		nodo = nodo->izq;
 	}
 }
 
@@ -228,13 +228,15 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
 }
 
 bool abb_iter_in_avanzar(abb_iter_t *iter) {
+	if(abb_iter_in_al_final(iter)) return false;
 	nodo_t* der = ((nodo_t*)pila_desapilar(iter->pila))->der;
 	if(der) apilar_izq(iter->pila, der);
-	if(!der && abb_iter_in_al_final(iter)) return false;
+	
 	return true;
 }
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter) {
+	if(abb_iter_in_al_final(iter)) return NULL;
 	return ((nodo_t*)pila_ver_tope(iter->pila))->clave;
 }
 
