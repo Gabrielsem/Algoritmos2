@@ -103,6 +103,8 @@ void destruir_arbol_aux(nodo_t* nodo, abb_destruir_dato_t destruir_dato) {
 	free(nodo->clave);
 	if(destruir_dato)
 		destruir_dato(nodo->dato);
+
+	free(nodo);
 }
 
 void abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), void *extra){
@@ -143,6 +145,7 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 		if(arbol->destruir_dato)
 			arbol->destruir_dato((*nodo)->dato);
 
+		(*nodo)->dato = dato;
 	} else {
 		*nodo = crear_nodo(clave, dato);
 		if(!*nodo)
@@ -151,7 +154,6 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 		arbol->cant++;
 	}
 
-	(*nodo)->dato = dato;
 	return true;
 }
 
