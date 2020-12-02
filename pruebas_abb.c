@@ -19,9 +19,9 @@
  *                        PRUEBAS UNITARIAS
  * *****************************************************************/
 
-static void prueba_crear_abb_vacio()
+static void prueba_crear_abb_vacio(abb_comparar_clave_t cmp)
 {
-    abb_t* abb = abb_crear(strcmp, NULL);
+    abb_t* abb = abb_crear(cmp, NULL);
 
     print_test("Prueba abb crear abb vacio", abb);
     print_test("Prueba abb la cantidad de elementos es 0", abb_cantidad(abb) == 0);
@@ -45,9 +45,9 @@ static void prueba_iterar_abb_vacio()
     abb_destruir(abb);
 }
 */
-static void prueba_abb_insertar()
+static void prueba_abb_insertar(abb_comparar_clave_t cmp)
 {
-    abb_t* abb = abb_crear(strcmp, NULL);
+    abb_t* abb = abb_crear(cmp, NULL);
 
     char *clave1 = "perro", *valor1 = "guau";
     char *clave2 = "gato", *valor2 = "miau";
@@ -78,9 +78,9 @@ static void prueba_abb_insertar()
     abb_destruir(abb);
 }
 
-static void prueba_abb_reemplazar()
+static void prueba_abb_reemplazar(abb_comparar_clave_t cmp)
 {
-    abb_t* abb = abb_crear(strcmp, NULL);
+    abb_t* abb = abb_crear(cmp, NULL);
 
     char *clave1 = "perro", *valor1a = "guau", *valor1b = "warf";
     char *clave2 = "gato", *valor2a = "miau", *valor2b = "meaow";
@@ -105,9 +105,9 @@ static void prueba_abb_reemplazar()
     abb_destruir(abb);
 }
 
-static void prueba_abb_reemplazar_con_destruir()
+static void prueba_abb_reemplazar_con_destruir(abb_comparar_clave_t cmp)
 {
-    abb_t* abb = abb_crear(strcmp, free);
+    abb_t* abb = abb_crear(cmp, free);
 
     char *clave1 = "perro", *valor1a, *valor1b;
     char *clave2 = "gato", *valor2a, *valor2b;
@@ -139,9 +139,9 @@ static void prueba_abb_reemplazar_con_destruir()
     abb_destruir(abb);
 }
 
-static void prueba_abb_borrar()
+static void prueba_abb_borrar(abb_comparar_clave_t cmp)
 {
-    abb_t* abb = abb_crear(strcmp, NULL);
+    abb_t* abb = abb_crear(cmp, NULL);
 
     char *clave1 = "perro", *valor1 = "guau";
     char *clave2 = "gato", *valor2 = "miau";
@@ -177,9 +177,9 @@ static void prueba_abb_borrar()
     abb_destruir(abb);
 }
 
-static void prueba_abb_clave_vacia()
+static void prueba_abb_clave_vacia(abb_comparar_clave_t cmp)
 {
-    abb_t* abb = abb_crear(strcmp, NULL);
+    abb_t* abb = abb_crear(cmp, NULL);
 
     char *clave = "", *valor = "";
 
@@ -193,9 +193,9 @@ static void prueba_abb_clave_vacia()
     abb_destruir(abb);
 }
 
-static void prueba_abb_valor_null()
+static void prueba_abb_valor_null(abb_comparar_clave_t cmp)
 {
-    abb_t* abb = abb_crear(strcmp, NULL);
+    abb_t* abb = abb_crear(cmp, NULL);
 
     char *clave = "", *valor = NULL;
 
@@ -209,6 +209,11 @@ static void prueba_abb_valor_null()
 
     abb_destruir(abb);
 }
+
+ int inv_strcmp(const char *s1, const char *s2){
+ 	return -1 * strcmp(s1, s2);
+ }
+
 
 //llena el arbol con fin-inicio elementos de forma tal que quede balanceado
 //si inicializar es true, inicializa los arreglos de valores y claves mientras llena el arbol
@@ -305,7 +310,7 @@ static void prueba_abb_iterar()
     print_test("Prueba abb iterador esta al final, es false", !abb_iter_in_al_final(iter));
 
     // Primer valor
-    clave = abb_iter_in_ver_actual(iter);
+	    clave = abb_iter_in_ver_actual(iter);
     indice = buscar(clave, claves, sizeof(claves) / sizeof(char *));
     print_test("Prueba abb iterador ver actual, es una clave valida", indice != -1);
     print_test("Prueba abb iterador ver actual, no es el mismo puntero", clave != claves[indice]);
@@ -402,16 +407,30 @@ static void prueba_abb_iterar_volumen(size_t largo)
 void pruebas_abb()
 {
     /* Ejecuta todas las pruebas unitarias. */
-    prueba_crear_abb_vacio();
+    printf("\n\nPruebas con strcmp()\n");
+    prueba_crear_abb_vacio(strcmp);
+    prueba_abb_insertar(strcmp);
+    prueba_abb_reemplazar(strcmp);
+    prueba_abb_reemplazar_con_destruir(strcmp);
+    prueba_abb_borrar(strcmp);
+    prueba_abb_clave_vacia(strcmp);
+    prueba_abb_valor_null(strcmp);
+
+    printf("\n\nPruebas con otra función de comparación\n");
+    prueba_crear_abb_vacio(inv_strcmp);
+    prueba_abb_insertar(inv_strcmp);
+    prueba_abb_reemplazar(inv_strcmp);
+    prueba_abb_reemplazar_con_destruir(inv_strcmp);
+    prueba_abb_borrar(inv_strcmp);
+    prueba_abb_clave_vacia(inv_strcmp);
+    prueba_abb_valor_null(inv_strcmp);
+
+    printf("\n\nPruebas iterador\n");
     //prueba_iterar_abb_vacio();
-    prueba_abb_insertar();
-    prueba_abb_reemplazar();
-    prueba_abb_reemplazar_con_destruir();
-    prueba_abb_borrar();
-    prueba_abb_clave_vacia();
-    prueba_abb_valor_null();
-    prueba_abb_volumen(5000);
     //prueba_abb_iterar();
+
+    printf("\n\nPruebas de volumen\n");
+    prueba_abb_volumen(5000);
     //prueba_abb_iterar_volumen(5000);
 }
 
