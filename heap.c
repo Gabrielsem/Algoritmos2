@@ -29,8 +29,8 @@ size_t pos_hijo_izq(size_t pos_padre) {
 	return pos_padre * 2 + 1;
 }
 
-// Hace upheap al dato en la posición tam del arreglo.
-void upheap(void** datos, size_t tam, cmp_func_t cmp) {
+// Hace upheap al dato en la posición n del arreglo.
+void upheap(void** datos, size_t n, cmp_func_t cmp) {
 	return;
 }
 
