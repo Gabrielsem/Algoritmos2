@@ -29,14 +29,65 @@ size_t pos_hijo_izq(size_t pos_padre) {
 	return pos_padre * 2 + 1;
 }
 
+void swap(void** dato_1, void** dato_2){
+	void* aux = *dato_1;
+	*dato_1 = *dato_2;
+	*dato_2 = aux;
+}
+
 // Hace upheap al dato en la posición n del arreglo datos.
 void upheap(void** datos, size_t n, cmp_func_t cmp) {
-	return;
+	if (n == 0)
+		return;
+
+	size_t actual = n;
+	size_t padre;
+	while (actual > 0 && cmp(datos[actual], datos[padre = pos_padre(actual)]) > 0){
+		swap(datos + actual, datos + padre);
+		actual = padre;
+	}
+}
+
+// Hace upheap al dato en la posición n del arreglo datos.
+void upheap(void** datos, size_t n, cmp_func_t cmp) {
+	if (n == 0)
+		return;
+
+	size_t padre = pos_padre(n);
+	if(cmp(datos[n], datos[padre]) > 0){
+		swap(datos + n, datos + padre);
+		upheap(datos, padre, cmp);
+	}
 }
 
 // Hace downheap al primer dato del arreglo datos de tamaño n.
 void downheap(void** datos, size_t n, cmp_func_t cmp) {
-	return;
+	size_t actual = 0;
+	size_t hijo;
+	while ( ((hijo = pos_hijo_izq(actual)) < n && cmp(datos[hijo], datos[actual]) > 0)
+		|| ((hijo = pos_hijo_der(actual)) < n && cmp(datos[hijo], datos[actual]) > 0)) {
+		
+		swap(datos + actual, datos + hijo);
+		actual = hijo;
+	}
+}
+
+void** dup_arreglo(void** original, size_t n){
+	void** copia = malloc(sizeof(void*) * n);
+	if (!copia)
+		return NULL;
+
+	for (size_t i = 0; i < n; i++){
+		copia[i] = original[i];
+	}
+
+	return copia;
+}
+
+void heapify(void** datos, size_t n, cmp_func_t cmp){
+	for (size_t i = n / 2; i <= n; i++){
+		downheap(datos + n - i, n, cmp);
+	}
 }
 
 /* ******************************************************************
@@ -49,8 +100,21 @@ heap_t *heap_crear(cmp_func_t cmp) {
 }
 
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
-	heap_t* tmp = NULL;
-	return tmp;
+	heap_t* heap = malloc(sizeof(heap_t));
+	if (!heap)
+		return NULL;
+
+	heap->datos = dup_arreglo(arreglo, n);
+	if (!heap->datos){
+		free(heap);
+		return NULL;
+	}
+
+	heapify(heap->datos, n, cmp);
+
+	heap->cmp = cmp;
+	heap->cant = heap->cap = n;
+	return heap;
 }
 
 void heap_destruir(heap_t *heap, void (*destruir_elemento)(void *e)) {
@@ -82,5 +146,7 @@ void *heap_desencolar(heap_t *heap) {
  * *****************************************************************/
 
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
-	return;
+	heapify(elementos, cant, cmp);
+
+
 }
