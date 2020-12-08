@@ -48,7 +48,7 @@ void upheap(void** datos, size_t n, cmp_func_t cmp) {
 }
 
 // Hace downheap al primer dato del arreglo datos de tamaño n.
-void downheap(void** datos, size_t n, cmp_func_t cmp) {
+void downheap(void** datos, size_t n, size_t tam, cmp_func_t cmp) {
 	size_t izq = pos_hijo_izq(0);
 	size_t der = pos_hijo_der(0);
 
