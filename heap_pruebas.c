@@ -12,11 +12,12 @@ void pruebas_heap_sort(){
 	int* arr[10];
 	for(size_t i = 0; i < 10; i++){
 		arr[i] = arr_int + i;
-		//printf("%lu: %p\n", i, (void*) arr[i]);
+		printf("%i ", *arr[i]);
 	}
 	heap_sort((void**) arr, 10, cmp_int);
+	printf("\n| Heap sort\nV	\n");
 	for(size_t i = 0; i < 10; i++){
-		printf("%i ", arr_int[i]);
+		printf("%i ", *arr[i]);
 	}
 }
 
