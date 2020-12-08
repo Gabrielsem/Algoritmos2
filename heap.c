@@ -1,9 +1,15 @@
 #include "heap.h"
 #include <stdlib.h>
 
+
 /* ******************************************************************
  *                   DEFINICIÓN DE LAS ESTRUCTURAS
  * *****************************************************************/
+
+#define CAPACIDAD_INICIAL 10
+#define PORC_AGRANDAR 70
+#define PORC_ACHICAR 15
+#define FACTOR_REDIM 2
 
 struct heap {
 	void** datos;
@@ -39,8 +45,32 @@ void downheap(void** datos, size_t n, size_t tam, cmp_func_t cmp) {
 	return;
 }
 
+size_t nueva_cap(const heap_t* heap){
+	size_t cap = heap->cap;
+	size_t porcentaje =  heap->cant*100/heap->cap;
+
+	if(porcentaje < PORC_ACHICAR){
+		cap = heap->cap/FACTOR_REDIM;
+		if(cap < CAPACIDAD_INICIAL)
+			cap = CAPACIDAD_INICIAL;
+	}
+
+	if(porcentaje > PORC_AGRANDAR){
+		cap = heap->cap * FACTOR_REDIM;
+	}
+
+	return cap;
+}
+
 bool heap_redim(heap_t *heap){
-	return false;
+	size_t cap = nueva_cap(heap);
+	if(cap == heap->cap) return true;
+
+	void** datos_nuevo = realloc(heap->datos,cap * sizeof(void*));
+	if(datos_nuevo == NULL) return false;
+	heap->datos = datos_nuevo;
+	heap->cap = cap;
+	return true;
 }
 
 /* ******************************************************************
@@ -50,7 +80,7 @@ bool heap_redim(heap_t *heap){
 heap_t *heap_crear(cmp_func_t cmp) {
 	heap_t* heap = malloc(sizeof(heap_t));
 	if(!heap) return NULL;
-	heap->cap = 10;
+	heap->cap = CAPACIDAD_INICIAL;
 	heap->cant = 0;
 	heap->datos = malloc(sizeof(void*) * heap->cap);
 	if(!heap->datos) {
@@ -85,17 +115,23 @@ bool heap_esta_vacio(const heap_t *heap) {
 
 bool heap_encolar(heap_t *heap, void *elem) {
 	if(!heap_redim(heap)) return false;
-
-
-	return false;
+	heap->datos[heap->cant] = elem;
+	upheap(heap->datos, heap->cant, heap->cmp);
+	heap->cant += 1;
+	return true;
 }
 
 void *heap_ver_max(const heap_t *heap) {
-	return heap->datos[heap->cant - 1];
+	return heap->datos[0];
 }
 
 void *heap_desencolar(heap_t *heap) {
-	return NULL;
+	if(!heap_redim(heap)) return NULL;
+	void* dato = heap->datos[0];
+	heap->cant -= 1;
+	heap->datos[0] = heap->datos[heap->cant];
+	downheap(heap->datos, (size_t)0, heap->cant, heap->cmp);
+	return dato;
 }
 
 /* ******************************************************************
