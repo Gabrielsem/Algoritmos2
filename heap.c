@@ -35,29 +35,34 @@ void swap(void** dato_1, void** dato_2){
 	*dato_2 = aux;
 }
 
-// Hace upheap al dato en la posición n del arreglo datos.
+// Hace upheap al dato en la posición n del arreglo.
 void upheap(void** datos, size_t n, cmp_func_t cmp) {
 	if (n == 0)
 		return;
 
 	size_t padre = pos_padre(n);
-	if(cmp(datos[n], datos[padre]) > 0){
+	if (cmp(datos[n], datos[padre]) > 0){
 		swap(datos + n, datos + padre);
 		upheap(datos, padre, cmp);
 	}
 }
 
-// Hace downheap al primer dato del arreglo datos de tamaño n.
+// Hace downheap al dato en la posición n del arreglo.
 void downheap(void** datos, size_t n, size_t tam, cmp_func_t cmp) {
-	size_t izq = pos_hijo_izq(0);
-	size_t der = pos_hijo_der(0);
+	size_t izq = pos_hijo_izq(n);
+	size_t der = pos_hijo_der(n);
 
-	if(izq < n && cmp(datos[izq], *datos) > 0){
-		swap(datos, datos + izq);
-		downheap(datos + izq, n - izq, cmp);
-	} else if (der < n && cmp(datos[der], *datos) > 0){
-		swap(datos, datos + der);
-		downheap(datos + der, n - der, cmp);
+	if (izq >= tam)
+		return;
+
+	if(der >= tam || cmp(datos[izq], datos[der]) > 0){
+		if (cmp(datos[izq], datos[n]) > 0){
+			swap(datos + n, datos + izq);
+			downheap(datos, izq, tam, cmp);
+		}
+	} else if (cmp(datos[der], datos[n]) > 0) {
+		swap(datos + n, datos + der);
+		downheap(datos, der, tam, cmp);
 	}
 }
 
@@ -75,7 +80,7 @@ void** dup_arreglo(void** original, size_t n){
 
 void heapify(void** datos, size_t n, cmp_func_t cmp){
 	for (size_t i = n / 2; i <= n; i++){
-		downheap(datos + n - i, n, cmp);
+		downheap(datos, n - i, n, cmp);
 	}
 }
 
@@ -139,6 +144,6 @@ void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
 
 	for(size_t i = 0; i < cant - 1; i++){
 		swap(elementos, elementos + cant - 1 - i);
-		downheap(elementos, cant - i, cmp);
+		downheap(elementos, 0, cant - 1 - i, cmp);
 	}
 }
