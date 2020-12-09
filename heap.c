@@ -50,7 +50,7 @@ size_t nueva_cap(const heap_t* heap){
 	size_t porcentaje =  heap->cant * 100 / heap->cap;
 
 	if(porcentaje < PORC_ACHICAR){
-		cap = heap->cap/FACTOR_REDIM;
+		cap = heap->cap / FACTOR_REDIM;
 		if(cap < CAPACIDAD_INICIAL)
 			cap = CAPACIDAD_INICIAL;
 	}
