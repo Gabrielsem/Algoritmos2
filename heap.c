@@ -47,7 +47,7 @@ void downheap(void** datos, size_t n, size_t tam, cmp_func_t cmp) {
 
 size_t nueva_cap(const heap_t* heap){
 	size_t cap = heap->cap;
-	size_t porcentaje =  heap->cant*100/heap->cap;
+	size_t porcentaje =  heap->cant * 100 / heap->cap;
 
 	if(porcentaje < PORC_ACHICAR){
 		cap = heap->cap/FACTOR_REDIM;
