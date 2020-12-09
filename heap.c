@@ -110,7 +110,7 @@ size_t heap_cantidad(const heap_t *heap) {
 }
 
 bool heap_esta_vacio(const heap_t *heap) {	
-	return heap->cant ? false : true;
+	return !heap->cant;
 }
 
 bool heap_encolar(heap_t *heap, void *elem) {
