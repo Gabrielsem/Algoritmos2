@@ -44,31 +44,14 @@ void downheap(void** datos, size_t n, size_t tam, cmp_func_t cmp) {
 	return;
 }
 
-size_t nueva_cap(const heap_t* heap) {
-	size_t cap = heap->cap;
-	size_t porcentaje =  heap->cant*100/heap->cap;
-
-	if(porcentaje < PORC_ACHICAR){
-		cap = heap->cap/FACTOR_REDIM;
-		if(cap < CAPACIDAD_INICIAL)
-			cap = CAPACIDAD_INICIAL;
-	}
-
-	if(porcentaje > PORC_AGRANDAR){
-		cap = heap->cap * FACTOR_REDIM;
-	}
-
-	return cap;
-}
-
 bool heap_redim(heap_t *heap) {
 	size_t cap = heap->cap;
-	size_t porcentaje =  heap->cant*100/heap->cap;
-	if(cap == heap->cant) cap*=FACTOR_REDIM;
-	else if(porcentaje < PORC_ACHICAR) cap/=FACTOR_REDIM;
+	size_t porcentaje = heap->cant * 100 / heap->cap;
+	if (cap == heap->cant) cap *= FACTOR_REDIM;
+	else if (porcentaje < PORC_ACHICAR) cap /= FACTOR_REDIM;
 	else return true;
 	void** datos_nuevo = realloc(heap->datos,cap * sizeof(void*));
-	if(datos_nuevo == NULL) return false;
+	if (datos_nuevo == NULL) return false;
 	heap->datos = datos_nuevo;
 	heap->cap = cap;
 	return true;
@@ -80,11 +63,11 @@ bool heap_redim(heap_t *heap) {
 
 heap_t *heap_crear(cmp_func_t cmp) {
 	heap_t* heap = malloc(sizeof(heap_t));
-	if(!heap) return NULL;
+	if (!heap) return NULL;
 	heap->cap = CAPACIDAD_INICIAL;
 	heap->cant = 0;
 	heap->datos = malloc(sizeof(void*) * heap->cap);
-	if(!heap->datos) {
+	if (!heap->datos) {
 		free(heap);
 		return NULL;
 	}
@@ -97,8 +80,8 @@ heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
 }
 
 void heap_destruir(heap_t *heap, void (*destruir_elemento)(void *e)) {
-	if(destruir_elemento) {
-		for(size_t i = 0; i < heap->cant; i++) {
+	if (destruir_elemento) {
+		for (size_t i = 0; i < heap->cant; i++) {
 			destruir_elemento(heap->datos[i]);
 		}
 	}
@@ -115,7 +98,7 @@ bool heap_esta_vacio(const heap_t *heap) {
 }
 
 bool heap_encolar(heap_t *heap, void *elem) {
-	if(!heap_redim(heap)) return false;
+	if (!heap_redim(heap)) return false;
 	heap->datos[heap->cant] = elem;
 	upheap(heap->datos, heap->cant, heap->cmp);
 	heap->cant += 1;
@@ -123,12 +106,12 @@ bool heap_encolar(heap_t *heap, void *elem) {
 }
 
 void *heap_ver_max(const heap_t *heap) {
-	if(heap_esta_vacio(heap)) return NULL;
+	if (heap_esta_vacio(heap)) return NULL;
 	return heap->datos[0];
 }
 
 void *heap_desencolar(heap_t *heap) {
-	if(heap_esta_vacio(heap)) return NULL;
+	if (heap_esta_vacio(heap)) return NULL;
 	heap_redim(heap);
 	void* dato = heap->datos[0];
 	heap->cant -= 1;
