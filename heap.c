@@ -66,7 +66,7 @@ bool heap_redim(heap_t *heap){
 	size_t cap = nueva_cap(heap);
 	if(cap == heap->cap) return true;
 
-	void** datos_nuevo = realloc(heap->datos,cap * sizeof(void*));
+	void** datos_nuevo = realloc(heap->datos, cap * sizeof(void*));
 	if(datos_nuevo == NULL) return false;
 	heap->datos = datos_nuevo;
 	heap->cap = cap;
