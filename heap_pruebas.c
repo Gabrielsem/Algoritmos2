@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-int cmp_int(const void* int_1, const void* int_2){
+int cmp_int(const void* int_1, const void* int_2) {
 	return *((int*) int_1) - *((int*) int_2);
 }
 

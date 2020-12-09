@@ -29,7 +29,7 @@ size_t pos_hijo_izq(size_t pos_padre) {
 	return pos_padre * 2 + 1;
 }
 
-void swap(void** dato_1, void** dato_2){
+void swap(void** dato_1, void** dato_2) {
 	void* aux = *dato_1;
 	*dato_1 = *dato_2;
 	*dato_2 = aux;
@@ -41,7 +41,7 @@ void upheap(void** datos, size_t n, cmp_func_t cmp) {
 		return;
 
 	size_t padre = pos_padre(n);
-	if (cmp(datos[n], datos[padre]) > 0){
+	if (cmp(datos[n], datos[padre]) > 0) {
 		swap(datos + n, datos + padre);
 		upheap(datos, padre, cmp);
 	}
@@ -55,8 +55,8 @@ void downheap(void** datos, size_t n, size_t tam, cmp_func_t cmp) {
 	if (izq >= tam)
 		return;
 
-	if(der >= tam || cmp(datos[izq], datos[der]) > 0){
-		if (cmp(datos[izq], datos[n]) > 0){
+	if (der >= tam || cmp(datos[izq], datos[der]) > 0) {
+		if (cmp(datos[izq], datos[n]) > 0) {
 			swap(datos + n, datos + izq);
 			downheap(datos, izq, tam, cmp);
 		}
@@ -68,12 +68,12 @@ void downheap(void** datos, size_t n, size_t tam, cmp_func_t cmp) {
 
 // Duplica un arreglo. Debe liberarse con free()
 // Devuelve NULL si falla.
-void** dup_arreglo(void** original, size_t n){
+void** dup_arreglo(void** original, size_t n) {
 	void** copia = malloc(sizeof(void*) * n);
 	if (!copia)
 		return NULL;
 
-	for (size_t i = 0; i < n; i++){
+	for (size_t i = 0; i < n; i++) {
 		copia[i] = original[i];
 	}
 
@@ -81,8 +81,8 @@ void** dup_arreglo(void** original, size_t n){
 }
 
 // Aplica heapify al arreglo dado (lo modifica para que cumpla condición de heap)
-void heapify(void** datos, size_t n, cmp_func_t cmp){
-	for (size_t i = n / 2; i <= n; i++){
+void heapify(void** datos, size_t n, cmp_func_t cmp) {
+	for (size_t i = n / 2; i <= n; i++) {
 		downheap(datos, n - i, n, cmp);
 	}
 }
@@ -102,7 +102,7 @@ heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
 		return NULL;
 
 	heap->datos = dup_arreglo(arreglo, n);
-	if (!heap->datos){
+	if (!heap->datos) {
 		free(heap);
 		return NULL;
 	}
@@ -145,7 +145,7 @@ void *heap_desencolar(heap_t *heap) {
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
 	heapify(elementos, cant, cmp);
 
-	for(size_t i = 0; i < cant - 1; i++){
+	for (size_t i = 0; i < cant - 1; i++) {
 		swap(elementos, elementos + cant - 1 - i);
 		downheap(elementos, 0, cant - 1 - i, cmp);
 	}
