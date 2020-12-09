@@ -66,6 +66,8 @@ void downheap(void** datos, size_t n, size_t tam, cmp_func_t cmp) {
 	}
 }
 
+// Duplica un arreglo. Debe liberarse con free()
+// Devuelve NULL si falla.
 void** dup_arreglo(void** original, size_t n){
 	void** copia = malloc(sizeof(void*) * n);
 	if (!copia)
@@ -78,6 +80,7 @@ void** dup_arreglo(void** original, size_t n){
 	return copia;
 }
 
+// Aplica heapify al arreglo dado (lo modifica para que cumpla condición de heap)
 void heapify(void** datos, size_t n, cmp_func_t cmp){
 	for (size_t i = n / 2; i <= n; i++){
 		downheap(datos, n - i, n, cmp);
