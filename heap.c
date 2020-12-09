@@ -18,7 +18,7 @@ struct heap {
 
 // Pre: pos_hijo es > 0
 size_t pos_padre(size_t pos_hijo) {
-	return (pos_hijo - 1)/2;
+	return (pos_hijo - 1) / 2;
 }
 
 size_t pos_hijo_der(size_t pos_padre) {
