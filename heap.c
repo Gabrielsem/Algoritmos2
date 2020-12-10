@@ -2,9 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 /* ******************************************************************
  *                   DEFINICIÓN DE LAS ESTRUCTURAS
  * *****************************************************************/
+
+#define CAPACIDAD_INICIAL 10
+#define PORC_ACHICAR 25
+#define FACTOR_REDIM 2
 
 struct heap {
 	void** datos;
@@ -85,13 +90,38 @@ void heapify(void** datos, size_t n, cmp_func_t cmp) {
 	}
 }
 
+bool heap_redim(heap_t *heap) {
+	size_t cap = heap->cap;
+	size_t porcentaje = heap->cant * 100 / heap->cap;
+	if (cap == heap->cant) cap *= FACTOR_REDIM;
+	else if (cap > CAPACIDAD_INICIAL && porcentaje < PORC_ACHICAR) {
+		cap /= FACTOR_REDIM;
+		if(cap < CAPACIDAD_INICIAL) cap = CAPACIDAD_INICIAL;
+	} 
+	else return true;
+	if(cap == heap->cap) return true;
+	void** datos_nuevo = realloc(heap->datos, cap * sizeof(void*));
+	if (datos_nuevo == NULL) return false;
+	heap->datos = datos_nuevo;
+	heap->cap = cap;
+	return true;
+}
+
 /* ******************************************************************
  *                  		PRIMITIVAS HEAP
  * *****************************************************************/
 
 heap_t *heap_crear(cmp_func_t cmp) {
-	heap_t* tmp = NULL;
-	return tmp;
+	heap_t* heap = malloc(sizeof(heap_t));
+	if (!heap) return NULL;
+	heap->cap = CAPACIDAD_INICIAL;
+	heap->cant = 0;
+	heap->datos = malloc(sizeof(void*) * heap->cap);
+	if (!heap->datos) {
+		free(heap);
+		return NULL;
+	}
+	return heap;
 }
 
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
@@ -113,27 +143,44 @@ heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
 }
 
 void heap_destruir(heap_t *heap, void (*destruir_elemento)(void *e)) {
-	return;
+	if (destruir_elemento) {
+		for (size_t i = 0; i < heap->cant; i++) {
+			destruir_elemento(heap->datos[i]);
+		}
+	}
+	free(heap->datos);
+	free(heap);
 }
 
 size_t heap_cantidad(const heap_t *heap) {
-	return 0;
+	return heap->cant;
 }
 
 bool heap_esta_vacio(const heap_t *heap) {	
-	return false;
+	return !heap->cant;
 }
 
 bool heap_encolar(heap_t *heap, void *elem) {
-	return false;
+	if (!heap_redim(heap)) return false;
+	heap->datos[heap->cant] = elem;
+	upheap(heap->datos, heap->cant, heap->cmp);
+	heap->cant += 1;
+	return true;
 }
 
 void *heap_ver_max(const heap_t *heap) {
-	return NULL;
+	if (heap_esta_vacio(heap)) return NULL;
+	return heap->datos[0];
 }
 
 void *heap_desencolar(heap_t *heap) {
-	return NULL;
+	if (heap_esta_vacio(heap)) return NULL;
+	heap_redim(heap);
+	void* dato = heap->datos[0];
+	heap->cant -= 1;
+	heap->datos[0] = heap->datos[heap->cant];
+	downheap(heap->datos, 0, heap->cant, heap->cmp);
+	return dato;
 }
 
 /* ******************************************************************
