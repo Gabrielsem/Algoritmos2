@@ -1,5 +1,6 @@
 #include "heap.h"
 #include <stdlib.h>
+#include <string.h>
 
 
 /* ******************************************************************
@@ -34,14 +35,59 @@ size_t pos_hijo_izq(size_t pos_padre) {
 	return pos_padre * 2 + 1;
 }
 
+void swap(void** dato_1, void** dato_2) {
+	void* aux = *dato_1;
+	*dato_1 = *dato_2;
+	*dato_2 = aux;
+}
+
 // Hace upheap al dato en la posición n del arreglo.
 void upheap(void** datos, size_t n, cmp_func_t cmp) {
-	return;
+	if (n == 0)
+		return;
+
+	size_t padre = pos_padre(n);
+	if (cmp(datos[n], datos[padre]) > 0) {
+		swap(datos + n, datos + padre);
+		upheap(datos, padre, cmp);
+	}
 }
 
 // Hace downheap al dato en la posición n del arreglo.
 void downheap(void** datos, size_t n, size_t tam, cmp_func_t cmp) {
-	return;
+	size_t izq = pos_hijo_izq(n);
+	size_t der = pos_hijo_der(n);
+
+	if (izq >= tam)
+		return;
+
+	if (der >= tam || cmp(datos[izq], datos[der]) > 0) {
+		if (cmp(datos[izq], datos[n]) > 0) {
+			swap(datos + n, datos + izq);
+			downheap(datos, izq, tam, cmp);
+		}
+	} else if (cmp(datos[der], datos[n]) > 0) {
+		swap(datos + n, datos + der);
+		downheap(datos, der, tam, cmp);
+	}
+}
+
+// Duplica un arreglo. Debe liberarse con free()
+// Devuelve NULL si falla.
+void** dup_arreglo(void** original, size_t n) {
+	void** copia = malloc(sizeof(void*) * n);
+	if (!copia)
+		return NULL;
+
+	memcpy(copia, original, sizeof(void*) * n);
+	return copia;
+}
+
+// Aplica heapify al arreglo dado (lo modifica para que cumpla condición de heap)
+void heapify(void** datos, size_t n, cmp_func_t cmp) {
+	for (size_t i = n / 2; i <= n; i++) {
+		downheap(datos, n - i, n, cmp);
+	}
 }
 
 bool heap_redim(heap_t *heap) {
@@ -79,8 +125,21 @@ heap_t *heap_crear(cmp_func_t cmp) {
 }
 
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
-	heap_t* tmp = NULL;
-	return tmp;
+	heap_t* heap = malloc(sizeof(heap_t));
+	if (!heap)
+		return NULL;
+
+	heap->datos = dup_arreglo(arreglo, n);
+	if (!heap->datos) {
+		free(heap);
+		return NULL;
+	}
+
+	heapify(heap->datos, n, cmp);
+
+	heap->cmp = cmp;
+	heap->cant = heap->cap = n;
+	return heap;
 }
 
 void heap_destruir(heap_t *heap, void (*destruir_elemento)(void *e)) {
@@ -129,5 +188,10 @@ void *heap_desencolar(heap_t *heap) {
  * *****************************************************************/
 
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
-	return;
+	heapify(elementos, cant, cmp);
+
+	for (size_t i = 0; i < cant - 1; i++) {
+		swap(elementos, elementos + cant - 1 - i);
+		downheap(elementos, 0, cant - 1 - i, cmp);
+	}
 }
