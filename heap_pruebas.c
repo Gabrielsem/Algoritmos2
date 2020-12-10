@@ -20,10 +20,10 @@ void prueba_heap_encolar() {
 		heap_encolar(heap,arr[i]);
 	}
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 8);
-	print_test("ver maximo correcto", heap_ver_max(heap) == *(int*)7);
+	print_test("ver maximo correcto", *(int*) heap_ver_max(heap) == *(int*)7);
 	
-	print_test("encolar nuevo maximo correcto", heap_encolar(heap,arr[8]) && heap_ver_max(heap) == *(int*)8);
-	print_test("encolar correcto", heap_encolar(heap,arr[9] && heap_ver_max(heap) == *(int*)9));
+	print_test("encolar nuevo maximo correcto", heap_encolar(heap,arr[8]) && *(int*) heap_ver_max(heap) == *(int*)8);
+	print_test("encolar correcto", heap_encolar(heap,arr[9]) && *(int*) heap_ver_max(heap) == *(int*)9);
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 11);
 	heap_destruir(heap,NULL);
 }
@@ -37,9 +37,9 @@ void prueba_heap_desencolar() {
 	for(size_t i=0; i<9; i++) {
 		heap_encolar(heap,(void*)i);
 	}
-	print_test("desencolar correcto", heap_desencolar(heap) == *(int*)8);
+	print_test("desencolar correcto", *(int*) heap_desencolar(heap) == *(int*)8);
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 8);
-	print_test("desencolar correcto", heap_desencolar(heap) == *(int*)7);
+	print_test("desencolar correcto", *(int*) heap_desencolar(heap) == *(int*)7);
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 7);
 	print_test("no esta vacio", !heap_esta_vacio(heap));
 	while(!heap_esta_vacio(heap)) {
