@@ -39,7 +39,7 @@ void prueba_heap_desencolar() {
 	}
 	print_test("desencolar correcto", *(int*) heap_desencolar(heap) == *(int*)8);
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 8);
-	print_test("desencolar correcto", *(int*) heap_desencolar(heap) == *(int*)7);
+	print_test("desencolar correcto", *(int*) heap_desencolar(heap) == 7);
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 7);
 	print_test("no esta vacio", !heap_esta_vacio(heap));
 	while(!heap_esta_vacio(heap)) {
