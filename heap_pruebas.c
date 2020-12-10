@@ -39,7 +39,7 @@ void prueba_heap_desencolar() {
 	int* arr[] = {arr_int, arr_int + 1, arr_int + 2, arr_int + 3, arr_int + 4, arr_int + 5, 
 		arr_int + 6, arr_int + 7, arr_int + 8, arr_int + 9};
 	for(size_t i=0; i<9; i++) {
-		heap_encolar(heap,(void*)i);
+		heap_encolar(heap, arr[i]);
 	}
 	print_test("desencolar correcto", *(int*) heap_desencolar(heap) == 8);
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 8);

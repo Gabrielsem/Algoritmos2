@@ -121,6 +121,7 @@ heap_t *heap_crear(cmp_func_t cmp) {
 		free(heap);
 		return NULL;
 	}
+	heap->cmp = cmp;
 	return heap;
 }
 
