@@ -48,9 +48,13 @@ bool heap_redim(heap_t *heap) {
 	size_t cap = heap->cap;
 	size_t porcentaje = heap->cant * 100 / heap->cap;
 	if (cap == heap->cant) cap *= FACTOR_REDIM;
-	else if (porcentaje < PORC_ACHICAR) cap /= FACTOR_REDIM;
+	else if (porcentaje < PORC_ACHICAR){
+		cap /= FACTOR_REDIM;
+		if(cap < CAPACIDAD_INICIAL) cap = CAPACIDAD_INICIAL;
+	} 
 	else return true;
-	void** datos_nuevo = realloc(heap->datos,cap * sizeof(void*));
+	if(cap == heap->cap) return true;
+	void** datos_nuevo = realloc(heap->datos, cap * sizeof(void*));
 	if (datos_nuevo == NULL) return false;
 	heap->datos = datos_nuevo;
 	heap->cap = cap;
