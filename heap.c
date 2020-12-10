@@ -48,7 +48,7 @@ bool heap_redim(heap_t *heap) {
 	size_t cap = heap->cap;
 	size_t porcentaje = heap->cant * 100 / heap->cap;
 	if (cap == heap->cant) cap *= FACTOR_REDIM;
-	else if (porcentaje < PORC_ACHICAR){
+	else if (cap > CAPACIDAD_INICIAL && porcentaje < PORC_ACHICAR) {
 		cap /= FACTOR_REDIM;
 		if(cap < CAPACIDAD_INICIAL) cap = CAPACIDAD_INICIAL;
 	} 
