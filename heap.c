@@ -1,5 +1,6 @@
 #include "heap.h"
 #include <stdlib.h>
+#include <string.h>
 
 /* ******************************************************************
  *                   DEFINICIÓN DE LAS ESTRUCTURAS
@@ -73,10 +74,7 @@ void** dup_arreglo(void** original, size_t n) {
 	if (!copia)
 		return NULL;
 
-	for (size_t i = 0; i < n; i++) {
-		copia[i] = original[i];
-	}
-
+	memcpy(copia, original, sizeof(void*) * n);
 	return copia;
 }
 
