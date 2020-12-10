@@ -3,11 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int cmp_int(const void* int_1, const void* int_2){
-	const int* a = int_1;
-	const int* b = int_2;
-	return (*a - *b);
-}	
 void prueba_heap_vacio() {
 	heap_t* heap = heap_crear(cmp_int);
 	if(!heap) return;
