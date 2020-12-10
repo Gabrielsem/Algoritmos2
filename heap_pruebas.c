@@ -20,7 +20,7 @@ void prueba_heap_encolar() {
 		heap_encolar(heap,arr[i]);
 	}
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 8);
-	print_test("ver maximo correcto", *(int*) heap_ver_max(heap) == *(int*)7);
+	print_test("ver maximo correcto", *(int*) heap_ver_max(heap) == 7);
 	
 	print_test("encolar nuevo maximo correcto", heap_encolar(heap,arr[8]) && *(int*) heap_ver_max(heap) == *(int*)8);
 	print_test("encolar correcto", heap_encolar(heap,arr[9]) && *(int*) heap_ver_max(heap) == *(int*)9);
