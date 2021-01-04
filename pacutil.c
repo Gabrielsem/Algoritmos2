@@ -68,7 +68,7 @@ struct colapac {
 
 // cola de una especialidad
 typedef struct colaesp {
-	cola_t* urgencias;
+	cola_t* urgentes;
 	heap_t* regulares;
 	size_t en_espera;
 } colaesp_t;
@@ -85,7 +85,7 @@ int antig_cmp_wr(const void* paciente_1, const void* paciente_2) {
 
 // Destruye una cola de una especialidad y todos sus pacientes
 void destruir_colaesp(colaesp_t* colaesp) {
-	cola_destruir(colaesp->urgencias, destruir_paciente);
+	cola_destruir(colaesp->urgentes, destruir_paciente);
 	heap_destruir(colaesp->regulares, destruir_paciente);
 	free(colaesp);
 }
@@ -102,15 +102,15 @@ colaesp_t* crear_colaesp() {
 	colaesp_t* colaesp = malloc(sizeof(colaesp_t));
 	if (!colaesp) return NULL;
 
-	colaesp->urgencias = cola_crear();
-	if (!colaesp->urgencias) {
+	colaesp->urgentes = cola_crear();
+	if (!colaesp->urgentes) {
 		free(colaesp);
 		return NULL;
 	}
 
 	colaesp->regulares = heap_crear(antig_cmp_wr);
 	if (!colaesp->regulares) {
-		cola_destruir(colaesp->urgencias, NULL);
+		cola_destruir(colaesp->urgentes, NULL);
 		free(colaesp);
 		return NULL;
 	}
@@ -146,7 +146,7 @@ bool colapac_encolar(colapac_t* colapac, paciente_t* paciente, const char* espec
 	}
 
 	bool encolo = false;
-	encolo = (urgente && cola_encolar(colaesp->urgencias, paciente)) ||
+	encolo = (urgente && cola_encolar(colaesp->urgentes, paciente)) ||
 		(!urgente && heap_encolar(colaesp->regulares, paciente));
 
 	if (encolo) colaesp->en_espera++;
@@ -171,7 +171,7 @@ paciente_t* colapac_desencolar(colapac_t* colapac, const char* especialidad) {
 		return NULL;
 
 	paciente_t* paciente = NULL;
-	if((paciente = cola_desencolar(colaesp->urgencias)) || (paciente = heap_desencolar(colaesp->regulares))){
+	if((paciente = cola_desencolar(colaesp->urgentes)) || (paciente = heap_desencolar(colaesp->regulares))){
 		colaesp->en_espera--;
 	}
 
