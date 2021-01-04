@@ -1,4 +1,4 @@
-#include "tdas_paciente.h"
+#include "pacutil.h"
 #include "heap.h"
 #include "cola.h"
 #include "hash.h"

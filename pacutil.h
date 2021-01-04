@@ -1,5 +1,5 @@
-#ifndef PAC__H
-#define PAC__H
+#ifndef PACUTIL__H
+#define PACUTIL__H
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -52,4 +52,4 @@ size_t colapac_cantidad(colapac_t* colapac, const char* especialidad);
 // de no haber pacientes encolados para esa especialidad.
 paciente_t* colapac_desencolar(colapac_t* colapac, const char* especialidad);
 
-#endif // PAC__H
+#endif // PACUTIL__H
