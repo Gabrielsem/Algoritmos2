@@ -107,10 +107,26 @@ void destruir_arbol_aux(nodo_t* nodo, abb_destruir_dato_t destruir_dato) {
 	free(nodo);
 }
 
-bool abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), void *extra) {
+bool abb_in_order_rec(nodo_t* nodo, abb_visitar_t* visitar, void *extra) {
 	if(!nodo) return true;
 	return abb_in_order_rec(nodo->izq,visitar,extra) && visitar(nodo->clave,nodo->dato,extra)
 		&& abb_in_order_rec(nodo->der,visitar,extra);
+}
+
+void abb_in_order_rec_rng(nodo_t* nodo, abb_visitar_rng_t* visitar, void *extra, const char* ini, const char* fin) {
+	if(!nodo) return true;
+
+	int cmp_ini = ini ? strcmp(nodo->clave, ini) : 1;
+	int cmp_fin = fin ? strcmp(nodo->clave, fin) : -1;
+
+	if (cmp_ini > 0)
+		abb_in_order_rec_rng(nodo->izq, visitar, extra);
+
+	if(cmp_ini >= 0 && cmp_fin <= 0)
+		visitar(nodo->clave, nodo->dato, extra);
+
+	if (cmp_fin < 0)
+		abb_in_order_rec_rng(nodo->der, visitar, extra);
 }
 
 //apila el nodo recibido y todos sus hijos izq.
@@ -206,11 +222,18 @@ void abb_destruir(abb_t *arbol) {
  *					PRIMITIVAS ITERADOR INTERNO
  * *****************************************************************/
 
-void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra) {
+void abb_in_order(abb_t *arbol, abb_visitar_t* visitar, void *extra) {
 	if(!visitar)
 		return;
 	
 	abb_in_order_rec(arbol->raiz, visitar, extra);
+}
+
+void abb_in_order_rng(abb_t *arbol, abb_visitar_t* visitar, void *extra, const char* ini, const char* fin) {
+	if(!visitar)
+		return;
+
+	abb_in_order_rec_rng(arbol->raiz, visitar, extra, ini, fin);
 }
 
 /* ******************************************************************
