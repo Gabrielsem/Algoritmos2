@@ -19,10 +19,6 @@ void csv_crear_estructura(const char* ruta_csv, void* (*creador) (char**, void*)
 		return NULL;
 	}
 	
-	if (!extra) {
-		fclose(archivo);
-		return NULL;
-	}
 
 	char* linea = NULL;
 	size_t c = 0;
