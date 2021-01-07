@@ -12,14 +12,13 @@ static void eliminar_fin_linea(char* linea) {
 	}
 }
 
-lista_t* csv_crear_estructura(const char* ruta_csv, void* (*creador) (char**, void*), void* extra) {
+void csv_crear_estructura(const char* ruta_csv, void* (*creador) (char**, void*), void* extra) {
 	FILE* archivo = fopen(ruta_csv, "r");
 	if (!archivo) {
 		return NULL;
 	}
 	
-	lista_t* lista = lista_crear();
-	if (!lista) {
+	if (!extra) {
 		fclose(archivo);
 		return NULL;
 	}
@@ -29,11 +28,17 @@ lista_t* csv_crear_estructura(const char* ruta_csv, void* (*creador) (char**, vo
 	while (getline(&linea, &c, archivo) > 0) {
 		eliminar_fin_linea(linea);
 		char** campos = split(linea, SEPARADOR);
-		lista_insertar_ultimo(lista, creador(campos, extra));
+		creador(campos, extra);
 		free_strv(campos);
 	}
 	free(linea);
 	fclose(archivo);
-	return lista;
 }
 
+void creador_abb(char** parametros, void* abb) {
+	abb_guardar((abb_t*) abb, parametros[1], parametros[2]);
+}
+
+void creador_hash(char** parametros, void* hash) {
+	hash_guardar((hash_t*) hash, parametros[1],crear_paciente(parametros[1], atoi(parametros[2])));
+}

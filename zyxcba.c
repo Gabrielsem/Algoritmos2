@@ -50,6 +50,10 @@ void procesar_entrada() {
 
 
 int main(int argc, char** argv) {
+	abb_t* doctores = abb_crear(strcmp, free);
+	hash_t* pacientes = hash_crear(destruir_paciente);
+	csv_crear_estructura(argv[0], creador_abb, doctores);
+	csv_crear_estructura(argv[1], creador_hash, pacientes);
 	procesar_entrada();
 	return 0;
 }
