@@ -12,7 +12,7 @@ static void eliminar_fin_linea(char* linea) {
 	}
 }
 
-void csv_crear_estructura(const char* ruta_csv, void* (*creador) (char**, void*), void* extra) {
+void csv_crear_estructura(const char* ruta_csv, void (*creador) (char**, void*), void* extra) {
 	FILE* archivo = fopen(ruta_csv, "r");
 	if (!archivo) {
 		printf(ENOENT_ARCHIVO, ruta_csv);
