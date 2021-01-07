@@ -40,5 +40,5 @@ void creador_abb(char** parametros, void* abb) {
 }
 
 void creador_hash(char** parametros, void* hash) {
-	hash_guardar((hash_t*) hash, parametros[1],crear_paciente(parametros[1], atoi(parametros[2])));
+	hash_guardar((hash_t*) hash, parametros[1],atoi(parametros[2]));
 }
