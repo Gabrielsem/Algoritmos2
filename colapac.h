@@ -24,6 +24,7 @@ void colapac_destruir(colapac_t* colapac);
 // Encola un paciente con la especialidad y urgencia dada.
 // Devuelve false si falla (paciente no existe en diccionario o fallo de memoria),
 // o true si se logra encolar.
+// Pre: Paciente y especialidad existen
 bool colapac_encolar(colapac_t* colapac, char* paciente, const char* especialidad, bool urgente);
 
 // Devuelve la cantidad de pacientes en espera para esa especialidad.
