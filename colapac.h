@@ -12,7 +12,7 @@
 typedef struct colapac colapac_t;
 
 // Crea una cola de pacientes, devuelve NULL si falla.
-// Recibe un diccionario con las antiguedades de cada paciente (clave: nombre, dato: año (short int*))
+// Recibe un diccionario con las antiguedades de cada paciente (clave: nombre, dato: año (unsigned short*))
 // No modificar el diccionario tras crear una cola de pacientes
 // Se debe destruir con colapac_destruir()
 colapac_t* colapac_crear(hash_t* antiguedades);
