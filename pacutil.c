@@ -6,64 +6,19 @@
 #include <string.h>
 #define _POSIX_C_SOURCE 200809L
 
-/* ******************************************************************
- *                            TDA PACIENTE
- * *****************************************************************/
-
 /*
   -------------- DEFINICION DE LAS ESTRUCTURAS  -------------- 
 */
 
-struct paciente {
+typedef struct paciente {
 	char* nombre;
 	unsigned short anio_ant;
-};
-
-/*
-  -------------- PRIMITIVAS TDA  -------------- 
-*/
-
-paciente_t* crear_paciente(const char* nombre, unsigned short anio_ant) {
-	paciente_t* paciente = malloc(sizeof(paciente));
-	if (!paciente) return NULL;
-
-	paciente->nombre = strdup(nombre);
-	if (!paciente->nombre) {
-		free(paciente);
-		return NULL;
-	}
-
-	paciente->anio_ant = anio_ant;
-	return paciente;
-}
-
-const char* nombre_paciente(paciente_t* paciente) {
-	return paciente->nombre;
-}
-
-void destruir_paciente(void* paciente) {
-	paciente_t* pac = paciente;
-	free(pac->nombre);
-	free(pac);
-}
-
-int antiguedad_cmp(const paciente_t* paciente_1, const paciente_t* paciente_2) {
-	int anio_1 = paciente_1->anio_ant;
-	int anio_2 = paciente_2->anio_ant;
-	return anio_2 - anio_1;
-}
-
-/* ******************************************************************
- *                       TDA COLA DE PACIENTES
- * *****************************************************************/
-
-/*
-  -------------- DEFINICION DE LAS ESTRUCTURAS  -------------- 
-*/
+} paciente_t;
 
 // cola general (diccionario con colas para cada especialidad)
 struct colapac {
 	hash_t* esp;
+	hash_t* antig;
 };
 
 // cola de una especialidad
@@ -73,31 +28,40 @@ typedef struct colaesp {
 	size_t en_espera;
 } colaesp_t;
 
-
 /*
   -------------- FUNCIONES INTERNAS  -------------- 
 */
 
-// Wrapper de antiguedad_cmp() con void* para utilizarla en el TDA Heap
-int antig_cmp_wr(const void* paciente_1, const void* paciente_2) {
-	return antiguedad_cmp((const paciente_t*) paciente_1, (const paciente_t*) paciente_2);
+// Crea un paciente con el nombre y año de antiguedad dados
+// Devuelve NULL si falla
+paciente_t* crear_paciente(char* nombre, unsigned short anio_ant) {
+	paciente_t* paciente = malloc(sizeof(paciente));
+	if (!paciente) return NULL;
+
+	paciente->nombre = nombre;
+	paciente->anio_ant = anio_ant;
+	return paciente;
+}
+
+// Compara la antiguedad de dos pacientes. Devuelve:
+// 0 si es la misma antiguedad
+// > 0 si el paciente 1 tiene mas antiguedad que el paciente 2
+// < 0 si el paciente 1 tiene menos antiguedad que el paciente 2
+int antiguedad_cmp(const void* paciente_1, const void* paciente_2) {
+	int anio_1 = ((paciente_t*) paciente_1)->anio_ant;
+	int anio_2 = ((paciente_t*) paciente_2)->anio_ant;
+	return anio_2 - anio_1;
 }
 
 // Destruye una cola de una especialidad y todos sus pacientes
-void destruir_colaesp(colaesp_t* colaesp) {
-	cola_destruir(colaesp->urgentes, destruir_paciente);
-	heap_destruir(colaesp->regulares, destruir_paciente);
+void destruir_colaesp(void* colaesp) {
+	cola_destruir(((colaesp_t*) colaesp)->urgentes, NULL);
+	heap_destruir(((colaesp_t*) colaesp)->regulares, free);
 	free(colaesp);
 }
 
-// Wrapper de destruir_colaesp() para utilizarla en el TDA Hash
-void destr_colaesp_wr(void* colaesp) {
-	destruir_colaesp((colaesp_t*) colaesp);
-}
-
-/* Crea una cola para una especialidad y la devuelve. Si falla la creación,
- * devuelve NULL
- */
+// Crea una cola para una especialidad y la devuelve. Si falla la creación,
+// devuelve NULL
 colaesp_t* crear_colaesp() {
 	colaesp_t* colaesp = malloc(sizeof(colaesp_t));
 	if (!colaesp) return NULL;
@@ -108,7 +72,7 @@ colaesp_t* crear_colaesp() {
 		return NULL;
 	}
 
-	colaesp->regulares = heap_crear(antig_cmp_wr);
+	colaesp->regulares = heap_crear(antiguedad_cmp);
 	if (!colaesp->regulares) {
 		cola_destruir(colaesp->urgentes, NULL);
 		free(colaesp);
@@ -123,31 +87,38 @@ colaesp_t* crear_colaesp() {
   -------------- PRIMITIVAS TDA  -------------- 
 */
 
-colapac_t* colapac_crear(void) {
+colapac_t* colapac_crear(hash_t* antiguedades) {
 	colapac_t* colapac = malloc(sizeof(colapac_t));
 	if (!colapac) return NULL;
 
-	colapac->esp = hash_crear(destr_colaesp_wr);
+	colapac->esp = hash_crear(destruir_colaesp);
 	if (!colapac->esp) {
 		free(colapac);
 		return NULL;
 	}
 
+	colapac->antig = antiguedades;
 	return colapac;
 }
 
-bool colapac_encolar(colapac_t* colapac, paciente_t* paciente, const char* especialidad, bool urgente) {
-	colaesp_t* colaesp = NULL;
-	if (!hash_pertenece(colapac->esp, especialidad)) {
+bool colapac_encolar(colapac_t* colapac, char* nombre, const char* especialidad, bool urgente) {
+	unsigned short* anio = hash_obtener(colapac->antig, nombre);
+	if (!anio) return false;
+
+	colaesp_t* colaesp = hash_obtener(colapac->esp, especialidad);
+	if (!colaesp) {
 		colaesp = crear_colaesp();
 		if (!colaesp) return false;
-	} else {
-		colaesp = hash_obtener(colapac->esp, especialidad);
 	}
 
 	bool encolo = false;
-	encolo = (urgente && cola_encolar(colaesp->urgentes, paciente)) ||
-		(!urgente && heap_encolar(colaesp->regulares, paciente));
+	if (urgente) {
+		encolo = cola_encolar(colaesp->urgentes, nombre);
+	} else {
+		paciente_t* paciente = crear_paciente(nombre, *anio);
+		if (!paciente) return false;
+		encolo = heap_encolar(colaesp->regulares, paciente);
+	}
 
 	if (encolo) colaesp->en_espera++;
 	return encolo;
@@ -165,15 +136,19 @@ size_t colapac_cantidad(colapac_t* colapac, const char* especialidad) {
 	return colaesp->en_espera;
 }
 
-paciente_t* colapac_desencolar(colapac_t* colapac, const char* especialidad) {
+char* colapac_desencolar(colapac_t* colapac, const char* especialidad) {
 	colaesp_t* colaesp = hash_obtener(colapac->esp, especialidad);
 	if (!colaesp)
 		return NULL;
 
-	paciente_t* paciente = NULL;
-	if((paciente = cola_desencolar(colaesp->urgentes)) || (paciente = heap_desencolar(colaesp->regulares))){
-		colaesp->en_espera--;
+	char* nombre = cola_desencolar(colaesp->urgentes);
+	if(!nombre) {
+		paciente_t* paciente = heap_desencolar(colaesp->regulares);
+		if (!paciente) return NULL;
+		nombre = paciente->nombre;
+		free(paciente);
 	}
 
-	return paciente;
+	colaesp->en_espera--;
+	return nombre;
 }
