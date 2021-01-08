@@ -150,6 +150,11 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 	hash_t* especialidades = obtener_especialidades(doctores);
+	if (!especialidades) {
+		hash_destruir(pacientes);
+		abb_destruir(doctores);
+		return 1;
+	}
 	procesar_entrada();
 	return 0;
 }
