@@ -106,8 +106,13 @@ bool creador_hash(char** parametros, void* hash) {
 	return true;
 }
 
+void destruir_datos_doc(void* datos_doc) {
+	free(((datos_doctor_t*) datos_doc)->especialidad);
+	free(datos_doc);
+}
+
 abb_t* leer_doctores(char* ruta) {
-	abb_t* doctores = abb_crear(strcmp, free);
+	abb_t* doctores = abb_crear(strcmp, destruir_datos_doc);
 	if(!csv_crear_estructura(ruta, creador_abb, doctores)) {
 		abb_destruir(doctores);
 		return NULL;
