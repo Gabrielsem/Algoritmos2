@@ -102,7 +102,7 @@ bool creador_hash(char** parametros, void* hash) {
 	}
 	unsigned short* antiguedad = malloc(sizeof(unsigned short));
 	*antiguedad = (unsigned short) num_entrada;
-	hash_guardar((hash_t*) hash, parametros[0],antiguedad);
+	hash_guardar((hash_t*) hash, parametros[0], antiguedad);
 	return true;
 }
 
