@@ -134,7 +134,7 @@ hash_t* leer_pacientes(char* ruta) {
 	return pacientes;
 }
 
-bool visitar_doctores(char* nombre, void* especialidad,void* especialidades) {
+bool visitar_doctores(const char* nombre, void* especialidad,void* especialidades) {
 	if(hash_pertenece((const hash_t *)especialidades, (const char *)nombre)) return true;
 	hash_guardar((hash_t *)especialidades, (const char *)especialidad, NULL);
 	return true;
