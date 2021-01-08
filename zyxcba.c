@@ -24,19 +24,19 @@ size_t cant_params(const char** parametros) {
 }
 
 void procesar_comando(const char* comando, const char** parametros) {
-	size_t parametros = cant_params(parametros);
+	size_t cantidad = cant_params(parametros);
 	if (strcmp(comando, COMANDO_PEDIR_TURNO) == 0) {
-		if (parametros == PARAMS_PEDIR_TURNO)
+		if (cantidad == PARAMS_PEDIR_TURNO)
 			pedir_turno(parametros);
 		else
 			printf(ENOENT_PARAMS, comando);
 	} else if (strcmp(comando, COMANDO_ATENDER) == 0) {
-		if (parametros == PARAMS_ATENDER)
+		if (cantidad == PARAMS_ATENDER)
 			atender_siguiente(parametros);
 		else
 			printf(ENOENT_PARAMS, comando);
 	} else if (strcmp(comando, COMANDO_INFORME) == 0) {
-		if (parametros == PARAMS_INFORME)
+		if (cantidad == PARAMS_INFORME)
 			informe_doctores(parametros);
 		else
 			printf(ENOENT_PARAMS, comando);
@@ -101,18 +101,23 @@ bool creador_hash(char** parametros, void* hash) {
 	}
 	char* fin;
 	long int num_entrada = strtol(parametros[1], &fin, 10);
-	if(fin != '\0' || num_entrada > 0 || num_entrada <= USHRT_MAX){
+	if(*fin != '\0' || num_entrada <= 0 || num_entrada > USHRT_MAX){
 		printf(ENOENT_ANIO, parametros[1]);
 		return false;
 	}
 	unsigned short* antiguedad = malloc(sizeof(unsigned short));
 	*antiguedad = (unsigned short) num_entrada;
-	hash_guardar((hash_t*) hash, parametros[0],antiguedad);
+	hash_guardar((hash_t*) hash, parametros[0], antiguedad);
 	return true;
 }
 
+void destruir_datos_doc(void* datos_doc) {
+	free(((datos_doctor_t*) datos_doc)->especialidad);
+	free(datos_doc);
+}
+
 abb_t* leer_doctores(char* ruta) {
-	abb_t* doctores = abb_crear(strcmp, free);
+	abb_t* doctores = abb_crear(strcmp, destruir_datos_doc);
 	if(!csv_crear_estructura(ruta, creador_abb, doctores)) {
 		abb_destruir(doctores);
 		return NULL;
@@ -147,11 +152,19 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 	abb_t* doctores = leer_doctores(argv[1]);
+	if (!doctores)
+		return 1;
 	hash_t* pacientes = leer_pacientes(argv[2]);
-	if(!doctores || !pacientes){
+	if (!pacientes) {
+		abb_destruir(doctores);
 		return 1;
 	}
 	hash_t* especialidades = obtener_especialidades(doctores);
+	if (!especialidades) {
+		hash_destruir(pacientes);
+		abb_destruir(doctores);
+		return 1;
+	}
 	procesar_entrada();
 	return 0;
 }
