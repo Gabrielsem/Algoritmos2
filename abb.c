@@ -114,19 +114,19 @@ bool abb_in_order_rec(nodo_t* nodo, abb_visitar_t visitar, void *extra) {
 }
 
 void abb_in_order_rec_rng(nodo_t* nodo, abb_visitar_rng_t visitar, void *extra, const char* ini, const char* fin) {
-	if(!nodo) return true;
+	if(!nodo) return;
 
 	int cmp_ini = ini ? strcmp(nodo->clave, ini) : 1;
 	int cmp_fin = fin ? strcmp(nodo->clave, fin) : -1;
 
 	if (cmp_ini > 0)
-		abb_in_order_rec_rng(nodo->izq, visitar, extra);
+		abb_in_order_rec_rng(nodo->izq, visitar, extra, ini, fin);
 
 	if(cmp_ini >= 0 && cmp_fin <= 0)
 		visitar(nodo->clave, nodo->dato, extra);
 
 	if (cmp_fin < 0)
-		abb_in_order_rec_rng(nodo->der, visitar, extra);
+		abb_in_order_rec_rng(nodo->der, visitar, extra, ini, fin);
 }
 
 //apila el nodo recibido y todos sus hijos izq.
@@ -229,7 +229,7 @@ void abb_in_order(abb_t *arbol, abb_visitar_t visitar, void *extra) {
 	abb_in_order_rec(arbol->raiz, visitar, extra);
 }
 
-void abb_in_order_rng(abb_t *arbol, abb_visitar_t visitar, void *extra, const char* ini, const char* fin) {
+void abb_in_order_rng(abb_t *arbol, abb_visitar_rng_t visitar, void *extra, const char* ini, const char* fin) {
 	if(!visitar)
 		return;
 

@@ -23,21 +23,21 @@ size_t cant_params(const char** parametros) {
 	return cant;
 }
 
-void procesar_comando(const char* comando, const char** parametros) {
+void procesar_comando(const char* comando, const char** parametros, colapac_t* colapac, abb_t* doctores, hash_t* especialidades) {
 	size_t cantidad = cant_params(parametros);
 	if (strcmp(comando, COMANDO_PEDIR_TURNO) == 0) {
 		if (cantidad == PARAMS_PEDIR_TURNO)
-			pedir_turno(parametros);
+			pedir_turno(parametros, colapac, especialidades);
 		else
 			printf(ENOENT_PARAMS, comando);
 	} else if (strcmp(comando, COMANDO_ATENDER) == 0) {
 		if (cantidad == PARAMS_ATENDER)
-			atender_siguiente(parametros);
+			atender_siguiente(parametros, colapac, doctores);
 		else
 			printf(ENOENT_PARAMS, comando);
 	} else if (strcmp(comando, COMANDO_INFORME) == 0) {
 		if (cantidad == PARAMS_INFORME)
-			informe_doctores(parametros);
+			informe_doctores(parametros, doctores);
 		else
 			printf(ENOENT_PARAMS, comando);
 	} else {
@@ -52,9 +52,15 @@ void eliminar_fin_linea(char* linea) {
 	}
 }
 
-void procesar_entrada() {
+bool procesar_entrada(abb_t* doctores, hash_t* pacientes, hash_t* especialidades) {
 	char* linea = NULL;
 	size_t c = 0;
+	colapac_t* colapac = colapac_crear(pacientes);
+	if (!colapac) {
+		printf(ERR_MEM);
+		return false;
+	}
+
 	while (getline(&linea, &c, stdin) > 0) {
 		eliminar_fin_linea(linea);
 		char** campos = split(linea, ':');
@@ -64,15 +70,17 @@ void procesar_entrada() {
 			continue;	
 		}
 		char** parametros = split(campos[1], ',');
-		procesar_comando(campos[0], (const char**) parametros);
+		procesar_comando(campos[0], (const char**) parametros, colapac, doctores, especialidades);
 		free_strv(parametros);
 		free_strv(campos);
 	}
 	free(linea);
+	colapac_destruir(colapac);
+	return true;
 }
 
 bool creador_abb(char** parametros, void* abb) {
-	if(cant_params(parametros) != CANT_PARAMS_ARCHIVO) {
+	if(cant_params((const char**) parametros) != CANT_PARAMS_ARCHIVO) {
 		printf(ERR_PARAMS_ARCHIVO);
 		return false;
 	}
@@ -95,7 +103,7 @@ bool creador_abb(char** parametros, void* abb) {
 }
 
 bool creador_hash(char** parametros, void* hash) {
-	if(cant_params(parametros) != CANT_PARAMS_ARCHIVO) {
+	if(cant_params((const char**) parametros) != CANT_PARAMS_ARCHIVO) {
 		printf(ERR_PARAMS_ARCHIVO);
 		return false;
 	}
@@ -156,15 +164,25 @@ int main(int argc, char** argv) {
 		return 1;
 	hash_t* pacientes = leer_pacientes(argv[2]);
 	if (!pacientes) {
+		printf(ERR_MEM);
 		abb_destruir(doctores);
 		return 1;
 	}
 	hash_t* especialidades = obtener_especialidades(doctores);
 	if (!especialidades) {
+		printf(ERR_MEM);
 		hash_destruir(pacientes);
 		abb_destruir(doctores);
 		return 1;
 	}
-	procesar_entrada();
+	if (!procesar_entrada(doctores, pacientes, especialidades)) {
+		hash_destruir(pacientes);
+		abb_destruir(doctores);
+		hash_destruir(especialidades);
+		return 1;
+	}
+	hash_destruir(pacientes);
+	abb_destruir(doctores);
+	hash_destruir(especialidades);
 	return 0;
 }

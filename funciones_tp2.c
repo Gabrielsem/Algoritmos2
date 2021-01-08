@@ -2,6 +2,7 @@
 #include "mensajes.h"
 #include "csv.h"
 #include <string.h>
+#include <stdlib.h>
 #define _POSIX_C_SOURCE 200809L
 
 #define URGENCIA_URGENTE "URGENTE"
@@ -15,13 +16,13 @@ void pedir_turno(const char** parametros, colapac_t* colapac, hash_t* especialid
 		return;
 	}
 
-	if (!hash_pertenece(especialidades, parametros[1])) {
-		printf(ENOENT_ESPECIALIDAD, parametros[1]);
+	if(!colapac_existe(colapac, parametros[0])) {
+		printf(ENOENT_PACIENTE, parametros[0]);
 		return;
 	}
 
-	if(!colapac_existe(colapac, parametros[0])) {
-		printf(ENOENT_PACIENTE, parametros[0]);
+	if (!hash_pertenece(especialidades, parametros[1])) {
+		printf(ENOENT_ESPECIALIDAD, parametros[1]);
 		return;
 	}
 
@@ -42,14 +43,14 @@ void atender_siguiente(const char** parametros, colapac_t* colapac, abb_t* docto
 		return;
 	}
 
-	char* nombre = colapac_desencolar(colapac, especialidad);
+	char* nombre = colapac_desencolar(colapac, doctor->especialidad);
 	if (!nombre) {
 		printf(SIN_PACIENTES);
 		return;
 	}
 
 	printf(PACIENTE_ATENDIDO, nombre);
-	printf(CANT_PACIENTES_ENCOLADOS, colapac_cantidad(colapac, especialidad), especialidad);
+	printf(CANT_PACIENTES_ENCOLADOS, colapac_cantidad(colapac, doctor->especialidad), doctor->especialidad);
 	free(nombre);
 	doctor->pacientes_atendidos++;
 }
@@ -65,8 +66,8 @@ void imprimir_doctores(const char* clave, void* dato, void* indice) {
 }
 
 void informe_doctores(const char** parametros, abb_t* doctores) {
-	char* ini = parametros[0][0] == '\0' ? NULL : parametros[0];
-	char* fin = parametros[1][0] == '\0' ? NULL : parametros[1];
+	const char* ini = parametros[0][0] == '\0' ? NULL : parametros[0];
+	const char* fin = parametros[1][0] == '\0' ? NULL : parametros[1];
 
 	size_t cantidad_doctores = 0;
 	abb_in_order_rng(doctores, contar_abb, &cantidad_doctores, ini, fin);
