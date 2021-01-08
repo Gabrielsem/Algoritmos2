@@ -80,12 +80,13 @@ bool procesar_entrada(abb_t* doctores, hash_t* pacientes, hash_t* especialidades
 }
 
 bool creador_abb(char** parametros, void* abb) {
-	if(cant_params((const char**) parametros) != CANT_PARAMS_ARCHIVO) {
+	if (cant_params((const char**) parametros) != CANT_PARAMS_ARCHIVO) {
 		printf(ERR_PARAMS_ARCHIVO);
 		return false;
 	}
+
 	void* especialidad = strdup(parametros[1]);
-	if(!especialidad) {
+	if (!especialidad) {
 		printf(ERR_MEM);
 		return false;
 	}
@@ -93,7 +94,7 @@ bool creador_abb(char** parametros, void* abb) {
 	datos->especialidad = especialidad;
 	datos->pacientes_atendidos = 0;
 	bool guardo = abb_guardar((abb_t*) abb, parametros[0], datos);
-	if(!guardo) {
+	if (!guardo) {
 		free(especialidad);
 		free(datos);
 		printf(ERR_MEM);
@@ -103,13 +104,14 @@ bool creador_abb(char** parametros, void* abb) {
 }
 
 bool creador_hash(char** parametros, void* hash) {
-	if(cant_params((const char**) parametros) != CANT_PARAMS_ARCHIVO) {
+	if (cant_params((const char**) parametros) != CANT_PARAMS_ARCHIVO) {
 		printf(ERR_PARAMS_ARCHIVO);
 		return false;
 	}
+
 	char* fin;
 	long int num_entrada = strtol(parametros[1], &fin, 10);
-	if(*fin != '\0' || num_entrada <= 0 || num_entrada > USHRT_MAX){
+	if (*fin != '\0' || num_entrada <= 0 || num_entrada > USHRT_MAX){
 		printf(ENOENT_ANIO, parametros[1]);
 		return false;
 	}
@@ -126,7 +128,12 @@ void destruir_datos_doc(void* datos_doc) {
 
 abb_t* leer_doctores(char* ruta) {
 	abb_t* doctores = abb_crear(strcmp, destruir_datos_doc);
-	if(!csv_crear_estructura(ruta, creador_abb, doctores)) {
+	if (!doctores) {
+		printf(ERR_MEM);
+		return NULL;
+	}
+	
+	if (!csv_crear_estructura(ruta, creador_abb, doctores)) {
 		abb_destruir(doctores);
 		return NULL;
 	}
@@ -135,7 +142,12 @@ abb_t* leer_doctores(char* ruta) {
 
 hash_t* leer_pacientes(char* ruta) {
 	hash_t* pacientes = hash_crear(free);
-	if(!csv_crear_estructura(ruta, creador_hash, pacientes)) {
+	if (!pacientes) {
+		printf(ERR_MEM);
+		return NULL;
+	}
+
+	if (!csv_crear_estructura(ruta, creador_hash, pacientes)) {
 		hash_destruir(pacientes);
 		return NULL;
 	}
@@ -150,37 +162,52 @@ bool visitar_doctores(const char* nombre, void* datos_doc, void* especialidades)
 
 hash_t* obtener_especialidades(abb_t* doctores) {
 	hash_t* especialidades = hash_crear(NULL);
+	if (!especialidades) {
+		printf(ERR_MEM);
+		return NULL;
+	}
+
 	abb_in_order(doctores, visitar_doctores, especialidades);
 	return especialidades;
 }
 
+bool cargar_datos(abb_t** doctores, hash_t** pacientes, hash_t** especialidades, char* ruta_docs, char* ruta_pacs) {
+	*doctores = leer_doctores(ruta_docs);
+	if (!*doctores){
+		return false;
+	}
+	*pacientes = leer_pacientes(ruta_pacs);
+	if (!*pacientes) {
+		abb_destruir(*doctores);
+		return false;
+	}
+	*especialidades = obtener_especialidades(*doctores);
+	if (!*especialidades) {
+		hash_destruir(*pacientes);
+		abb_destruir(*doctores);
+		return false;
+	}
+	return true;
+}
+
 int main(int argc, char** argv) {
-	if(argc != 3) {
+	if (argc != 3) {
 		printf(ENOENT_CANT_PARAMS);
 		return 0;
 	}
-	abb_t* doctores = leer_doctores(argv[1]);
-	if (!doctores)
+
+	abb_t* doctores;
+	hash_t *pacientes, *especialidades;
+	if (!cargar_datos(&doctores, &pacientes, &especialidades, argv[1], argv[2]))
 		return 1;
-	hash_t* pacientes = leer_pacientes(argv[2]);
-	if (!pacientes) {
-		printf(ERR_MEM);
-		abb_destruir(doctores);
-		return 1;
-	}
-	hash_t* especialidades = obtener_especialidades(doctores);
-	if (!especialidades) {
-		printf(ERR_MEM);
-		hash_destruir(pacientes);
-		abb_destruir(doctores);
-		return 1;
-	}
+
 	if (!procesar_entrada(doctores, pacientes, especialidades)) {
 		hash_destruir(pacientes);
 		abb_destruir(doctores);
 		hash_destruir(especialidades);
 		return 1;
 	}
+
 	hash_destruir(pacientes);
 	abb_destruir(doctores);
 	hash_destruir(especialidades);
