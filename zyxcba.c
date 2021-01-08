@@ -96,7 +96,7 @@ bool creador_abb(char** parametros, void* abb) {
 bool creador_hash(char** parametros, void* hash) {
 	char* fin;
 	long int num_entrada = strtol(parametros[1], &fin, 10);
-	if(fin != '\0' || num_entrada > 0 || num_entrada <= USHRT_MAX){
+	if(*fin != '\0' || num_entrada <= 0 || num_entrada > USHRT_MAX){
 		printf(ENOENT_ANIO, parametros[1]);
 		return false;
 	}
