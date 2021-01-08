@@ -11,6 +11,7 @@
 #define COMANDO_PEDIR_TURNO "PEDIR_TURNO"
 #define COMANDO_ATENDER "ATENDER_SIGUIENTE"
 #define COMANDO_INFORME "INFORME"
+#define CANT_PARAMS_ARCHIVO 2
 
 // Devuelve la cantidad de parámetros en el arreglo
 size_t cant_params(const char** parametros) {
@@ -71,7 +72,7 @@ void procesar_entrada() {
 }
 
 bool creador_abb(char** parametros, void* abb) {
-	if(cant_params(parametros) != 2) {
+	if(cant_params(parametros) != CANT_PARAMS_ARCHIVO) {
 		printf(ERR_PARAMS_ARCHIVO);
 		return false;
 	}
@@ -94,6 +95,10 @@ bool creador_abb(char** parametros, void* abb) {
 }
 
 bool creador_hash(char** parametros, void* hash) {
+	if(cant_params(parametros) != CANT_PARAMS_ARCHIVO) {
+		printf(ERR_PARAMS_ARCHIVO);
+		return false;
+	}
 	char* fin;
 	long int num_entrada = strtol(parametros[1], &fin, 10);
 	if(fin != '\0' || num_entrada > 0 || num_entrada <= USHRT_MAX){
