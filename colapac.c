@@ -53,10 +53,16 @@ int antiguedad_cmp(const void* paciente_1, const void* paciente_2) {
 	return anio_2 - anio_1;
 }
 
+// Destruye un paciente, liberando también el nombre almacenado
+void destruir_paciente(void* paciente) {
+	free(((paciente_t*) paciente)->nombre);
+	free(paciente);
+}
+
 // Destruye una cola de una especialidad y todos sus pacientes
 void destruir_colaesp(void* colaesp) {
-	cola_destruir(((colaesp_t*) colaesp)->urgentes, NULL);
-	heap_destruir(((colaesp_t*) colaesp)->regulares, free);
+	cola_destruir(((colaesp_t*) colaesp)->urgentes, free);
+	heap_destruir(((colaesp_t*) colaesp)->regulares, destruir_paciente);
 	free(colaesp);
 }
 
@@ -99,6 +105,10 @@ colapac_t* colapac_crear(hash_t* antiguedades) {
 
 	colapac->antig = antiguedades;
 	return colapac;
+}
+
+bool colapac_existe(colapac_t* colapac, const char* paciente) {
+	return hash_pertenece(colapac->antig, paciente);
 }
 
 bool colapac_encolar(colapac_t* colapac, char* nombre, const char* especialidad, bool urgente) {

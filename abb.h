@@ -70,14 +70,14 @@ void abb_destruir(abb_t *arbol);
 /* Recorre los elementos del ABB in-order, aplicándoles la función
  * visitar. Si esta devuelve falso, se deja de recorrer el ABB.
  */
-void abb_in_order(abb_t *arbol, abb_visitar_t* visitar, void *extra);
+void abb_in_order(abb_t *arbol, abb_visitar_t visitar, void *extra);
 
 /* Recorre los elementos del ABB in-order en un rango, aplicándoles la función
  * visitar. Comienza a recorrer a partir de la clave ini hasta la clave fin.
  * Si ini es NULL, recorre desde el inicio.
  * Si fin es NULL, recorre hasta el final.
  */
-void abb_in_order_rng(abb_t *arbol, abb_visitar_rng_t* visitar, void *extra, const char* ini, const char* fin);
+void abb_in_order_rng(abb_t *arbol, abb_visitar_rng_t visitar, void *extra, const char* ini, const char* fin);
 
 
 /* ******************************************************************
