@@ -35,7 +35,7 @@ typedef struct colaesp {
 // Crea un paciente con el nombre y año de antiguedad dados
 // Devuelve NULL si falla
 paciente_t* crear_paciente(char* nombre, unsigned short anio_ant) {
-	paciente_t* paciente = malloc(sizeof(paciente));
+	paciente_t* paciente = malloc(sizeof(paciente_t));
 	if (!paciente) return NULL;
 
 	paciente->nombre = nombre;
@@ -118,7 +118,7 @@ bool colapac_encolar(colapac_t* colapac, char* nombre, const char* especialidad,
 	colaesp_t* colaesp = hash_obtener(colapac->esp, especialidad);
 	if (!colaesp) {
 		colaesp = crear_colaesp();
-		if (!colaesp) return false;
+		if (!colaesp || !hash_guardar(colapac->esp, especialidad, colaesp)) return false;
 	}
 
 	bool encolo = false;
@@ -141,8 +141,9 @@ void colapac_destruir(colapac_t* colapac) {
 
 size_t colapac_cantidad(colapac_t* colapac, const char* especialidad) {
 	colaesp_t* colaesp = hash_obtener(colapac->esp, especialidad);
-	if (!colaesp) 
+	if (!colaesp) {
 		return 0;
+	}
 	return colaesp->en_espera;
 }
 

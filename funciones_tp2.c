@@ -9,7 +9,7 @@
 #define URGENCIA_REGULAR "REGULAR"
 
 void pedir_turno(const char** parametros, colapac_t* colapac, hash_t* especialidades) {
-	bool urgente = strcmp(parametros[1], URGENCIA_URGENTE) == 0;
+	bool urgente = strcmp(parametros[2], URGENCIA_URGENTE) == 0;
 	bool regular = strcmp(parametros[2], URGENCIA_REGULAR) == 0;
 	if (!urgente && !regular) {
 		printf(ENOENT_URGENCIA, parametros[2]);
