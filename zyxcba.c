@@ -142,8 +142,11 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 	abb_t* doctores = leer_doctores(argv[1]);
+	if (!doctores)
+		return 1;
 	hash_t* pacientes = leer_pacientes(argv[2]);
-	if(!doctores || !pacientes){
+	if (!pacientes) {
+		abb_destruir(doctores);
 		return 1;
 	}
 	hash_t* especialidades = obtener_especialidades(doctores);
