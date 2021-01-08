@@ -1,8 +1,8 @@
 #ifndef __CSV__H_
 #define __CSV__H_
 
-#include "lista.h"
-#include "strutil.h"
+#include "dependencias/lista.h"
+#include "dependencias/strutil.h"
 
 /**
 Haciendo uso de strutil (split) lee un archivo csv y, línea a línea,

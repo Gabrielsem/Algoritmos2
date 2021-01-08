@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include "funciones_tp2.h"
-#include "strutil.h"
+#include "dependencias/strutil.h"
 #include "mensajes.h"
 #include "csv.h"
 #define _POSIX_C_SOURCE 200809L

@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "hash.h"
+#include "dependencias/hash.h"
 
 /* ******************************************************************
  *                    TDA COLA DE PACIENTES

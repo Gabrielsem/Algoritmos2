@@ -1,8 +1,8 @@
 #ifndef FUNCTP2__H
 #define FUNCTP2__H
 #include "colapac.h"
-#include "hash.h"
-#include "abb.h"
+#include "dependencias/hash.h"
+#include "dependencias/abb.h"
 
 #define PARAMS_PEDIR_TURNO 3
 #define PARAMS_ATENDER 1

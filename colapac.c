@@ -1,7 +1,7 @@
 #include "colapac.h"
-#include "heap.h"
-#include "cola.h"
-#include "hash.h"
+#include "dependencias/heap.h"
+#include "dependencias/cola.h"
+#include "dependencias/hash.h"
 #include <stdlib.h>
 #include <string.h>
 #define _POSIX_C_SOURCE 200809L
