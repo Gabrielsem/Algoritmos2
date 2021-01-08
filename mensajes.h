@@ -24,4 +24,5 @@
 
 #define ENOENT_PARAMS "ERROR: cantidad de parametros invalidos para comando '%s'\n"
 
+#define ERR_PARAMS_ARCHIVO "ERROR: insuficiente cantidad de argumentos dentro de un archivo\n"
 #endif

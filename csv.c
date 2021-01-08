@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "csv.h"
+#include "mensajes.h"
 #define SEPARADOR ','
 
 static void eliminar_fin_linea(char* linea) {
@@ -12,30 +13,27 @@ static void eliminar_fin_linea(char* linea) {
 	}
 }
 
-void csv_crear_estructura(const char* ruta_csv, void (*creador) (char**, void*), void* extra) {
+bool csv_crear_estructura(const char* ruta_csv, bool (*creador) (char**, void*), void* extra) {
 	FILE* archivo = fopen(ruta_csv, "r");
 	if (!archivo) {
 		printf(ENOENT_ARCHIVO, ruta_csv);
-		return NULL;
+		return false;
 	}
 	
-
 	char* linea = NULL;
 	size_t c = 0;
 	while (getline(&linea, &c, archivo) > 0) {
 		eliminar_fin_linea(linea);
 		char** campos = split(linea, SEPARADOR);
-		creador(campos, extra);
+		if(!creador(campos, extra)){
+			free_strv(campos);
+			free(linea);
+			fclose(archivo);
+			return false;
+		}
 		free_strv(campos);
 	}
 	free(linea);
 	fclose(archivo);
-}
-
-void creador_abb(char** parametros, void* abb) {
-	abb_guardar((abb_t*) abb, parametros[1], parametros[2]);
-}
-
-void creador_hash(char** parametros, void* hash) {
-	hash_guardar((hash_t*) hash, parametros[1],atoi(parametros[2]));
+	return true;
 }
