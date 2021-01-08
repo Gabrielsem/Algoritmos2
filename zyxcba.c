@@ -23,19 +23,19 @@ size_t cant_params(const char** parametros) {
 }
 
 void procesar_comando(const char* comando, const char** parametros) {
-	size_t parametros = cant_params(parametros);
+	size_t cantidad = cant_params(parametros);
 	if (strcmp(comando, COMANDO_PEDIR_TURNO) == 0) {
-		if (parametros == PARAMS_PEDIR_TURNO)
+		if (cantidad == PARAMS_PEDIR_TURNO)
 			pedir_turno(parametros);
 		else
 			printf(ENOENT_PARAMS, comando);
 	} else if (strcmp(comando, COMANDO_ATENDER) == 0) {
-		if (parametros == PARAMS_ATENDER)
+		if (cantidad == PARAMS_ATENDER)
 			atender_siguiente(parametros);
 		else
 			printf(ENOENT_PARAMS, comando);
 	} else if (strcmp(comando, COMANDO_INFORME) == 0) {
-		if (parametros == PARAMS_INFORME)
+		if (cantidad == PARAMS_INFORME)
 			informe_doctores(parametros);
 		else
 			printf(ENOENT_PARAMS, comando);
