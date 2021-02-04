@@ -1,8 +1,12 @@
-#ifndef __CSV__H_
-#define __CSV__H_
+#ifndef __LECTURA_ARCHIVOS__H_
+#define __LECTURA_ARCHIVOS__H_
 
 #include "dependencias/lista.h"
 #include "dependencias/strutil.h"
+#include "dependencias/abb.h"
+#include "dependencias/hash.h"
+
+bool cargar_datos(abb_t** doctores, hash_t** pacientes, hash_t** especialidades, char* ruta_docs, char* ruta_pacs);
 
 /**
 Haciendo uso de strutil (split) lee un archivo csv y, línea a línea,
