@@ -17,8 +17,8 @@ typedef struct paciente {
 
 // cola general (diccionario con colas para cada especialidad)
 struct colapac {
-	hash_t* esp;
-	hash_t* antig;
+	hash_t* colas;
+	hash_t* antiguedad;
 };
 
 // cola de una especialidad
@@ -97,28 +97,28 @@ colapac_t* colapac_crear(hash_t* antiguedades) {
 	colapac_t* colapac = malloc(sizeof(colapac_t));
 	if (!colapac) return NULL;
 
-	colapac->esp = hash_crear(destruir_colaesp);
-	if (!colapac->esp) {
+	colapac->colas = hash_crear(destruir_colaesp);
+	if (!colapac->colas) {
 		free(colapac);
 		return NULL;
 	}
 
-	colapac->antig = antiguedades;
+	colapac->antiguedad = antiguedades;
 	return colapac;
 }
 
-bool colapac_existe(colapac_t* colapac, const char* paciente) {
-	return hash_pertenece(colapac->antig, paciente);
+bool colapac_existe_pac(colapac_t* colapac, const char* paciente) {
+	return hash_pertenece(colapac->antiguedad, paciente);
 }
 
 bool colapac_encolar(colapac_t* colapac, char* nombre, const char* especialidad, bool urgente) {
-	unsigned short* anio = hash_obtener(colapac->antig, nombre);
+	unsigned short* anio = hash_obtener(colapac->antiguedad, nombre);
 	if (!anio) return false;
 
-	colaesp_t* colaesp = hash_obtener(colapac->esp, especialidad);
+	colaesp_t* colaesp = hash_obtener(colapac->colas, especialidad);
 	if (!colaesp) {
 		colaesp = crear_colaesp();
-		if (!colaesp || !hash_guardar(colapac->esp, especialidad, colaesp)) return false;
+		if (!colaesp || !hash_guardar(colapac->colas, especialidad, colaesp)) return false;
 	}
 
 	bool encolo = false;
@@ -135,12 +135,12 @@ bool colapac_encolar(colapac_t* colapac, char* nombre, const char* especialidad,
 }
 
 void colapac_destruir(colapac_t* colapac) {
-	hash_destruir(colapac->esp);
+	hash_destruir(colapac->colas);
 	free(colapac);
 }
 
 size_t colapac_cantidad(colapac_t* colapac, const char* especialidad) {
-	colaesp_t* colaesp = hash_obtener(colapac->esp, especialidad);
+	colaesp_t* colaesp = hash_obtener(colapac->colas, especialidad);
 	if (!colaesp) {
 		return 0;
 	}
@@ -148,7 +148,7 @@ size_t colapac_cantidad(colapac_t* colapac, const char* especialidad) {
 }
 
 char* colapac_desencolar(colapac_t* colapac, const char* especialidad) {
-	colaesp_t* colaesp = hash_obtener(colapac->esp, especialidad);
+	colaesp_t* colaesp = hash_obtener(colapac->colas, especialidad);
 	if (!colaesp)
 		return NULL;
 

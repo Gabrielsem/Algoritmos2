@@ -15,7 +15,7 @@ void pedir_turno(const char** parametros, colapac_t* colapac, hash_t* especialid
 		return;
 	}
 
-	if(!colapac_existe(colapac, parametros[0])) {
+	if(!colapac_existe_pac(colapac, parametros[0])) {
 		printf(ENOENT_PACIENTE, parametros[0]);
 		return;
 	}

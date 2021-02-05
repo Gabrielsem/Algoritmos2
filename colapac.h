@@ -18,10 +18,10 @@ typedef struct colapac colapac_t;
 colapac_t* colapac_crear(hash_t* antiguedades);
 
 // Devuelve si el paciente existe (esta en el diccionario de antiguedades)
-bool colapac_existe(colapac_t* colapac, const char* paciente);
+bool colapac_existe_pac(colapac_t* colapac, const char* paciente);
 
 // Destruye una cola de pacientes
-// No destruye el diccionario.
+// No destruye el diccionario recibido en colapac_crear().
 // Cualquier paciente que quede encolado al destruir se libera con free()
 void colapac_destruir(colapac_t* colapac);
 
