@@ -19,7 +19,7 @@ static void eliminar_fin_linea(char* linea) {
 }
 
 // Devuelve la cantidad de parámetros en el arreglo
-static size_t cant_params(const char** parametros) {
+static size_t cant_params(const char** parametros) {	
 	size_t cant = 0;
 	while (*parametros) {
 		cant++;
@@ -28,16 +28,16 @@ static size_t cant_params(const char** parametros) {
 	return cant;
 }
 
-void procesar_comando(const char* comando, const char** parametros, colapac_t* colapac, abb_t* doctores, hash_t* especialidades) {
+void procesar_comando(const char* comando, const char** parametros, clinica_t* clinica, abb_t* doctores, hash_t* especialidades) {
 	size_t cantidad = cant_params(parametros);
 	if (strcmp(comando, COMANDO_PEDIR_TURNO) == 0) {
 		if (cantidad == PARAMS_PEDIR_TURNO)
-			pedir_turno(parametros, colapac, especialidades);
+			pedir_turno(parametros, clinica, especialidades);
 		else
 			printf(ENOENT_PARAMS, comando);
 	} else if (strcmp(comando, COMANDO_ATENDER) == 0) {
 		if (cantidad == PARAMS_ATENDER)
-			atender_siguiente(parametros, colapac, doctores);
+			atender_siguiente(parametros, clinica, doctores);
 		else
 			printf(ENOENT_PARAMS, comando);
 	} else if (strcmp(comando, COMANDO_INFORME) == 0) {
@@ -53,8 +53,8 @@ void procesar_comando(const char* comando, const char** parametros, colapac_t* c
 bool procesar_entrada(abb_t* doctores, hash_t* pacientes, hash_t* especialidades) {
 	char* linea = NULL;
 	size_t c = 0;
-	colapac_t* colapac = colapac_crear(pacientes);
-	if (!colapac) {
+	clinica_t* clinica = clinica_crear(pacientes);
+	if (!clinica) {
 		printf(ERR_MEM);
 		return false;
 	}
@@ -68,12 +68,12 @@ bool procesar_entrada(abb_t* doctores, hash_t* pacientes, hash_t* especialidades
 			continue;	
 		}
 		char** parametros = split(campos[1], ',');
-		procesar_comando(campos[0], (const char**) parametros, colapac, doctores, especialidades);
+		procesar_comando(campos[0], (const char**) parametros, clinica, doctores, especialidades);
 		free_strv(parametros);
 		free_strv(campos);
 	}
 	free(linea);
-	colapac_destruir(colapac);
+	clinica_destruir(clinica);
 	return true;
 }
 

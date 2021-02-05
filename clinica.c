@@ -1,4 +1,4 @@
-#include "colapac.h"
+#include "clinica.h"
 #include "dependencias/heap.h"
 #include "dependencias/cola.h"
 #include "dependencias/hash.h"
@@ -16,7 +16,7 @@ typedef struct paciente {
 } paciente_t;
 
 // cola general (diccionario con colas para cada especialidad)
-struct colapac {
+struct clinica {
 	hash_t* colas;
 	hash_t* antiguedad;
 };
@@ -93,32 +93,32 @@ colaesp_t* crear_colaesp() {
   -------------- PRIMITIVAS TDA  -------------- 
 */
 
-colapac_t* colapac_crear(hash_t* antiguedades) {
-	colapac_t* colapac = malloc(sizeof(colapac_t));
-	if (!colapac) return NULL;
+clinica_t* clinica_crear(hash_t* antiguedades) {
+	clinica_t* clinica = malloc(sizeof(clinica_t));
+	if (!clinica) return NULL;
 
-	colapac->colas = hash_crear(destruir_colaesp);
-	if (!colapac->colas) {
-		free(colapac);
+	clinica->colas = hash_crear(destruir_colaesp);
+	if (!clinica->colas) {
+		free(clinica);
 		return NULL;
 	}
 
-	colapac->antiguedad = antiguedades;
-	return colapac;
+	clinica->antiguedad = antiguedades;
+	return clinica;
 }
 
-bool colapac_existe_pac(colapac_t* colapac, const char* paciente) {
-	return hash_pertenece(colapac->antiguedad, paciente);
+bool clinica_existe_pac(clinica_t* clinica, const char* paciente) {
+	return hash_pertenece(clinica->antiguedad, paciente);
 }
 
-bool colapac_encolar(colapac_t* colapac, char* nombre, const char* especialidad, bool urgente) {
-	unsigned short* anio = hash_obtener(colapac->antiguedad, nombre);
+bool clinica_encolar(clinica_t* clinica, char* nombre, const char* especialidad, bool urgente) {
+	unsigned short* anio = hash_obtener(clinica->antiguedad, nombre);
 	if (!anio) return false;
 
-	colaesp_t* colaesp = hash_obtener(colapac->colas, especialidad);
+	colaesp_t* colaesp = hash_obtener(clinica->colas, especialidad);
 	if (!colaesp) {
 		colaesp = crear_colaesp();
-		if (!colaesp || !hash_guardar(colapac->colas, especialidad, colaesp)) return false;
+		if (!colaesp || !hash_guardar(clinica->colas, especialidad, colaesp)) return false;
 	}
 
 	bool encolo = false;
@@ -134,21 +134,21 @@ bool colapac_encolar(colapac_t* colapac, char* nombre, const char* especialidad,
 	return encolo;
 }
 
-void colapac_destruir(colapac_t* colapac) {
-	hash_destruir(colapac->colas);
-	free(colapac);
+void clinica_destruir(clinica_t* clinica) {
+	hash_destruir(clinica->colas);
+	free(clinica);
 }
 
-size_t colapac_cantidad(colapac_t* colapac, const char* especialidad) {
-	colaesp_t* colaesp = hash_obtener(colapac->colas, especialidad);
+size_t clinica_cantidad(clinica_t* clinica, const char* especialidad) {
+	colaesp_t* colaesp = hash_obtener(clinica->colas, especialidad);
 	if (!colaesp) {
 		return 0;
 	}
 	return colaesp->en_espera;
 }
 
-char* colapac_desencolar(colapac_t* colapac, const char* especialidad) {
-	colaesp_t* colaesp = hash_obtener(colapac->colas, especialidad);
+char* clinica_desencolar(clinica_t* clinica, const char* especialidad) {
+	colaesp_t* colaesp = hash_obtener(clinica->colas, especialidad);
 	if (!colaesp)
 		return NULL;
 

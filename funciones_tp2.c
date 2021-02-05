@@ -7,7 +7,7 @@
 #define URGENCIA_URGENTE "URGENTE"
 #define URGENCIA_REGULAR "REGULAR"
 
-void pedir_turno(const char** parametros, colapac_t* colapac, hash_t* especialidades) {
+void pedir_turno(const char** parametros, clinica_t* clinica, hash_t* especialidades) {
 	bool urgente = strcmp(parametros[2], URGENCIA_URGENTE) == 0;
 	bool regular = strcmp(parametros[2], URGENCIA_REGULAR) == 0;
 	if (!urgente && !regular) {
@@ -15,7 +15,7 @@ void pedir_turno(const char** parametros, colapac_t* colapac, hash_t* especialid
 		return;
 	}
 
-	if(!colapac_existe_pac(colapac, parametros[0])) {
+	if(!clinica_existe_pac(clinica, parametros[0])) {
 		printf(ENOENT_PACIENTE, parametros[0]);
 		return;
 	}
@@ -26,30 +26,30 @@ void pedir_turno(const char** parametros, colapac_t* colapac, hash_t* especialid
 	}
 
 	char* nombre = strdup(parametros[0]);
-	if (!nombre || !colapac_encolar(colapac, nombre, parametros[1], urgente)) {
+	if (!nombre || !clinica_encolar(clinica, nombre, parametros[1], urgente)) {
 		printf(ERR_MEM);
 		return;
 	}
  
 	printf(PACIENTE_ENCOLADO, parametros[0]);
-	printf(CANT_PACIENTES_ENCOLADOS, colapac_cantidad(colapac, parametros[1]), parametros[1]);
+	printf(CANT_PACIENTES_ENCOLADOS, clinica_cantidad(clinica, parametros[1]), parametros[1]);
 }
 
-void atender_siguiente(const char** parametros, colapac_t* colapac, abb_t* doctores) {
+void atender_siguiente(const char** parametros, clinica_t* clinica, abb_t* doctores) {
 	datos_doctor_t* doctor = abb_obtener(doctores, parametros[0]);
 	if (!doctor) {
 		printf(ENOENT_DOCTOR, parametros[0]);
 		return;
 	}
 
-	char* nombre = colapac_desencolar(colapac, doctor->especialidad);
+	char* nombre = clinica_desencolar(clinica, doctor->especialidad);
 	if (!nombre) {
 		printf(SIN_PACIENTES);
 		return;
 	}
 
 	printf(PACIENTE_ATENDIDO, nombre);
-	printf(CANT_PACIENTES_ENCOLADOS, colapac_cantidad(colapac, doctor->especialidad), doctor->especialidad);
+	printf(CANT_PACIENTES_ENCOLADOS, clinica_cantidad(clinica, doctor->especialidad), doctor->especialidad);
 	free(nombre);
 	doctor->pacientes_atendidos++;
 }

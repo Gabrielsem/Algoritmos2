@@ -18,7 +18,7 @@ static void eliminar_fin_linea(char* linea) {
 }
 
 // Devuelve la cantidad de parámetros en el arreglo
-size_t cant_params(const char** parametros) {
+static size_t cant_params(const char** parametros) {
 	size_t cant = 0;
 	while (*parametros) {
 		cant++;
