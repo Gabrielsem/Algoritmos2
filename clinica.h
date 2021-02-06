@@ -27,12 +27,15 @@ bool clinica_existe_esp(clinica_t* clinica, const char* especialidad);
 bool clinica_existe_doc(clinica_t* clinica, const char* doctor);
 
 // Agrega un paciente a los registros de la clinica.
+// Devuelve verdadero si se logró, sino falso.
 bool clinica_agregar_pac(clinica_t* clinica, const char* nombre, unsigned short anio_antig);
 
 // Agrega un doctor a los registros de la clinica.
+// Devuelve verdadero si se logró, sino falso.
 bool clinica_agregar_doc(clinica_t* clinica, const char* nombre, const char* especialidad);
 
 // Devuelve la cantidad de pacientes en espera para esa especialidad.
+// Devuelve 0 si la especialidad no existe.
 size_t clinica_cantidad_pac(clinica_t* clinica, const char* especialidad);
 
 // Devuelve la especialidad de un doctor o NULL si este no existe.
@@ -53,9 +56,8 @@ void clinica_destruir(clinica_t* clinica);
 // Si se destruye la clínica, se hace free() al nombre del paciente.
 bool clinica_encolar(clinica_t* clinica, char* paciente, const char* especialidad, bool urgente);
 
-
-// Desencola un paciente de la especialidad dada. Devuelve el nombre del paciente o NULL en caso
-// de no haber pacientes encolados para esa especialidad o que no exista la especialidad.
-char* clinica_desencolar(clinica_t* clinica, const char* especialidad);
+// Desencola un paciente de la especialidad del doctor dado. Devuelve el nombre del paciente o NULL en caso
+// de no haber pacientes encolados para esa especialidad o que no exista el doctor.
+char* clinica_desencolar(clinica_t* clinica, const char* doctor);
 
 #endif // CLINICA__H

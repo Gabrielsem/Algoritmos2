@@ -257,7 +257,7 @@ size_t clinica_cantidad_pac(clinica_t* clinica, const char* especialidad) {
 
 char* clinica_desencolar(clinica_t* clinica, const char* doctor) {
 	datos_doctor_t* datos = abb_obtener(clinica->doctores, doctor);
-	if (!datos) return false;
+	if (!datos) return NULL;
 
 	colaesp_t* colaesp = hash_obtener(clinica->colas, datos->especialidad);
 	if (!colaesp) return NULL;
