@@ -1,8 +1,6 @@
 #ifndef FUNCTP2__H
 #define FUNCTP2__H
 #include "clinica.h"
-#include "dependencias/hash.h"
-#include "dependencias/abb.h"
 
 #define PARAMS_PEDIR_TURNO 3
 #define PARAMS_ATENDER 1
@@ -13,13 +11,15 @@ typedef struct doctor {
 	size_t pacientes_atendidos;
 } datos_doctor_t;
 
+// Funciones para cada comando de pedir turno, con mensajes de error.
+
 // Pre: Debe haber PARAMS_PEDIR_TURNO parámetros.
-void pedir_turno(const char** parametros, clinica_t* clinica, hash_t* especialidades);
+void pedir_turno(const char** parametros, clinica_t* clinica);
 
-// Pre: Debe haber PARAMS_ATENDER parámetros. El árbol de doctores es de datos_doctor_t*
-void atender_siguiente(const char** parametros, clinica_t* clinica, abb_t* doctores);
+// Pre: Debe haber PARAMS_ATENDER parámetros.
+void atender_siguiente(const char** parametros, clinica_t* clinica);
 
-// Pre: Debe haber PARAMS_INFORME parámetros. El árbol de doctores es de datos_doctor_t*
-void informe_doctores(const char** parametros, abb_t* doctores);
+// Pre: Debe haber PARAMS_INFORME parámetros.
+void informe_doctores(const char** parametros, clinica_t* clinica);
 
 #endif // FUNCTP2_H

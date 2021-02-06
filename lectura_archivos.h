@@ -1,26 +1,10 @@
 #ifndef __LECTURA_ARCHIVOS__H_
 #define __LECTURA_ARCHIVOS__H_
 
-#include "dependencias/lista.h"
-#include "dependencias/strutil.h"
-#include "dependencias/abb.h"
-#include "dependencias/hash.h"
+#include "clinica.h"
 
-bool cargar_datos(abb_t** doctores, hash_t** pacientes, hash_t** especialidades, char* ruta_docs, char* ruta_pacs);
-
-/**
-Haciendo uso de strutil (split) lee un archivo csv y, línea a línea,
-va llamando al constructor que se pasa por parámetro. Dicho constructor se invoca
-con la línea separada por split, sin fines de línea ni ninguna otra consideración,
-y con el puntero extra que se pasa por parámetro.
-Importante: la función constructor no debe guardar las referencias a las cadenas
-dentro de arreglo de cadenas pasado por parámetros (hacer copias en caso de ser 
-necesario); luego de invocarse el constructor se invoca a free_strv.
-
-Se devuelve una lista con todos los elementos construidos. NULL en caso que el archivo
-csv (indicado por la ruta pasada por parámetro) no exista. 
-**/
-bool csv_crear_estructura(const char* ruta_csv, bool (*creador) (char**, void*), void* extra);
-
+// Carga los datos de todos los medicos y pacientes desde los archivos y los devuelve en una clinica.
+// Si falla, imprime el mensaje de error y devuelve NULL.
+clinica_t* cargar_datos(char* ruta_docs, char* ruta_pacs);
 
 #endif

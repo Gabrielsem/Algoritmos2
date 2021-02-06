@@ -3,39 +3,59 @@
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "dependencias/hash.h"
 
 /* ******************************************************************
- *                    TDA COLA DE PACIENTES
+ *                    		 TDA CLINICA
  * *****************************************************************/
 
 typedef struct clinica clinica_t;
 
-// Crea una cola de pacientes, devuelve NULL si falla.
-// Recibe un diccionario con las antiguedades de cada paciente (clave: nombre, dato: año (unsigned short*))
-// No modificar el diccionario tras crear una cola de pacientes
-// Se debe destruir con clinica_destruir()
-clinica_t* clinica_crear(hash_t* antiguedades);
+// Función para clinica_visitar_doc()
+typedef void (*visitar_doc_t)(const char* nombre, const char* especialidad, size_t pac_atendidos, void* extra);
 
-// Devuelve si el paciente existe (esta en el diccionario de antiguedades)
+// Crea una clinica, devuelve NULL si falla.
+// Se debe destruir con clinica_destruir()
+clinica_t* clinica_crear();
+
+// Devuelve verdadero si el paciente existe, sino falso.
 bool clinica_existe_pac(clinica_t* clinica, const char* paciente);
 
-// Destruye una cola de pacientes
-// No destruye el diccionario recibido en clinica_crear().
-// Cualquier paciente que quede encolado al destruir se libera con free()
+// Devuelve verdadero si la especialdiad existe, sino falso.
+bool clinica_existe_esp(clinica_t* clinica, const char* especialidad);
+
+// Devuelve verdadero si el doctor existe, sino falso.
+bool clinica_existe_doc(clinica_t* clinica, const char* doctor);
+
+// Agrega un paciente a los registros de la clinica.
+bool clinica_agregar_pac(clinica_t* clinica, const char* nombre, unsigned short anio_antig);
+
+// Agrega un doctor a los registros de la clinica.
+bool clinica_agregar_doc(clinica_t* clinica, const char* nombre, const char* especialidad);
+
+// Devuelve la cantidad de pacientes en espera para esa especialidad.
+size_t clinica_cantidad_pac(clinica_t* clinica, const char* especialidad);
+
+// Devuelve la especialidad de un doctor o NULL si este no existe.
+const char* clinica_especialidad(clinica_t* clinica, const char* nombre);
+
+// Visita todos los doctores entre inicio y fin (alfábeticamente) inclusive, con la función dada.
+// Si inicio es NULL, imprime desde el primer doctor.
+// Si fin es NULL, imprime desde el último doctor.
+void clinica_visitar_doc(clinica_t* clinica, visitar_doc_t visitar, void* extra, const char* inicio, const char* fin);
+
+// Destruye la clínica
+// Cualquier paciente que haya quedado encolado al destruir se libera con free()
 void clinica_destruir(clinica_t* clinica);
 
 // Encola un paciente con la especialidad y urgencia dada.
-// Devuelve false si falla (paciente no existe en diccionario o fallo de memoria),
+// Devuelve false si falla (paciente o especialidad no existe o fallo de memoria),
 // o true si se logra encolar.
-// Pre: Paciente y especialidad existen
+// Si se destruye la clínica, se hace free() al nombre del paciente.
 bool clinica_encolar(clinica_t* clinica, char* paciente, const char* especialidad, bool urgente);
 
-// Devuelve la cantidad de pacientes en espera para esa especialidad.
-size_t clinica_cantidad(clinica_t* clinica, const char* especialidad);
 
 // Desencola un paciente de la especialidad dada. Devuelve el nombre del paciente o NULL en caso
-// de no haber pacientes encolados para esa especialidad.
+// de no haber pacientes encolados para esa especialidad o que no exista la especialidad.
 char* clinica_desencolar(clinica_t* clinica, const char* especialidad);
 
 #endif // CLINICA__H
