@@ -30,7 +30,7 @@ void pedir_turno(const char** parametros, clinica_t* clinica) {
 
 	if(!clinica_existe_pac(clinica, parametros[0])) {
 		printf(ENOENT_PACIENTE, parametros[0]);
-	} else  if (!clinica_existe_esp(clinica, parametros[1])) {
+	} else if (!clinica_existe_esp(clinica, parametros[1])) {
 		printf(ENOENT_ESPECIALIDAD, parametros[1]);
 	}
 	free(nombre);
