@@ -71,8 +71,10 @@ void destruir_paciente(void* paciente) {
 	free(paciente);
 }
 
-// Destruye una cola de una especialidad y todos sus pacientes
+// Destruye una cola de una especialidad y todos sus pacientes, si es que la cola existe
 void destruir_colaesp(void* colaesp) {
+	if (!colaesp) return;
+
 	cola_destruir(((colaesp_t*) colaesp)->urgentes, free);
 	heap_destruir(((colaesp_t*) colaesp)->regulares, destruir_paciente);
 	free(colaesp);
@@ -195,17 +197,12 @@ bool clinica_agregar_doc(clinica_t* clinica, const char* nombre, const char* esp
 		return false;
 	}
 
-	colaesp_t* colaesp = crear_colaesp();
-	if (!colaesp) {
-		abb_borrar(clinica->doctores, nombre);
-		destruir_datos_doc(datos);
-		return false;
-	}
+	if(hash_pertenece(clinica->colas, especialidad))
+		return true;
 
-	if (!hash_guardar(clinica->colas, especialidad, colaesp)) {
+	if (!hash_guardar(clinica->colas, especialidad, NULL)) {
 		abb_borrar(clinica->doctores, nombre);
 		destruir_datos_doc(datos);
-		destruir_colaesp(colaesp);
 		return false;
 	}
 
@@ -216,8 +213,18 @@ bool clinica_encolar(clinica_t* clinica, char* nombre, const char* especialidad,
 	unsigned short* anio = hash_obtener(clinica->antiguedades, nombre);
 	if (!anio) return false;
 
+	if (!hash_pertenece(clinica->colas, especialidad)) return false;
+
 	colaesp_t* colaesp = hash_obtener(clinica->colas, especialidad);
-	if (!colaesp) return false;
+	if (!colaesp) {
+		colaesp = crear_colaesp();
+		if (!colaesp) return false;
+
+		if (!hash_guardar(clinica->colas, especialidad, colaesp)) {
+			destruir_colaesp(colaesp);
+			return false;
+		}
+	}
 
 	bool encolo = false;
 	if (urgente) {
