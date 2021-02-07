@@ -1,1 +1,1 @@
-zyxcba: dependencias/* colapac.c colapac.h csv.c csv.h funciones_tp2.h funciones_tp2.c mensajes.h zyxcba.c
+zyxcba: dependencias/* clinica.c clinica.h lectura_archivos.c lectura_archivos.h funciones_tp2.h funciones_tp2.c mensajes.h zyxcba.c
