@@ -1,6 +1,7 @@
 #include "funciones_tp2.h"
 #include "mensajes.h"
 #include "clinica.h"
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #define _POSIX_C_SOURCE 200809L
