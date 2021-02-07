@@ -26,7 +26,7 @@ struct clinica {
 typedef struct colaesp {
 	cola_t* urgentes;
 	heap_t* regulares;
-	size_t en_espera;
+	size_t cant_en_espera;
 } colaesp_t;
 
 typedef struct doctor {
@@ -37,7 +37,7 @@ typedef struct doctor {
 // Para pasar mas de un extra a función de iterador de abb en clinica_visitar_doc()
 typedef struct extras_visitar {
 	visitar_doc_t func_visitar;
-	void* extra_posta;
+	void* extra_real;
 } extras_t;
 
 /*
@@ -99,7 +99,7 @@ colaesp_t* crear_colaesp() {
 		return NULL;
 	}
 
-	colaesp->en_espera = 0;
+	colaesp->cant_en_espera = 0;
 	return colaesp;
 }
 
@@ -129,7 +129,7 @@ datos_doctor_t* crear_datos_doc(const char* especialidad) {
 void visitar_aux(const char* nombre, void* datos_doc, void* extra) {
 	extras_t* extras = extra;
 	datos_doctor_t* datos = datos_doc;
-	extras->func_visitar(nombre, datos->especialidad, datos->pacientes_atendidos, extras->extra_posta);
+	extras->func_visitar(nombre, datos->especialidad, datos->pacientes_atendidos, extras->extra_real);
 }
 
 /*
@@ -235,7 +235,7 @@ bool clinica_encolar(clinica_t* clinica, char* nombre, const char* especialidad,
 		encolo = heap_encolar(colaesp->regulares, paciente);
 	}
 
-	if (encolo) colaesp->en_espera++;
+	if (encolo) colaesp->cant_en_espera++;
 	return encolo;
 }
 
@@ -252,7 +252,7 @@ size_t clinica_cantidad_pac(clinica_t* clinica, const char* especialidad) {
 		return 0;
 	}
 
-	return colaesp->en_espera;
+	return colaesp->cant_en_espera;
 }
 
 char* clinica_desencolar(clinica_t* clinica, const char* doctor) {
@@ -271,7 +271,7 @@ char* clinica_desencolar(clinica_t* clinica, const char* doctor) {
 		free(paciente);
 	}
 
-	colaesp->en_espera--;
+	colaesp->cant_en_espera--;
 	datos->pacientes_atendidos++;
 	return nombre;
 }
@@ -284,6 +284,6 @@ const char* clinica_especialidad(clinica_t* clinica, const char* doctor) {
 void clinica_visitar_doc(clinica_t* clinica, visitar_doc_t visitar, void* extra, const char* inicio, const char* fin) {
 	extras_t extras;
 	extras.func_visitar = visitar;
-	extras.extra_posta = extra;
+	extras.extra_real = extra;
 	abb_in_order_rng(clinica->doctores, visitar_aux, &extras, inicio, fin);
 }
