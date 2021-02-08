@@ -1,3 +1,6 @@
+#define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE 1
+#define _XOPEN_SOURCE 500
 #include "clinica.h"
 #include "dependencias/heap.h"
 #include "dependencias/cola.h"
@@ -5,7 +8,6 @@
 #include "dependencias/abb.h"
 #include <stdlib.h>
 #include <string.h>
-#define _POSIX_C_SOURCE 200809L
 
 /*
   -------------- DEFINICION DE LAS ESTRUCTURAS  -------------- 

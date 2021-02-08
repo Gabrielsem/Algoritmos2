@@ -1,3 +1,6 @@
+#define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE 1
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <string.h>
 #include "funciones_tp2.h"
@@ -5,7 +8,6 @@
 #include "mensajes.h"
 #include "lectura_archivos.h"
 #include "stdlib.h"
-#define _POSIX_C_SOURCE 200809L
 
 #define COMANDO_PEDIR_TURNO "PEDIR_TURNO"
 #define COMANDO_ATENDER "ATENDER_SIGUIENTE"

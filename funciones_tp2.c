@@ -1,10 +1,12 @@
+#define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE 1
+#define _XOPEN_SOURCE 500
 #include "funciones_tp2.h"
 #include "mensajes.h"
 #include "clinica.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define _POSIX_C_SOURCE 200809L
 
 #define URGENCIA_URGENTE "URGENTE"
 #define URGENCIA_REGULAR "REGULAR"

@@ -1,8 +1,10 @@
+#define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE 1
+#define _XOPEN_SOURCE 500
 #include "abb.h"
 #include <stdlib.h>
 #include "pila.h"
 #include <string.h>
-#define _POSIX_C_SOURCE 200809L
 
 /* ******************************************************************
  *                  DEFINICIÓN DE LAS ESTRUCTURAS
