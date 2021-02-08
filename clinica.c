@@ -200,6 +200,12 @@ bool clinica_agregar_doc(clinica_t* clinica, const char* nombre, const char* esp
 	if(hash_pertenece(clinica->colas, especialidad))
 		return true;
 
+	// Nota: Al agregar un doctor, se agrega al hash esa especialidad si es que esta
+	// no existía, pero no se crea la colaesp_t, simplemente se guarda NULL.
+	// Esto es así para evitar crear colaesp_t de especialidades que quizás no hay ningún
+	// paciente, pero si se guarda NULL para confirmar que la especialidad exista.
+	// Luego clinica_encolar() se encarga de crear la colaesp_t si es que la especialidad
+	// pertenece al hash pero al obtener este devuelve NULL.
 	if (!hash_guardar(clinica->colas, especialidad, NULL)) {
 		abb_borrar(clinica->doctores, nombre);
 		destruir_datos_doc(datos);
