@@ -6,6 +6,7 @@
 #include "dependencias/abb.h"
 #include "colapac.h"
 #include "paciente.h"
+#include "doctor.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,15 +15,10 @@
 */
 
 struct clinica {
-	colapac_t* colapac;
+	colapac_t* colapac; // Cola de pacientes de todas las especialidades.
 	hash_t* pacientes; // Diccionario de pacientes. Clave: nombre del paciente.
-	abb_t* doctores; // Árbol de datos_doctor_t*. Clave: nombre del doctor.
+	abb_t* doctores; // Árbol de doctor_t*. Clave: nombre del doctor.
 };
-
-typedef struct doctor {
-	char* especialidad;
-	size_t pacientes_atendidos;
-} datos_doctor_t;
 
 // Para pasar mas de un extra a función de iterador de abb en clinica_visitar_doc()
 typedef struct extras_visitar {
@@ -34,38 +30,22 @@ typedef struct extras_visitar {
   -------------- FUNCIONES INTERNAS  -------------- 
 */
 
-// Destruye los datos de un doctor
-void destruir_datos_doc(void* datos_doc) {
-	free(((datos_doctor_t*) datos_doc)->especialidad);
-	free(datos_doc);
-}
-
-// Crea los datos de un doctor con esa especialidad, inicializando los pacientes atendidos en 0
-datos_doctor_t* crear_datos_doc(const char* especialidad) {
-	datos_doctor_t* datos = malloc(sizeof(datos_doctor_t));
-	if (!datos) return NULL;
-
-	datos->especialidad = strdup(especialidad);
-	if (!datos->especialidad) {
-		free(datos);
-		return false;
-	}
-
-	datos->pacientes_atendidos = 0;
-	return datos;
-}
-
 // Función de visita para el TDA ABB utilizada en clinica_visitar_doc()
 // Es un wrapper de la función de visita del usuario del TDA
-void visitar_aux(const char* nombre, void* datos_doc, void* extra) {
+void visitar_aux(const char* nombre, void* doctor, void* extra) {
 	extras_t* extras = extra;
-	datos_doctor_t* datos = datos_doc;
-	extras->func_visitar(nombre, datos->especialidad, datos->pacientes_atendidos, extras->extra_real);
+	doctor_t* doc = doctor;
+	extras->func_visitar(doctor_nombre(doc), doctor_especialidad(doc), doctor_cant_atendidos(doc), extras->extra_real);
 }
 
 // Wrapper de paciente_destruir() del TDA Paciente para usar en el Hash.
 void paciente_destruir_wr(void* paciente) {
 	paciente_destruir(paciente);
+}
+
+// Wrapper de doctor_destruir() del TDA Doctor para usar en el ABB.
+void doctor_destruir_wr(void* doctor) {
+	doctor_destruir(doctor);
 }
 
 /*
@@ -89,7 +69,7 @@ clinica_t* clinica_crear() {
 		return NULL;
 	}
 
-	clinica->doctores = abb_crear(strcmp, destruir_datos_doc);
+	clinica->doctores = abb_crear(strcmp, doctor_destruir_wr);
 	if (!clinica->doctores) {
 		hash_destruir(clinica->pacientes);
 		colapac_destruir(clinica->colapac);
@@ -124,17 +104,17 @@ bool clinica_agregar_pac(clinica_t* clinica, const char* nombre, unsigned short 
 }
 
 bool clinica_agregar_doc(clinica_t* clinica, const char* nombre, const char* especialidad) {
-	datos_doctor_t* datos = crear_datos_doc(especialidad);
-	if (!datos) return false;
+	doctor_t* doctor = doctor_crear(nombre, especialidad);
+	if (!doctor) return false;
 
-	if (!abb_guardar(clinica->doctores, nombre, datos)) {
-		destruir_datos_doc(datos);
+	if (!abb_guardar(clinica->doctores, nombre, doctor)) {
+		doctor_destruir(doctor);
 		return false;
 	}
 
 	if (!colapac_agregar(clinica->colapac, especialidad)) {
 		abb_borrar(clinica->doctores, nombre);
-		destruir_datos_doc(datos);
+		doctor_destruir(doctor);
 		return false;
 	}
 
@@ -159,20 +139,20 @@ size_t clinica_cantidad_pac(clinica_t* clinica, const char* especialidad) {
 	return colapac_cantidad(clinica->colapac, especialidad);
 }
 
-const char* clinica_desencolar(clinica_t* clinica, const char* doctor) {
-	datos_doctor_t* datos = abb_obtener(clinica->doctores, doctor);
-	if (!datos) return NULL;
+const char* clinica_desencolar(clinica_t* clinica, const char* nombre_doc) {
+	doctor_t* doctor = abb_obtener(clinica->doctores, nombre_doc);
+	if (!doctor) return NULL;
 
-	paciente_t* paciente = colapac_desencolar(clinica->colapac, datos->especialidad);
+	paciente_t* paciente = colapac_desencolar(clinica->colapac, doctor_especialidad(doctor));
 	if (!paciente) return NULL;
 
-	datos->pacientes_atendidos++;
+	doctor_contar_paciente(doctor);
 	return paciente_nombre(paciente);
 }
 
-const char* clinica_especialidad(clinica_t* clinica, const char* doctor) {
-	datos_doctor_t* datos = abb_obtener(clinica->doctores, doctor);
-	return datos ? datos->especialidad : NULL;
+const char* clinica_especialidad(clinica_t* clinica, const char* nombre_doc) {
+	doctor_t* doctor = abb_obtener(clinica->doctores, nombre_doc);
+	return doctor ? doctor_especialidad(doctor) : NULL;
 }
 
 void clinica_visitar_doc(clinica_t* clinica, visitar_doc_t visitar, void* extra, const char* inicio, const char* fin) {
