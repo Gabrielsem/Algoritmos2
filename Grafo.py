@@ -57,11 +57,11 @@ class Grafo:
 	def obtener_vertice_random(self):
 		return random.choice(list(self.vertices.keys()))
 
-	def obtener_vertices(self):
+	def vertices(self):
 		"""devuelve una lista de todos los vertices """
 		return list(self.vertices.keys())
 
-	def obtener_adyacentes(self, v):
+	def adyacentes(self, v):
 		"""devuelve una lista con los vertices adyacentes """
 		return list(self.vertices[v].keys())
 
