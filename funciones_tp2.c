@@ -19,7 +19,6 @@ void pedir_turno(const char** parametros, clinica_t* clinica) {
 		return;
 	}
 
-
 	if(clinica_encolar(clinica, parametros[0], parametros[1], urgente)) {
 		printf(PACIENTE_ENCOLADO, parametros[0]);
 		printf(CANT_PACIENTES_ENCOLADOS, clinica_cantidad_pac(clinica, parametros[1]), parametros[1]);
@@ -30,6 +29,8 @@ void pedir_turno(const char** parametros, clinica_t* clinica) {
 		printf(ENOENT_PACIENTE, parametros[0]);
 	} else if (!clinica_existe_esp(clinica, parametros[1])) {
 		printf(ENOENT_ESPECIALIDAD, parametros[1]);
+	} else {
+		printf(ERR_MEM);
 	}
 }
 
