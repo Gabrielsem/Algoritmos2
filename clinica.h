@@ -47,7 +47,6 @@ const char* clinica_especialidad(clinica_t* clinica, const char* nombre);
 void clinica_visitar_doc(clinica_t* clinica, visitar_doc_t visitar, void* extra, const char* inicio, const char* fin);
 
 // Destruye la clínica
-// Cualquier paciente que haya quedado encolado al destruir se libera con free()
 void clinica_destruir(clinica_t* clinica);
 
 // Encola un paciente con la especialidad y urgencia dada.

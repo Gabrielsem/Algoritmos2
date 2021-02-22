@@ -11,8 +11,6 @@ struct paciente {
 };
 
 
-// Crea un paciente con el nombre y año de antiguedad dados
-// Devuelve NULL si falla
 paciente_t* paciente_crear(const char* nombre, unsigned short anio_ant) {
 	paciente_t* paciente = malloc(sizeof(paciente_t));
 	if (!paciente) return NULL;
@@ -27,7 +25,6 @@ paciente_t* paciente_crear(const char* nombre, unsigned short anio_ant) {
 	return paciente;
 }
 
-// Destruye un paciente.
 void paciente_destruir(paciente_t* paciente) {
 	free(paciente->nombre);
 	free(paciente);
