@@ -5,6 +5,7 @@
 #include "dependencias/hash.h"
 #include "dependencias/abb.h"
 #include "colapac.h"
+#include "paciente.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,7 +15,7 @@
 
 struct clinica {
 	colapac_t* colapac;
-	hash_t* antiguedades; // Diccionario de año de antiguedad de pacientes (unsigned short). Clave: nombre del paciente.
+	hash_t* pacientes; // Diccionario de pacientes. Clave: nombre del paciente.
 	abb_t* doctores; // Árbol de datos_doctor_t*. Clave: nombre del doctor.
 };
 
@@ -62,6 +63,11 @@ void visitar_aux(const char* nombre, void* datos_doc, void* extra) {
 	extras->func_visitar(nombre, datos->especialidad, datos->pacientes_atendidos, extras->extra_real);
 }
 
+// Wrapper de paciente_destruir() del TDA Paciente para usar en el Hash.
+void paciente_destruir_wr(void* paciente) {
+	paciente_destruir(paciente);
+}
+
 /*
   -------------- PRIMITIVAS TDA  -------------- 
 */
@@ -76,8 +82,8 @@ clinica_t* clinica_crear() {
 		return NULL;
 	}
 
-	clinica->antiguedades = hash_crear(free);
-	if (!clinica->antiguedades) {
+	clinica->pacientes = hash_crear(paciente_destruir_wr);
+	if (!clinica->pacientes) {
 		colapac_destruir(clinica->colapac);
 		free(clinica);
 		return NULL;
@@ -85,7 +91,7 @@ clinica_t* clinica_crear() {
 
 	clinica->doctores = abb_crear(strcmp, destruir_datos_doc);
 	if (!clinica->doctores) {
-		hash_destruir(clinica->antiguedades);
+		hash_destruir(clinica->pacientes);
 		colapac_destruir(clinica->colapac);
 		free(clinica);
 		return NULL;
@@ -95,7 +101,7 @@ clinica_t* clinica_crear() {
 }
 
 bool clinica_existe_pac(clinica_t* clinica, const char* paciente) {
-	return hash_pertenece(clinica->antiguedades, paciente);
+	return hash_pertenece(clinica->pacientes, paciente);
 }
 
 bool clinica_existe_esp(clinica_t* clinica, const char* especialidad) {
@@ -107,12 +113,11 @@ bool clinica_existe_doc(clinica_t* clinica, const char* doctor) {
 }
 
 bool clinica_agregar_pac(clinica_t* clinica, const char* nombre, unsigned short anio_antig) {
-	unsigned short* anio = malloc(sizeof(unsigned short));
-	if (!anio) return false;
-	*anio = anio_antig;
+	paciente_t* paciente = paciente_crear(nombre, anio_antig);
+	if (!paciente) return false;
 
-	if (!hash_guardar(clinica->antiguedades, nombre, anio)) {
-		free(anio);
+	if (!hash_guardar(clinica->pacientes, nombre, paciente)) {
+		paciente_destruir(paciente);
 		return false;
 	}
 	return true;
@@ -136,16 +141,16 @@ bool clinica_agregar_doc(clinica_t* clinica, const char* nombre, const char* esp
 	return true;
 }
 
-bool clinica_encolar(clinica_t* clinica, char* nombre, const char* especialidad, bool urgente) {
-	unsigned short* anio = hash_obtener(clinica->antiguedades, nombre);
-	if (!anio) return false;
+bool clinica_encolar(clinica_t* clinica, const char* nombre, const char* especialidad, bool urgente) {
+	paciente_t* paciente = hash_obtener(clinica->pacientes, nombre);
+	if (!paciente) return false;
 
-	return colapac_encolar(clinica->colapac, nombre, especialidad, *anio, urgente);
+	return colapac_encolar(clinica->colapac, paciente, especialidad, urgente);
 }
 
 void clinica_destruir(clinica_t* clinica) {
 	colapac_destruir(clinica->colapac);
-	hash_destruir(clinica->antiguedades);
+	hash_destruir(clinica->pacientes);
 	abb_destruir(clinica->doctores);
 	free(clinica);
 }
@@ -154,15 +159,15 @@ size_t clinica_cantidad_pac(clinica_t* clinica, const char* especialidad) {
 	return colapac_cantidad(clinica->colapac, especialidad);
 }
 
-char* clinica_desencolar(clinica_t* clinica, const char* doctor) {
+const char* clinica_desencolar(clinica_t* clinica, const char* doctor) {
 	datos_doctor_t* datos = abb_obtener(clinica->doctores, doctor);
 	if (!datos) return NULL;
 
-	char* nombre = colapac_desencolar(clinica->colapac, datos->especialidad);
-	if (!nombre) return NULL;
+	paciente_t* paciente = colapac_desencolar(clinica->colapac, datos->especialidad);
+	if (!paciente) return NULL;
 
 	datos->pacientes_atendidos++;
-	return nombre;
+	return paciente_obtener_nombre(paciente);
 }
 
 const char* clinica_especialidad(clinica_t* clinica, const char* doctor) {

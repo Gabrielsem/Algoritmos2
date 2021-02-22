@@ -53,11 +53,10 @@ void clinica_destruir(clinica_t* clinica);
 // Encola un paciente con la especialidad y urgencia dada.
 // Devuelve false si falla (paciente o especialidad no existe o fallo de memoria),
 // o true si se logra encolar.
-// Si se destruye la clínica, se hace free() al nombre del paciente.
-bool clinica_encolar(clinica_t* clinica, char* paciente, const char* especialidad, bool urgente);
+bool clinica_encolar(clinica_t* clinica, const char* nombre_paciente, const char* especialidad, bool urgente);
 
 // Desencola un paciente de la especialidad del doctor dado. Devuelve el nombre del paciente o NULL en caso
 // de no haber pacientes encolados para esa especialidad o que no exista el doctor.
-char* clinica_desencolar(clinica_t* clinica, const char* doctor);
+const char* clinica_desencolar(clinica_t* clinica, const char* doctor);
 
 #endif // CLINICA__H

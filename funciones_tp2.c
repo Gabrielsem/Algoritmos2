@@ -19,13 +19,8 @@ void pedir_turno(const char** parametros, clinica_t* clinica) {
 		return;
 	}
 
-	char* nombre = strdup(parametros[0]);
-	if (!nombre) {
-		printf(ERR_MEM);
-		return;
-	}
 
-	if(clinica_encolar(clinica, nombre, parametros[1], urgente)) {
+	if(clinica_encolar(clinica, parametros[0], parametros[1], urgente)) {
 		printf(PACIENTE_ENCOLADO, parametros[0]);
 		printf(CANT_PACIENTES_ENCOLADOS, clinica_cantidad_pac(clinica, parametros[1]), parametros[1]);
 		return;
@@ -36,16 +31,14 @@ void pedir_turno(const char** parametros, clinica_t* clinica) {
 	} else if (!clinica_existe_esp(clinica, parametros[1])) {
 		printf(ENOENT_ESPECIALIDAD, parametros[1]);
 	}
-	free(nombre);
 }
 
 void atender_siguiente(const char** parametros, clinica_t* clinica) {
-	char* nombre = clinica_desencolar(clinica, parametros[0]);
+	const char* nombre = clinica_desencolar(clinica, parametros[0]);
 	if (nombre) {
 		printf(PACIENTE_ATENDIDO, nombre);
 		const char* especialidad = clinica_especialidad(clinica, parametros[0]);
 		printf(CANT_PACIENTES_ENCOLADOS, clinica_cantidad_pac(clinica, especialidad), especialidad);
-		free(nombre);
 	}
 
 	if (!clinica_existe_doc(clinica, parametros[0])) {
