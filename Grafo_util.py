@@ -1,1 +1,1 @@
-import Grafo
+from Grafo import Grafo

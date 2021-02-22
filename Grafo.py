@@ -46,7 +46,7 @@ class Grafo:
 			return True
 		return False
 
-	def obtener_peso(self, v1,v2):
+	def obtener_peso(self, v1, v2):
 		return self.vertices[v1][v2]
 
 	def existe_vertice(self, v):
@@ -59,18 +59,11 @@ class Grafo:
 
 	def obtener_vertices(self):
 		"""devuelve una lista de todos los vertices """
-		lista_v = []
-		for v in self.vertices.keys():
-			lista_v.append(v)
-		return lista_v
+		return list(self.vertices.keys())
 
 	def obtener_adyacentes(self, v):
-		"""devuelve una lista con los vertices adyacentes """\
-		lista_ady = []
-		for ady in self.vertices[v].keys():
-			lista_ady.append(ady)
-		return lista_ady
+		"""devuelve una lista con los vertices adyacentes """
+		return list(self.vertices[v].keys())
 
-	def iterador_vertices(self):
-		pass
-	
+	def __iter__(self):
+		return iter(self.vertices.keys())
