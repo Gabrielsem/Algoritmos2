@@ -12,7 +12,7 @@ typedef struct paciente paciente_t;
 paciente_t* paciente_crear(const char* nombre, unsigned short anio_ant);
 
 // Devuelve el nombre del paciente.
-const char* paciente_obtener_nombre(paciente_t* paciente);
+const char* paciente_nombre(paciente_t* paciente);
 
 // Destruye el paciente.
 void paciente_destruir(paciente_t* paciente);

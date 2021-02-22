@@ -39,6 +39,6 @@ int paciente_antiguedad_cmp(const paciente_t* paciente_1, const paciente_t* paci
 	return anio_2 - anio_1;
 }
 
-const char* paciente_obtener_nombre(paciente_t* paciente) {
+const char* paciente_nombre(paciente_t* paciente) {
 	return paciente->nombre;
 }

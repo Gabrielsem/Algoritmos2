@@ -167,7 +167,7 @@ const char* clinica_desencolar(clinica_t* clinica, const char* doctor) {
 	if (!paciente) return NULL;
 
 	datos->pacientes_atendidos++;
-	return paciente_obtener_nombre(paciente);
+	return paciente_nombre(paciente);
 }
 
 const char* clinica_especialidad(clinica_t* clinica, const char* doctor) {
