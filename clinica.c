@@ -2,10 +2,11 @@
 #define _GNU_SOURCE 1
 #define _XOPEN_SOURCE 500
 #include "clinica.h"
-#include "dependencias/heap.h"
-#include "dependencias/cola.h"
 #include "dependencias/hash.h"
 #include "dependencias/abb.h"
+#include "colapac.h"
+#include "paciente.h"
+#include "doctor.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,28 +14,11 @@
   -------------- DEFINICION DE LAS ESTRUCTURAS  -------------- 
 */
 
-typedef struct paciente {
-	char* nombre;
-	unsigned short anio_ant;
-} paciente_t;
-
 struct clinica {
-	hash_t* colas; // Diccionario de colaesp_t*. Clave: especialidad.
-	hash_t* antiguedades; // Diccionario de año de antiguedad de pacientes (unsigned short). Clave: nombre del paciente.
-	abb_t* doctores; // Árbol de datos_doctor_t*. Clave: nombre del doctor.
+	colapac_t* colapac; // Cola de pacientes de todas las especialidades.
+	hash_t* pacientes; // Diccionario de pacientes. Clave: nombre del paciente.
+	abb_t* doctores; // Árbol de doctor_t*. Clave: nombre del doctor.
 };
-
-// cola de una especialidad
-typedef struct colaesp {
-	cola_t* urgentes;
-	heap_t* regulares;
-	size_t cant_en_espera;
-} colaesp_t;
-
-typedef struct doctor {
-	char* especialidad;
-	size_t pacientes_atendidos;
-} datos_doctor_t;
 
 // Para pasar mas de un extra a función de iterador de abb en clinica_visitar_doc()
 typedef struct extras_visitar {
@@ -46,92 +30,22 @@ typedef struct extras_visitar {
   -------------- FUNCIONES INTERNAS  -------------- 
 */
 
-// Crea un paciente con el nombre y año de antiguedad dados
-// Devuelve NULL si falla
-paciente_t* crear_paciente(char* nombre, unsigned short anio_ant) {
-	paciente_t* paciente = malloc(sizeof(paciente_t));
-	if (!paciente) return NULL;
-
-	paciente->nombre = nombre;
-	paciente->anio_ant = anio_ant;
-	return paciente;
-}
-
-// Compara la antiguedad de dos pacientes. Devuelve:
-// 0 si es la misma antiguedad
-// > 0 si el paciente 1 tiene mas antiguedad que el paciente 2
-// < 0 si el paciente 1 tiene menos antiguedad que el paciente 2
-int antiguedad_cmp(const void* paciente_1, const void* paciente_2) {
-	int anio_1 = ((paciente_t*) paciente_1)->anio_ant;
-	int anio_2 = ((paciente_t*) paciente_2)->anio_ant;
-	return anio_2 - anio_1;
-}
-
-// Destruye un paciente, liberando también el nombre almacenado
-void destruir_paciente(void* paciente) {
-	free(((paciente_t*) paciente)->nombre);
-	free(paciente);
-}
-
-// Destruye una cola de una especialidad y todos sus pacientes, si es que la cola existe
-void destruir_colaesp(void* colaesp) {
-	if (!colaesp) return;
-
-	cola_destruir(((colaesp_t*) colaesp)->urgentes, free);
-	heap_destruir(((colaesp_t*) colaesp)->regulares, destruir_paciente);
-	free(colaesp);
-}
-
-// Crea una cola para una especialidad y la devuelve. Si falla la creación,
-// devuelve NULL
-colaesp_t* crear_colaesp() {
-	colaesp_t* colaesp = malloc(sizeof(colaesp_t));
-	if (!colaesp) return NULL;
-
-	colaesp->urgentes = cola_crear();
-	if (!colaesp->urgentes) {
-		free(colaesp);
-		return NULL;
-	}
-
-	colaesp->regulares = heap_crear(antiguedad_cmp);
-	if (!colaesp->regulares) {
-		cola_destruir(colaesp->urgentes, NULL);
-		free(colaesp);
-		return NULL;
-	}
-
-	colaesp->cant_en_espera = 0;
-	return colaesp;
-}
-
-// Destruye los datos de un doctor
-void destruir_datos_doc(void* datos_doc) {
-	free(((datos_doctor_t*) datos_doc)->especialidad);
-	free(datos_doc);
-}
-
-// Crea los datos de un doctor con esa especialidad, inicializando los pacientes atendidos en 0
-datos_doctor_t* crear_datos_doc(const char* especialidad) {
-	datos_doctor_t* datos = malloc(sizeof(datos_doctor_t));
-	if (!datos) return NULL;
-
-	datos->especialidad = strdup(especialidad);
-	if (!datos->especialidad) {
-		free(datos);
-		return false;
-	}
-
-	datos->pacientes_atendidos = 0;
-	return datos;
-}
-
 // Función de visita para el TDA ABB utilizada en clinica_visitar_doc()
 // Es un wrapper de la función de visita del usuario del TDA
-void visitar_aux(const char* nombre, void* datos_doc, void* extra) {
+void visitar_aux(const char* nombre, void* doctor, void* extra) {
 	extras_t* extras = extra;
-	datos_doctor_t* datos = datos_doc;
-	extras->func_visitar(nombre, datos->especialidad, datos->pacientes_atendidos, extras->extra_real);
+	doctor_t* doc = doctor;
+	extras->func_visitar(doctor_nombre(doc), doctor_especialidad(doc), doctor_cant_atendidos(doc), extras->extra_real);
+}
+
+// Wrapper de paciente_destruir() del TDA Paciente para usar en el Hash.
+void paciente_destruir_wr(void* paciente) {
+	paciente_destruir(paciente);
+}
+
+// Wrapper de doctor_destruir() del TDA Doctor para usar en el ABB.
+void doctor_destruir_wr(void* doctor) {
+	doctor_destruir(doctor);
 }
 
 /*
@@ -142,23 +56,23 @@ clinica_t* clinica_crear() {
 	clinica_t* clinica = malloc(sizeof(clinica_t));
 	if (!clinica) return NULL;
 
-	clinica->colas = hash_crear(destruir_colaesp);
-	if (!clinica->colas) {
+	clinica->colapac = colapac_crear();
+	if (!clinica->colapac) {
 		free(clinica);
 		return NULL;
 	}
 
-	clinica->antiguedades = hash_crear(free);
-	if (!clinica->antiguedades) {
-		hash_destruir(clinica->colas);
+	clinica->pacientes = hash_crear(paciente_destruir_wr);
+	if (!clinica->pacientes) {
+		colapac_destruir(clinica->colapac);
 		free(clinica);
 		return NULL;
 	}
 
-	clinica->doctores = abb_crear(strcmp, destruir_datos_doc);
+	clinica->doctores = abb_crear(strcmp, doctor_destruir_wr);
 	if (!clinica->doctores) {
-		hash_destruir(clinica->antiguedades);
-		hash_destruir(clinica->colas);
+		hash_destruir(clinica->pacientes);
+		colapac_destruir(clinica->colapac);
 		free(clinica);
 		return NULL;
 	}
@@ -167,11 +81,11 @@ clinica_t* clinica_crear() {
 }
 
 bool clinica_existe_pac(clinica_t* clinica, const char* paciente) {
-	return hash_pertenece(clinica->antiguedades, paciente);
+	return hash_pertenece(clinica->pacientes, paciente);
 }
 
 bool clinica_existe_esp(clinica_t* clinica, const char* especialidad) {
-	return hash_pertenece(clinica->colas, especialidad);
+	return colapac_existe(clinica->colapac, especialidad);
 }
 
 bool clinica_existe_doc(clinica_t* clinica, const char* doctor) {
@@ -179,114 +93,66 @@ bool clinica_existe_doc(clinica_t* clinica, const char* doctor) {
 }
 
 bool clinica_agregar_pac(clinica_t* clinica, const char* nombre, unsigned short anio_antig) {
-	unsigned short* anio = malloc(sizeof(unsigned short));
-	if (!anio) return false;
-	*anio = anio_antig;
+	paciente_t* paciente = paciente_crear(nombre, anio_antig);
+	if (!paciente) return false;
 
-	if (!hash_guardar(clinica->antiguedades, nombre, anio)) {
-		free(anio);
+	if (!hash_guardar(clinica->pacientes, nombre, paciente)) {
+		paciente_destruir(paciente);
 		return false;
 	}
 	return true;
 }
 
 bool clinica_agregar_doc(clinica_t* clinica, const char* nombre, const char* especialidad) {
-	datos_doctor_t* datos = crear_datos_doc(especialidad);
-	if (!datos) return false;
+	doctor_t* doctor = doctor_crear(nombre, especialidad);
+	if (!doctor) return false;
 
-	if (!abb_guardar(clinica->doctores, nombre, datos)) {
-		destruir_datos_doc(datos);
+	if (!abb_guardar(clinica->doctores, nombre, doctor)) {
+		doctor_destruir(doctor);
 		return false;
 	}
 
-	if(hash_pertenece(clinica->colas, especialidad))
-		return true;
-
-	// Nota: Al agregar un doctor, se agrega al hash esa especialidad si es que esta
-	// no existía, pero no se crea la colaesp_t, simplemente se guarda NULL.
-	// Esto es así para evitar crear colaesp_t de especialidades que quizás no hay ningún
-	// paciente, pero si se guarda NULL para confirmar que la especialidad exista.
-	// Luego clinica_encolar() se encarga de crear la colaesp_t si es que la especialidad
-	// pertenece al hash pero al obtener este devuelve NULL.
-	if (!hash_guardar(clinica->colas, especialidad, NULL)) {
+	if (!colapac_agregar(clinica->colapac, especialidad)) {
 		abb_borrar(clinica->doctores, nombre);
-		destruir_datos_doc(datos);
+		doctor_destruir(doctor);
 		return false;
 	}
 
 	return true;
 }
 
-bool clinica_encolar(clinica_t* clinica, char* nombre, const char* especialidad, bool urgente) {
-	unsigned short* anio = hash_obtener(clinica->antiguedades, nombre);
-	if (!anio) return false;
+bool clinica_encolar(clinica_t* clinica, const char* nombre, const char* especialidad, bool urgente) {
+	paciente_t* paciente = hash_obtener(clinica->pacientes, nombre);
+	if (!paciente) return false;
 
-	if (!hash_pertenece(clinica->colas, especialidad)) return false;
-
-	colaesp_t* colaesp = hash_obtener(clinica->colas, especialidad);
-	if (!colaesp) {
-		colaesp = crear_colaesp();
-		if (!colaesp) return false;
-
-		if (!hash_guardar(clinica->colas, especialidad, colaesp)) {
-			destruir_colaesp(colaesp);
-			return false;
-		}
-	}
-
-	bool encolo = false;
-	if (urgente) {
-		encolo = cola_encolar(colaesp->urgentes, nombre);
-	} else {
-		paciente_t* paciente = crear_paciente(nombre, *anio);
-		if (!paciente) return false;
-		encolo = heap_encolar(colaesp->regulares, paciente);
-	}
-
-	if (encolo) colaesp->cant_en_espera++;
-	return encolo;
+	return colapac_encolar(clinica->colapac, paciente, especialidad, urgente);
 }
 
 void clinica_destruir(clinica_t* clinica) {
-	hash_destruir(clinica->colas);
-	hash_destruir(clinica->antiguedades);
+	colapac_destruir(clinica->colapac);
+	hash_destruir(clinica->pacientes);
 	abb_destruir(clinica->doctores);
 	free(clinica);
 }
 
 size_t clinica_cantidad_pac(clinica_t* clinica, const char* especialidad) {
-	colaesp_t* colaesp = hash_obtener(clinica->colas, especialidad);
-	if (!colaesp) {
-		return 0;
-	}
-
-	return colaesp->cant_en_espera;
+	return colapac_cantidad(clinica->colapac, especialidad);
 }
 
-char* clinica_desencolar(clinica_t* clinica, const char* doctor) {
-	datos_doctor_t* datos = abb_obtener(clinica->doctores, doctor);
-	if (!datos) return NULL;
+const char* clinica_desencolar(clinica_t* clinica, const char* nombre_doc) {
+	doctor_t* doctor = abb_obtener(clinica->doctores, nombre_doc);
+	if (!doctor) return NULL;
 
-	colaesp_t* colaesp = hash_obtener(clinica->colas, datos->especialidad);
-	if (!colaesp) return NULL;
+	paciente_t* paciente = colapac_desencolar(clinica->colapac, doctor_especialidad(doctor));
+	if (!paciente) return NULL;
 
-	char* nombre = cola_desencolar(colaesp->urgentes);
-	if(!nombre) {
-		paciente_t* paciente = heap_desencolar(colaesp->regulares);
-		if (!paciente) return NULL;
-
-		nombre = paciente->nombre;
-		free(paciente);
-	}
-
-	colaesp->cant_en_espera--;
-	datos->pacientes_atendidos++;
-	return nombre;
+	doctor_contar_paciente(doctor);
+	return paciente_nombre(paciente);
 }
 
-const char* clinica_especialidad(clinica_t* clinica, const char* doctor) {
-	datos_doctor_t* datos = abb_obtener(clinica->doctores, doctor);
-	return datos ? datos->especialidad : NULL;
+const char* clinica_especialidad(clinica_t* clinica, const char* nombre_doc) {
+	doctor_t* doctor = abb_obtener(clinica->doctores, nombre_doc);
+	return doctor ? doctor_especialidad(doctor) : NULL;
 }
 
 void clinica_visitar_doc(clinica_t* clinica, visitar_doc_t visitar, void* extra, const char* inicio, const char* fin) {
