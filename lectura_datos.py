@@ -27,4 +27,3 @@ def cargar_datos(ruta_archivo, usuarios_gustos, canciones_similares):
 
 			agregar_gusto(usuarios_gustos, fila["USER_ID"], cancion)
 			agregar_similar(canciones_similares, playlists, fila["PLAYLIST_ID"], cancion)
-			print(fila["ID"])
