@@ -2,10 +2,10 @@ import csv
 from Grafo import Grafo
 
 
-def agregar_gusto(usuarios_gustos, playlist, usuario, cancion):
+def agregar_gusto(usuarios_gustos, playlist_nombre, usuario, cancion):
 	usuarios_gustos.agregar_vertice(usuario)
 	usuarios_gustos.agregar_vertice(cancion)
-	usuarios_gustos.agregar_arista(usuario, cancion, peso = playlist)
+	usuarios_gustos.agregar_arista(usuario, cancion, peso = playlist_nombre)
 
 def agregar_similar(canciones_similares, playlists, playlist_actual, cancion_actual):
 	canciones_similares.agregar_vertice(cancion_actual)
@@ -25,5 +25,5 @@ def cargar_datos(ruta_archivo, usuarios_gustos, canciones_similares):
 		for fila in lector:
 			cancion = fila["TRACK_NAME"] + " - " + fila["ARTIST"]
 
-			agregar_gusto(usuarios_gustos, fila["PLAYLIST_ID"], fila["USER_ID"], cancion)
+			agregar_gusto(usuarios_gustos, fila["PLAYLIST_NAME"], fila["USER_ID"], cancion)
 			agregar_similar(canciones_similares, playlists, fila["PLAYLIST_ID"], cancion)
