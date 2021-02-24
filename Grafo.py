@@ -1,3 +1,5 @@
+import random
+
 class Grafo:
 
 	def __init__(self):
@@ -54,7 +56,7 @@ class Grafo:
 			return True
 		return False
 
-	def obtener_vertice_random(self):
+	def vertice_random(self):
 		return random.choice(list(self.vertices.keys()))
 
 	def vertices(self):
