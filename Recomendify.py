@@ -1,5 +1,5 @@
 from Grafo import Grafo
-import Grafo_util
+import funciones_tp3
 from lectura_datos import cargar_datos
 import sys
 
@@ -10,25 +10,22 @@ CMD_CICLO = "ciclo"
 CMD_RANGO = "rango"
 CMD_CLUSTERING = "clustering"
 
-def camino(parametros):
-	pass
-
-def procesar_entrada(linea):
-	entrada = linea.split(" ")
-	if entrada[0] == CMD_CAMINO:
-		camino(entrada[1:])
-	elif entrada[0] == CMD_CANCIONES_IMPORTANTES:
+def procesar_entrada(linea, usuarios_gustos, canciones_similares):
+	comando, _, parametros = linea.partition(" ")
+	if comando == CMD_CAMINO:
+		funciones_tp3.camino(parametros, usuarios_gustos, canciones_similares)
+	elif comando == CMD_CANCIONES_IMPORTANTES:
 		pass
-	elif entrada[0] == CMD_RECOMENDACION:
+	elif comando == CMD_RECOMENDACION:
 		pass
-	elif entrada[0] == CMD_CICLO:
+	elif comando == CMD_CICLO:
 		pass
-	elif entrada[0] == CMD_RANGO:
+	elif comando == CMD_RANGO:
 		pass
-	elif entrada[0] == CMD_CLUSTERING:
+	elif comando == CMD_CLUSTERING:
 		pass
 	else:
-		print("Error: comando inválido (\"" + entrada[0] + "\")")
+		print(f"Error: comando inválido (\"{comando}\")")
 		return
 
 def main():
@@ -41,7 +38,7 @@ def main():
 	cargar_datos(sys.argv[1], usuarios_gustos, canciones_similares)
 
 	for linea in sys.stdin:
-		procesar_entrada(linea.rstrip("\n"))
+		procesar_entrada(linea.rstrip("\n"), usuarios_gustos, canciones_similares)
 
 if __name__ == "__main__":
 	main()
