@@ -1,6 +1,11 @@
 import csv
 from Grafo import Grafo
 
+FORMATO_CANCION = "{} - {}"
+COL_CANCION = "TRACK_NAME"
+COL_ARTISTA = "ARTIST"
+COL_PLAYLIST = "PLAYLIST_NAME"
+COL_USUARIO = "USER_ID"
 
 def agregar_gusto(usuarios_gustos, playlist_nombre, usuario, cancion):
 	usuarios_gustos.agregar_vertice(usuario)
@@ -23,7 +28,7 @@ def cargar_datos(ruta_archivo, usuarios_gustos, canciones_similares):
 	with open(ruta_archivo, "r") as archivo:
 		lector = csv.DictReader(archivo, delimiter = '\t', quoting = csv.QUOTE_NONE)
 		for fila in lector:
-			cancion = fila["TRACK_NAME"] + " - " + fila["ARTIST"]
+			cancion = FORMATO_CANCION.format(fila[COL_CANCION], fila[COL_ARTISTA])
 
-			agregar_gusto(usuarios_gustos, fila["PLAYLIST_NAME"], fila["USER_ID"], cancion)
-			agregar_similar(canciones_similares, playlists, fila["PLAYLIST_ID"], cancion)
+			agregar_gusto(usuarios_gustos, fila[COL_PLAYLIST], fila[COL_USUARIO], cancion)
+			agregar_similar(canciones_similares, playlists, fila[COL_PLAYLIST], cancion)
