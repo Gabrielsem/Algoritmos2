@@ -1,13 +1,22 @@
 import Grafo_util
+
 CAM_SEPARADOR = " >>>> "
 CAM_ERROR = "Tanto el origen como el destino deben ser canciones."
-CAM_MENSAJE = "{} --> aparece en la playlist --> {} ---> de ---> {} --> tiene una playlist --> {} --> donde aparece --> "
+CAM_MENSAJES = ["aparece en la playlist", "de", "tiene una playlist", "donde aparece"]
 
 FLECHA = " --> "
 SIN_RECORRIDO = "No se encontro recorrido"
 NO_CANCION = "{} no es una canción válida."
 NO_NUMERO = "{} no es una cantidad válida."
 
+def imprimir_lista(lista, separador = ' ', mensajes_intermedios = []):
+	i = 0
+	for s in lista[:-1]:
+		print(s, end = separador)
+		if len(mensajes_intermedios) > 0:
+			print(mensajes_intermedios[i], end = separador)
+			i = (i + 1) % len(mensajes_intermedios)
+	print(lista[-1])
 
 def camino(parametros, usuarios_gustos, canciones_similares):
 	origen, _, destino = parametros.partition(CAM_SEPARADOR)
@@ -15,20 +24,12 @@ def camino(parametros, usuarios_gustos, canciones_similares):
 		print(CAM_ERROR)
 		return
 
-	padres, _ = Grafo_util.recorrido_bfs(usuarios_gustos, destino, v_corte = origen)
-	if origen not in padres:
-		print(CAM_SIN_RECORRIDO)
+	camino_min = Grafo_util.camino_minimo(usuarios_gustos, origen, destino, con_peso = True)
+	if len(camino_min) == 0:
+		print(SIN_RECORRIDO)
 		return
 	
-	cancion_actual = origen
-	while not cancion_actual == destino:
-		usuario = padres[cancion_actual]
-		cancion_siguiente = padres[usuario]
-		playlist_1 = usuarios_gustos.obtener_peso(cancion_actual, usuario)
-		playlist_2 = usuarios_gustos.obtener_peso(usuario, cancion_siguiente)
-		print(CAM_MENSAJE.format(cancion_actual, playlist_1, usuario, playlist_2), end = '') 
-		cancion_actual = cancion_siguiente
-	print(destino)
+	imprimir_lista(camino_min, separador = FLECHA, mensajes_intermedios = CAM_MENSAJES)
 
 def ciclo(parametros, canciones_similares):
 	n, _, cancion_origen = parametros.partition(" ")
@@ -39,12 +40,9 @@ def ciclo(parametros, canciones_similares):
 		print(NO_CANCION.format(cancion))
 		return
 
-	canciones = Grafo_util.ciclo_n(canciones_similares, cancion_origen, int(n))
-	if len(canciones) == 0:
+	lista_ciclo = Grafo_util.ciclo_n(canciones_similares, cancion_origen, int(n))
+	if len(lista_ciclo) == 0:
 		print(SIN_RECORRIDO)
 		return
 
-	print(cancion_origen, end = '')
-	for c in canciones:
-		print(FLECHA + c, end = '')
-	print("")
+	imprimir_lista(lista_ciclo, separador = FLECHA)
