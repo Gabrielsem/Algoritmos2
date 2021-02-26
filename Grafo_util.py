@@ -28,3 +28,28 @@ def recorrido_bfs(grafo, v_origen, v_corte = None, orden_corte = float("inf")):
 
 	return padres, ordenes
 
+def ciclo_aux(grafo, origen, actual, n, visitados):
+	if n <= 1:
+		if grafo.estan_unidos(origen, actual):
+			return [actual]
+		return []
+
+	visitados.add(actual)
+	for v in grafo.adyacentes(actual):
+		if v in visitados:
+			continue
+		lista = ciclo_aux(grafo, origen, v, n - 1, visitados)
+		if len(lista) > 0:
+			lista.append(actual)
+			return lista
+	
+	visitados.remove(actual)
+	return []
+
+# Devuelve una lista de los vértices de un ciclo de n elementos,
+# terminando en origen. La lista se devuelve vacía si no se encuentra
+# tal ciclo.
+def ciclo_n(grafo, origen, n):
+	visitados = set()
+	return ciclo_aux(grafo, origen, origen, n, visitados)
+
