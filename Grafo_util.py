@@ -32,7 +32,7 @@ def recorrido_bfs(grafo, v_origen, v_corte = None, orden_corte = float("inf")):
 # Solo para grafos no pesados.
 # La lista se devuelve vacía si no se encuentra camino
 # Si con_peso es verdadero, se agrega a la lista entre vértice el peso de su arista.
-def camino_minimo(grafo, v_origen, v_destino, con_peso = false):
+def camino_minimo(grafo, v_origen, v_destino, con_peso = False):
 	lista = []
 	padres, _ = Grafo_util.recorrido_bfs(usuarios_gustos, v_destino, v_corte = v_origen)
 	if v_origen not in padres:
