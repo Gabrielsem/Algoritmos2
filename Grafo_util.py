@@ -34,9 +34,8 @@ def recorrido_bfs(grafo, v_origen, v_corte = None, orden_corte = float("inf")):
 # Si con_peso es verdadero, se agrega a la lista entre vértice el peso de su arista.
 def camino_minimo(grafo, v_origen, v_destino, con_peso = False):
 	lista = []
-	padres, _ = Grafo_util.recorrido_bfs(usuarios_gustos, v_destino, v_corte = v_origen)
+	padres, _ = recorrido_bfs(grafo, v_destino, v_corte = v_origen)
 	if v_origen not in padres:
-		print(CAM_SIN_RECORRIDO)
 		return lista
 
 	actual = v_origen
