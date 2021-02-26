@@ -10,6 +10,8 @@ CMD_CICLO = "ciclo"
 CMD_RANGO = "rango"
 CMD_CLUSTERING = "clustering"
 
+CMD_INVALIDO = "ERROR: comando inválido ({})"
+
 def procesar_entrada(linea, usuarios_gustos, canciones_similares):
 	comando, _, parametros = linea.partition(" ")
 	if comando == CMD_CAMINO:
@@ -19,13 +21,13 @@ def procesar_entrada(linea, usuarios_gustos, canciones_similares):
 	elif comando == CMD_RECOMENDACION:
 		pass
 	elif comando == CMD_CICLO:
-		pass
+		funciones_tp3.ciclo(parametros, canciones_similares)
 	elif comando == CMD_RANGO:
 		pass
 	elif comando == CMD_CLUSTERING:
 		pass
 	else:
-		print(f"Error: comando inválido (\"{comando}\")")
+		print(CMD_INVALIDO.format(comando))
 		return
 
 def main():
