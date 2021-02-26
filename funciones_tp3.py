@@ -32,17 +32,28 @@ def camino(parametros, usuarios_gustos, canciones_similares):
 	imprimir_lista(camino_min, separador = FLECHA, mensajes_intermedios = CAM_MENSAJES)
 
 def ciclo(parametros, canciones_similares):
-	n, _, cancion_origen = parametros.partition(" ")
+	n, _, cancion = parametros.partition(" ")
 	if not n.isdigit():
 		print(NO_NUMERO.format(n))
 		return
-	if cancion_origen not in canciones_similares:
+	if cancion not in canciones_similares:
 		print(NO_CANCION.format(cancion))
 		return
 
-	lista_ciclo = Grafo_util.ciclo_n(canciones_similares, cancion_origen, int(n))
+	lista_ciclo = Grafo_util.ciclo_n(canciones_similares, cancion, int(n))
 	if len(lista_ciclo) == 0:
 		print(SIN_RECORRIDO)
 		return
 
 	imprimir_lista(lista_ciclo, separador = FLECHA)
+
+def rango(parametros, canciones_similares):
+	n, _, cancion = parametros.partition(" ")
+	if not n.isdigit():
+		print(NO_NUMERO.format(n))
+		return
+	if cancion not in canciones_similares:
+		print(NO_CANCION.format(cancion))
+		return
+
+	print(Grafo_util.rango(canciones_similares, cancion, int(n)))

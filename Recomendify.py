@@ -23,7 +23,7 @@ def procesar_entrada(linea, usuarios_gustos, canciones_similares):
 	elif comando == CMD_CICLO:
 		funciones_tp3.ciclo(parametros, canciones_similares)
 	elif comando == CMD_RANGO:
-		pass
+		funciones_tp3.rango(parametros, canciones_similares)
 	elif comando == CMD_CLUSTERING:
 		pass
 	else:
