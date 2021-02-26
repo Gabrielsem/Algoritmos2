@@ -62,7 +62,7 @@ def ciclo_aux(grafo, origen, actual, n, visitados):
 	visitados.remove(actual)
 	return []
 
-# Devuelve una lista de n+ 1 vértices de un ciclo de n vértices,
+# Devuelve una lista de n + 1 vértices de un ciclo de n vértices,
 # empezando y terminando en origen. La lista se devuelve vacía si no se encuentra
 # tal ciclo.
 def ciclo_n(grafo, origen, n):
