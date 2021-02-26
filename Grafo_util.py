@@ -31,7 +31,8 @@ def recorrido_bfs(grafo, v_origen, v_corte = None, orden_corte = float("inf")):
 # Devuelve una lista con los elementos del camino mínimo entre v_origen y v_destino.
 # Solo para grafos no pesados.
 # La lista se devuelve vacía si no se encuentra camino
-def camino_minimo(grafo, v_origen, v_destino):
+# Si con_peso es verdadero, se agrega a la lista entre vértice el peso de su arista.
+def camino_minimo(grafo, v_origen, v_destino, con_peso = false):
 	lista = []
 	padres, _ = Grafo_util.recorrido_bfs(usuarios_gustos, v_destino, v_corte = v_origen)
 	if v_origen not in padres:
@@ -41,7 +42,10 @@ def camino_minimo(grafo, v_origen, v_destino):
 	actual = v_origen
 	while not actual == None:
 		lista.append(actual)
-		actual = padres[actual]
+		sig = padres[actual]
+		if con_peso and not sig == None:
+			lista.append(grafo.obtener_peso(actual, sig))
+		actual = sig
 	return lista
 
 def ciclo_aux(grafo, origen, actual, n, visitados):
