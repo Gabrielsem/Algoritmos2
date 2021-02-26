@@ -72,3 +72,13 @@ def ciclo_n(grafo, origen, n):
 	visitados = set()
 	return ciclo_aux(grafo, origen, origen, n, visitados)
 
+# Devuelve la cantidad de vértices que se encuenten a exactamente n saltos
+# del vértice pasado por parámetro.
+def rango(grafo, vertice, n):
+	_, ordenes = recorrido_bfs(grafo, vertice, orden_corte = n)
+	cantidad = 0
+	for v in ordenes:
+		if ordenes[v] == n:
+			cantidad += 1
+
+	return cantidad
