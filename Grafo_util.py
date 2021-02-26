@@ -28,10 +28,26 @@ def recorrido_bfs(grafo, v_origen, v_corte = None, orden_corte = float("inf")):
 
 	return padres, ordenes
 
+# Devuelve una lista con los elementos del camino mínimo entre v_origen y v_destino.
+# Solo para grafos no pesados.
+# La lista se devuelve vacía si no se encuentra camino
+def camino_minimo(grafo, v_origen, v_destino):
+	lista = []
+	padres, _ = Grafo_util.recorrido_bfs(usuarios_gustos, v_destino, v_corte = v_origen)
+	if v_origen not in padres:
+		print(CAM_SIN_RECORRIDO)
+		return lista
+
+	actual = v_origen
+	while not actual == None:
+		lista.append(actual)
+		actual = padres[actual]
+	return lista
+
 def ciclo_aux(grafo, origen, actual, n, visitados):
 	if n <= 1:
 		if grafo.estan_unidos(origen, actual):
-			return [actual]
+			return [origen, actual]
 		return []
 
 	visitados.add(actual)
@@ -46,8 +62,8 @@ def ciclo_aux(grafo, origen, actual, n, visitados):
 	visitados.remove(actual)
 	return []
 
-# Devuelve una lista de los vértices de un ciclo de n elementos,
-# terminando en origen. La lista se devuelve vacía si no se encuentra
+# Devuelve una lista de n+ 1 vértices de un ciclo de n vértices,
+# empezando y terminando en origen. La lista se devuelve vacía si no se encuentra
 # tal ciclo.
 def ciclo_n(grafo, origen, n):
 	visitados = set()
