@@ -41,7 +41,7 @@ def leer_archivo(ruta_archivo):
 # Recibe diccionario de playlists (Clave = nombre de playlist, dato = lista de todas las canciones)
 def grafo_canciones(playlists):
 	grafo = Grafo()
-	for playlist in playlists:
+	for playlist in playlists.values():
 		agregados = 0
 		for cancion in playlist:
 			grafo.agregar_vertice(cancion)
