@@ -43,5 +43,7 @@ def grafo_canciones(playlists):
 			agregados += 1
 			for i in range(0, agregados - 1):
 				grafo.agregar_arista(playlist[i], cancion)
+				
+	return grafo
 
 
