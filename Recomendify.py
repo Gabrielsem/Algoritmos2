@@ -1,6 +1,7 @@
 from Grafo import Grafo
 import funciones_tp3
-from lectura_datos import cargar_datos
+import Grafo_util
+from lectura_datos import leer_archivo
 import sys
 
 CMD_CAMINO = "camino"
@@ -37,7 +38,7 @@ def main():
 
 	usuarios_gustos = Grafo() # Grafo bipartito entre usuarios y canciones, conectándo a los usuarios con las canciones que les gustan
 	canciones_similares = Grafo() # Grafo de canciones cuyas aristas conectan canciones similares
-	cargar_datos(sys.argv[1], usuarios_gustos, canciones_similares)
+	leer_archivo(sys.argv[1], usuarios_gustos, canciones_similares)
 
 	for linea in sys.stdin:
 		procesar_entrada(linea.rstrip("\n"), usuarios_gustos, canciones_similares)
