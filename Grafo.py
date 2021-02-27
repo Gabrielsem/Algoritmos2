@@ -69,3 +69,6 @@ class Grafo:
 
 	def __iter__(self):
 		return iter(self.vertices.keys())
+
+	def __len__(self):
+		return len(self.vertices)
