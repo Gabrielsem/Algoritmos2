@@ -12,7 +12,7 @@ def agregar_grafo_usuarios(usuarios_gustos, playlist_nombre, usuario, cancion):
 	usuarios_gustos.agregar_vertice(cancion)
 	usuarios_gustos.agregar_arista(usuario, cancion, peso = playlist_nombre)
 
-def agregar_dic_playlists(canciones_similares, playlists, playlist_actual, cancion_actual):
+def agregar_dic_playlists(playlists, playlist_actual, cancion_actual):
 	if playlist_actual not in playlists:
 		playlists[playlist_actual] = [cancion_actual]
 	else:
@@ -33,7 +33,7 @@ def leer_archivo(ruta_archivo):
 			cancion = FORMATO_CANCION.format(fila[COL_CANCION], fila[COL_ARTISTA])
 
 			agregar_grafo_usuarios(usuarios_gustos, fila["PLAYLIST_NAME"], fila["USER_ID"], cancion)
-			agregar_dic_playlists(canciones_similares, playlists, fila["PLAYLIST_ID"], cancion)
+			agregar_dic_playlists(playlists, fila["PLAYLIST_ID"], cancion)
 
 	return usuarios_gustos, playlists
 
