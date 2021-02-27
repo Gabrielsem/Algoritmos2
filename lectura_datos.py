@@ -23,8 +23,9 @@ def agregar_dic_playlists(canciones_similares, playlists, playlist_actual, canci
 # que esten en sus playlists
 # 2. Diccionario de playlists (Clave = nombre de playlist, dato = lista de todas las canciones)
 # Ese diccionario se puede pasar a grafo_canciones() para crear el Grafo correspondiente.
-def leer_archivo(ruta_archivo, usuarios_gustos, canciones_similares):
+def leer_archivo(ruta_archivo):
 	playlists = {} # Diccionario de playlists, guarda listas con las canciones de la playlist
+	usuarios_gustos = Grafo()
 
 	with open(ruta_archivo, "r") as archivo:
 		lector = csv.DictReader(archivo, delimiter = '\t', quoting = csv.QUOTE_NONE)
@@ -33,6 +34,8 @@ def leer_archivo(ruta_archivo, usuarios_gustos, canciones_similares):
 
 			agregar_grafo_usuarios(usuarios_gustos, fila["PLAYLIST_NAME"], fila["USER_ID"], cancion)
 			agregar_dic_playlists(canciones_similares, playlists, fila["PLAYLIST_ID"], cancion)
+
+	return usuarios_gustos, playlists
 
 # Devuelve un grafo con vértices de canciones y aristas entre canciones que esten en una misma playlist.
 # Recibe diccionario de playlists (Clave = nombre de playlist, dato = lista de todas las canciones)
