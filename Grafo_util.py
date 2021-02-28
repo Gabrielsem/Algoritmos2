@@ -82,3 +82,14 @@ def rango(grafo, vertice, n):
 			cantidad += 1
 
 	return cantidad
+
+#devuelve el pagerank del vertice pasado por parametro
+# pr(pi) = (1-d)/N + d. EE pr(pj)/ L(pj)
+def pagerank(grafo, tol=1.0e-6, d=0.85, max_iter=100, nstart=1):
+	for vertice in grafo:
+
+		dic_prs = dict((x, nstart) for x in grafo.adyacentes(vertice))
+		for i in range(max_iter):
+			prv = (1-d) / len(grafo) + d * sum(prw / len(grafo.adyacentes(w)) for w, prw in dic_prs.items())
+
+
