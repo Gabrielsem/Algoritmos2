@@ -86,10 +86,15 @@ def rango(grafo, vertice, n):
 #devuelve el pagerank del vertice pasado por parametro
 # pr(pi) = (1-d)/N + d. EE pr(pj)/ L(pj)
 def pagerank(grafo, tol=1.0e-6, d=0.85, max_iter=100, nstart=1):
-	for vertice in grafo:
+	dic_prs = dict((x, nstart) for x in grafo)
+	N = len(grafo)
+	for i in range(max_iter):
+		ultimo_prs = dic_prs
+		for vertice in grafo:
+			
+			dic_prs[vertice] = (1-d) / N + d * sum(dic_prs[ady] / len(grafo.adyacentes(ady)) for ady in grafo.adyacentes(vertice))
 
-		dic_prs = dict((x, nstart) for x in grafo.adyacentes(vertice))
-		for i in range(max_iter):
-			prv = (1-d) / len(grafo) + d * sum(prw / len(grafo.adyacentes(w)) for w, prw in dic_prs.items())
-
-
+		err = sum([abs(dic_prs[n] - ultimo_prs[n]) for n in dic_prs.keys()]) 
+		if err < N*tol: 
+			return dic_prs
+	raise ValueError('pagerank: iteration failed to converge in %d iterations.' ,max_iter)
