@@ -7,6 +7,9 @@ COL_ARTISTA = "ARTIST"
 COL_PLAYLIST = "PLAYLIST_NAME"
 COL_USUARIO = "USER_ID"
 
+ID_USUARIO = "U"
+ID_CANCION = "C"
+
 def agregar_grafo_usuarios(usuarios_gustos, playlist_nombre, usuario, cancion):
 	usuarios_gustos.agregar_vertice(usuario)
 	usuarios_gustos.agregar_vertice(cancion)
@@ -31,21 +34,24 @@ def leer_archivo(ruta_archivo):
 		lector = csv.DictReader(archivo, delimiter = '\t', quoting = csv.QUOTE_NONE)
 		for fila in lector:
 			cancion = FORMATO_CANCION.format(fila[COL_CANCION], fila[COL_ARTISTA])
+			usuario = fila[COL_USUARIO]
 
-			agregar_grafo_usuarios(usuarios_gustos, fila["PLAYLIST_NAME"], fila["USER_ID"], cancion)
-			agregar_dic_playlists(playlists, fila["PLAYLIST_ID"], cancion)
+			agregar_grafo_usuarios(usuarios_gustos, fila[COL_PLAYLIST], (ID_USUARIO, usuario), (ID_CANCION, cancion))
+			agregar_dic_playlists(playlists, fila[COL_PLAYLIST], cancion)
 
 	return usuarios_gustos, playlists
 
-# Devuelve un grafo con vértices de canciones y aristas entre canciones que esten en una misma playlist.
+# Carga los datos del grafo con vértices de canciones y aristas entre canciones que esten en una misma playlist.
+# Si ya esta cargado, no hace nada
 # Recibe diccionario de playlists (Clave = nombre de playlist, dato = lista de todas las canciones)
-def grafo_canciones(playlists):
-	grafo = Grafo()
+def grafo_canciones(playlists, canciones_similares):
+	if len(canciones_similares) > 0:
+		return
+
 	for playlist in playlists.values():
 		agregados = 0
 		for cancion in playlist:
-			grafo.agregar_vertice(cancion)
+			canciones_similares.agregar_vertice(cancion)
 			agregados += 1
 			for i in range(0, agregados - 1):
-				grafo.agregar_arista(playlist[i], cancion)	
-	return grafo
+				canciones_similares.agregar_arista(playlist[i], cancion)	
