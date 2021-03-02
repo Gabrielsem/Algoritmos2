@@ -109,3 +109,30 @@ def pagerank(grafo, max_iter=100):
 		if err < PR_TOL_ERR:
 			return dic_prs
 	return dic_prs
+
+
+def clustering_v(grafo, v):
+	ady = grafo.adyacentes(v)
+	grado_sal = len(ady)
+	adyacentes_unidos = 0
+	if grado_sal < 2:
+		return 0
+
+	for w in ady:
+		for u in ady:
+			if grafo.estan_unidos(w, u):
+				adyacentes_unidos += 1
+
+	return adyacentes_unidos/(grado_sal*(grado_sal - 1))
+
+def clustering(grafo, vertice = None):
+	if len(grafo) == 0:
+		return 0
+	if vertice:
+		return clustering_v(grafo, vertice)
+
+	c_total = 0
+	for v in grafo:
+		c_total += clustering_v(grafo, v)
+
+	return c_total/len(grafo)

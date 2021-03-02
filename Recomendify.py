@@ -12,32 +12,34 @@ CMD_RANGO = "rango"
 CMD_CLUSTERING = "clustering"
 CMD_INVALIDO = "ERROR: comando inválido ({})"
 
-def procesar_entrada(linea, usuarios_gustos, canciones_similares, playlists, top_canciones):
+def procesar_entrada(linea, grafo_usuarios, grafo_canciones, playlists, top_canciones):
 	comando, _, parametros = linea.partition(" ")
 	if comando == CMD_CAMINO:
-		funciones_tp3.camino(parametros, usuarios_gustos)
+		funciones_tp3.camino(parametros, grafo_usuarios)
 
 	elif comando == CMD_CANCIONES_IMPORTANTES:
-		lectura_datos.grafo_canciones(playlists, canciones_similares)
+		lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
 		
-		funciones_tp3.canciones_importantes(parametros, canciones_similares, top_canciones)
+		funciones_tp3.canciones_importantes(parametros, grafo_canciones, top_canciones)
 
 	elif comando == CMD_RECOMENDACION:
 		pass
 
 	elif comando == CMD_CICLO:
-		lectura_datos.grafo_canciones(playlists, canciones_similares)
+		lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
 
-		funciones_tp3.ciclo(parametros, canciones_similares)
+		funciones_tp3.ciclo(parametros, grafo_canciones)
 
 	elif comando == CMD_RANGO:
-		lectura_datos.grafo_canciones(playlists, canciones_similares)
+		lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
 
-		funciones_tp3.rango(parametros, canciones_similares)
+		funciones_tp3.rango(parametros, grafo_canciones)
 
 	elif comando == CMD_CLUSTERING:
-		pass
-			
+		lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
+
+		funciones_tp3.clustering(parametros, grafo_canciones)
+		
 	else:
 		print(CMD_INVALIDO.format(comando))
 		return
@@ -47,18 +49,17 @@ def main():
 		print("Error: no se pasó ruta del archivo de datos")
 		return
 
-	canciones_similares = Grafo() # Grafo de canciones cuyas aristas conectan canciones similares (se arma si se necesita)
-	usuarios_gustos, playlists = lectura_datos.leer_archivo(sys.argv[1])
+	grafo_canciones = Grafo() # Grafo de canciones cuyas aristas conectan canciones similares (se arma si se necesita)
+	grafo_usuarios, playlists = lectura_datos.leer_archivo(sys.argv[1])
 	# \-> Grafo bipartito entre usuarios y canciones, conectándo a los usuarios con las canciones que les gustan
 
 	top_canciones = ([], [])
-	# Cuando se cargue el top_canciones, va a tener:
+	# Cuando se ejecute la función de funciones_tp3.canciones_importantes(), va a tener:
 	# Lista 1: k canciones con pagerank más alto ordenados de mayor a menor
 	# Lista 2: c-k tuplas (pagerank, cancion) con condicion de heap de maximos
-	# (en realidad, se guarda el -1*pagerank y es un heap de mínimos, para usar el de python)
+	# (en realidad, se guarda el -1*pagerank y es un heap de mínimos, para usar el del módulo heapq)
 
 	for linea in sys.stdin:
-		procesar_entrada(linea.rstrip("\n"), usuarios_gustos, canciones_similares, playlists, top_canciones)
+		procesar_entrada(linea.rstrip("\n"), grafo_usuarios, grafo_canciones, playlists, top_canciones)
 
-if __name__ == "__main__":
-	main()
+main()
