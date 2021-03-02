@@ -1,7 +1,7 @@
 from Grafo import Grafo
 from collections import deque
 
-PR_TOL_ERR = 1.0e-6 
+PR_TOL_ERR = 1.0e-3
 PR_AMORT = 0.85
 
 # Hace un recorrido BFS desde el vértice de origen indicado. 
@@ -97,16 +97,15 @@ def pagerank(grafo, max_iter=100):
 	N = len(grafo)
 	nstart = 1/N
 	d = PR_AMORT
-	err_tol = PR_TOL_ERR * nstart
 	dic_prs = dict((x, nstart) for x in grafo)
-	for i in range(max_iter):
-		ultimo_prs = dic_prs.copy()
-		for vertice in grafo:
-			
-			dic_prs[vertice] = (1-d) / N + d * sum(dic_prs[ady] / len(grafo.adyacentes(ady)) for ady in grafo.adyacentes(vertice))
 
-		err = sum([abs(dic_prs[n] - ultimo_prs[n]) for n in dic_prs.keys()]) 
-		if err < N*err_tol: 
-			print(f"Convergió en {i} iteraciones")
+	for i in range(max_iter):
+		err = 0
+		for vertice in grafo:
+			aux = dic_prs[vertice]
+			dic_prs[vertice] = (1-d) / N + d * sum(dic_prs[ady] / len(grafo.adyacentes(ady)) for ady in grafo.adyacentes(vertice))
+			err += abs(dic_prs[vertice] - aux)
+
+		if err < PR_TOL_ERR:
 			return dic_prs
 	return dic_prs

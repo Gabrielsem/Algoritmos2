@@ -1,5 +1,6 @@
 import Grafo_util
 from lectura_datos import ID_CANCION, ID_USUARIO
+import heapq
 
 CAM_SEPARADOR = " >>>> "
 CAM_ERROR = "Tanto el origen como el destino deben ser canciones."
@@ -9,6 +10,8 @@ FLECHA = " --> "
 SIN_RECORRIDO = "No se encontro recorrido"
 NO_CANCION = "{} no es una canción válida."
 NO_NUMERO = "{} no es una cantidad válida."
+
+TOPC_SEPARADOR = "; "
 
 def mensaje_camino(camino):
 	msj = [None]*(len(camino)*4)
@@ -59,3 +62,27 @@ def rango(parametros, canciones_similares):
 		return
 
 	print(Grafo_util.rango(canciones_similares, cancion, int(n)))
+
+def canciones_importantes(parametros, canciones_similares, top_canciones):
+	n, _, _ = parametros.partition(" ")
+	if not n.isdigit():
+		print(NO_NUMERO.format(n))
+		return
+	n = int(n)
+
+	cant_canciones = len(top_canciones[0]) + len(top_canciones[1])
+	if cant_canciones == 0:
+		top_canciones[1].extend([(-1*pr, c) for c, pr in Grafo_util.pagerank(canciones_similares).items()]) 
+		heapq.heapify(top_canciones[1])
+		cant_canciones = len(top_canciones[1])
+
+	if cant_canciones < n:
+		n = cant_canciones
+
+	if len(top_canciones[0]) < n:
+		cant_desencolar = n - len(top_canciones[0])
+		for i in range(0, cant_desencolar):
+			_, cancion = heapq.heappop(top_canciones[1])
+			top_canciones[0].append(cancion)
+
+	print(*top_canciones[0][:n], sep = TOPC_SEPARADOR)

@@ -35,23 +35,27 @@ def leer_archivo(ruta_archivo):
 		for fila in lector:
 			cancion = FORMATO_CANCION.format(fila[COL_CANCION], fila[COL_ARTISTA])
 			usuario = fila[COL_USUARIO]
+			playlist = fila[COL_PLAYLIST]
 
-			agregar_grafo_usuarios(usuarios_gustos, fila[COL_PLAYLIST], (ID_USUARIO, usuario), (ID_CANCION, cancion))
-			agregar_dic_playlists(playlists, fila[COL_PLAYLIST], cancion)
+			agregar_grafo_usuarios(usuarios_gustos, playlist, (ID_USUARIO, usuario), (ID_CANCION, cancion))
+			agregar_dic_playlists(playlists, playlist, cancion)
 
 	return usuarios_gustos, playlists
 
 # Carga los datos del grafo con vértices de canciones y aristas entre canciones que esten en una misma playlist.
 # Si ya esta cargado, no hace nada
 # Recibe diccionario de playlists (Clave = nombre de playlist, dato = lista de todas las canciones)
+# Se borran los elementos del diccionario al utilizar esta función
 def grafo_canciones(playlists, canciones_similares):
 	if len(canciones_similares) > 0:
 		return
 
 	for playlist in playlists.values():
-		agregados = 0
-		for cancion in playlist:
-			canciones_similares.agregar_vertice(cancion)
-			agregados += 1
-			for i in range(0, agregados - 1):
-				canciones_similares.agregar_arista(playlist[i], cancion)	
+		for c in playlist:
+			canciones_similares.agregar_vertice(c)
+
+		while(len(playlist) > 0):
+			c_actual = playlist.pop()
+			for c in playlist:
+				canciones_similares.agregar_arista(c_actual, c)
+	playlists.clear()

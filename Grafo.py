@@ -67,6 +67,9 @@ class Grafo:
 		"""devuelve una lista con los vertices adyacentes """
 		return list(self.vertices[v].keys())
 
+	def aristas(self):
+		return [(v, *a) for v in self.vertices for a in self.vertices[v].items()]
+
 	def __iter__(self):
 		return iter(self.vertices.keys())
 
