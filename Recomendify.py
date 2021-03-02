@@ -3,17 +3,11 @@ import funciones_tp3
 import Grafo_util
 import lectura_datos 
 import sys
-
-CMD_CAMINO = "camino"
-CMD_CANCIONES_IMPORTANTES = "mas_importantes"
-CMD_RECOMENDACION = "recomendacion"
-CMD_CICLO = "ciclo"
-CMD_RANGO = "rango"
-CMD_CLUSTERING = "clustering"
-CMD_INVALIDO = "ERROR: comando inválido ({})"
+from mensajes import *
 
 def procesar_entrada(linea, grafo_usuarios, grafo_canciones, playlists, top_canciones):
 	comando, _, parametros = linea.partition(" ")
+
 	if comando == CMD_CAMINO:
 		funciones_tp3.camino(parametros, grafo_usuarios)
 
@@ -42,7 +36,7 @@ def procesar_entrada(linea, grafo_usuarios, grafo_canciones, playlists, top_canc
 		
 	else:
 		print(CMD_INVALIDO.format(comando))
-		return
+
 
 def main():
 	if len(sys.argv) < 2:

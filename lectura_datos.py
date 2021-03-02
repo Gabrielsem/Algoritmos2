@@ -1,7 +1,7 @@
 import csv
 from Grafo import Grafo
+from mensajes import FORMATO_CANCION
 
-FORMATO_CANCION = "{} - {}"
 COL_CANCION = "TRACK_NAME"
 COL_ARTISTA = "ARTIST"
 COL_PLAYLIST = "PLAYLIST_NAME"

@@ -1,19 +1,8 @@
 import Grafo_util
 from lectura_datos import ID_CANCION, ID_USUARIO
 import heapq
+from mensajes import *
 
-CAM_SEPARADOR = " >>>> "
-CAM_ERROR = "Tanto el origen como el destino deben ser canciones."
-CAM_MENSAJES = ["aparece en la playlist", "de", "tiene una playlist", "donde aparece"]
-
-FLECHA = " --> "
-SIN_RECORRIDO = "No se encontro recorrido"
-NO_CANCION = "{} no es una canción válida."
-NO_NUMERO = "{} no es una cantidad válida."
-
-TOPC_SEPARADOR = "; "
-
-CLUST_FORMATO = "{:.3f}"
 
 def mensaje_camino(camino):
 	msj = [None]*(len(camino)*4)
@@ -66,7 +55,7 @@ def rango(parametros, grafo_canciones):
 
 	print(Grafo_util.rango(grafo_canciones, cancion, int(n)))
 
-def canciones_importantes(parametros, grafo_canciones, top_canciones):
+def top_canciones(parametros, grafo_canciones, top_canciones):
 	n, _, _ = parametros.partition(" ")
 	if not n.isdigit():
 		print(NO_NUMERO.format(n))
