@@ -1,4 +1,4 @@
-from Grafo import Grafo
+from grafo import Grafo
 from collections import deque
 
 PR_TOL_ERR = 1.0e-3

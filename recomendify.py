@@ -1,7 +1,8 @@
-from Grafo import Grafo
+#!/usr/bin/python3
+
+from grafo import Grafo
 import funciones_tp3
-import Grafo_util
-import lectura_datos 
+import lectura_datos
 import sys
 from mensajes import *
 

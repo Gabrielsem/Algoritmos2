@@ -1,5 +1,5 @@
 import csv
-from Grafo import Grafo
+from grafo import Grafo
 from mensajes import FORMATO_CANCION
 
 COL_CANCION = "TRACK_NAME"

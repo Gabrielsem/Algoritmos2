@@ -1,4 +1,4 @@
-import Grafo_util
+import grafo_util
 from lectura_datos import ID_CANCION, ID_USUARIO
 import heapq
 from mensajes import *
@@ -21,7 +21,7 @@ def camino(parametros, grafo_usuarios):
 		print(CAM_ERROR)
 		return
 
-	camino_min = Grafo_util.camino_minimo(grafo_usuarios, origen, destino, con_peso = True)
+	camino_min = grafo_util.camino_minimo(grafo_usuarios, origen, destino, con_peso = True)
 	if len(camino_min) == 0:
 		print(SIN_RECORRIDO)
 		return
@@ -37,7 +37,7 @@ def ciclo(parametros, grafo_canciones):
 		print(NO_CANCION.format(cancion))
 		return
 
-	lista_ciclo = Grafo_util.ciclo_n(grafo_canciones, cancion, int(n))
+	lista_ciclo = grafo_util.ciclo_n(grafo_canciones, cancion, int(n))
 	if len(lista_ciclo) == 0:
 		print(SIN_RECORRIDO)
 		return
@@ -53,9 +53,9 @@ def rango(parametros, grafo_canciones):
 		print(NO_CANCION.format(cancion))
 		return
 
-	print(Grafo_util.rango(grafo_canciones, cancion, int(n)))
+	print(grafo_util.rango(grafo_canciones, cancion, int(n)))
 
-def top_canciones(parametros, grafo_canciones, top_canciones):
+def canciones_importantes(parametros, grafo_canciones, top_canciones):
 	n, _, _ = parametros.partition(" ")
 	if not n.isdigit():
 		print(NO_NUMERO.format(n))
@@ -64,7 +64,7 @@ def top_canciones(parametros, grafo_canciones, top_canciones):
 
 	cant_canciones = len(top_canciones[0]) + len(top_canciones[1])
 	if cant_canciones == 0:
-		top_canciones[1].extend([(-1*pr, c) for c, pr in Grafo_util.pagerank(grafo_canciones).items()]) 
+		top_canciones[1].extend([(-1*pr, c) for c, pr in grafo_util.pagerank(grafo_canciones).items()]) 
 		heapq.heapify(top_canciones[1])
 		cant_canciones = len(top_canciones[1])
 
@@ -81,11 +81,11 @@ def top_canciones(parametros, grafo_canciones, top_canciones):
 
 def clustering(parametros, grafo_canciones):
 	if parametros == "":
-		print(CLUST_FORMATO.format(float(Grafo_util.clustering(grafo_canciones))))
+		print(CLUST_FORMATO.format(float(grafo_util.clustering(grafo_canciones))))
 		return
 
 	if parametros not in grafo_canciones:
 		print(NO_CANCION.format(parametros))
 		return
 
-	print(CLUST_FORMATO.format(float(Grafo_util.clustering(grafo_canciones, vertice = parametros))))
+	print(CLUST_FORMATO.format(float(grafo_util.clustering(grafo_canciones, vertice = parametros))))
