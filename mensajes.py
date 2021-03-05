@@ -7,6 +7,9 @@ CMD_RANGO = "rango"
 CMD_CLUSTERING = "clustering"
 CMD_INVALIDO = "ERROR: comando inválido ({})"
 
+# Mensaje de error falta ruta de archivo
+NO_ARCHIVO = "No se pasó ruta del archivo de datos"
+
 # Mensajes de salida y de error para las funciones en funciones_tp3
 FLECHA = " --> "
 SIN_RECORRIDO = "No se encontro recorrido"

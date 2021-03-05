@@ -36,7 +36,7 @@ def procesar_entrada(linea, grafo_usuarios, grafo_canciones, playlists, top_canc
 
 def main():
 	if len(sys.argv) < 2:
-		print("Error: no se pasó ruta del archivo de datos")
+		print(NO_ARCHIVO)
 		return
 
 	grafo_canciones = Grafo() # Grafo de canciones cuyas aristas conectan canciones similares (se arma si se necesita)
