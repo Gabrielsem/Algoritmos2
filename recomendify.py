@@ -9,25 +9,26 @@ from mensajes import *
 def procesar_entrada(linea, grafo_usuarios, grafo_canciones, playlists, top_canciones):
 	comando, _, parametros = linea.partition(" ")
 
-	if not (comando == CMD_CAMINO or comando == CMD_RECOMENDACION):
-		 lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
-
 	if comando == CMD_CAMINO:
 		funciones_tp3.camino(parametros, grafo_usuarios)
 
 	elif comando == CMD_CANCIONES_IMPORTANTES:
+		lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
 		funciones_tp3.canciones_importantes(parametros, grafo_canciones, top_canciones)
 
 	elif comando == CMD_RECOMENDACION:
 		funciones_tp3.recomendacion(parametros, grafo_usuarios)
 
 	elif comando == CMD_CICLO:
+		lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
 		funciones_tp3.ciclo(parametros, grafo_canciones)
 
 	elif comando == CMD_RANGO:
+		lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
 		funciones_tp3.rango(parametros, grafo_canciones)
 
 	elif comando == CMD_CLUSTERING:
+		lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
 		funciones_tp3.clustering(parametros, grafo_canciones)
 		
 	else:
