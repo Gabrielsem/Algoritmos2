@@ -10,11 +10,17 @@ COL_USUARIO = "USER_ID"
 ID_USUARIO = "U"
 ID_CANCION = "C"
 
+# Agrega ese usuario, canción y playlist a el grafo de usuarios,
+# como una tupla (ID_USUARIO/ID_CANCION, nombre)
 def agregar_grafo_usuarios(grafo_usuarios, playlist_nombre, usuario, cancion):
+	usuario = (ID_USUARIO, usuario)
+	cancion = (ID_CANCION, cancion)
+	
 	grafo_usuarios.agregar_vertice(usuario)
 	grafo_usuarios.agregar_vertice(cancion)
 	grafo_usuarios.agregar_arista(usuario, cancion, peso = playlist_nombre)
 
+# Agrega esa canción al diccionario de playlists en la playlist actual
 def agregar_dic_playlists(playlists, playlist_actual, cancion_actual):
 	if playlist_actual not in playlists:
 		playlists[playlist_actual] = [cancion_actual]
@@ -37,7 +43,7 @@ def leer_archivo(ruta_archivo):
 			usuario = fila[COL_USUARIO]
 			playlist = fila[COL_PLAYLIST]
 
-			agregar_grafo_usuarios(grafo_usuarios, playlist, (ID_USUARIO, usuario), (ID_CANCION, cancion))
+			agregar_grafo_usuarios(grafo_usuarios, playlist, usuario, cancion)
 			agregar_dic_playlists(playlists, playlist, cancion)
 
 	return grafo_usuarios, playlists

@@ -3,6 +3,10 @@ from lectura_datos import ID_CANCION, ID_USUARIO
 import heapq
 from mensajes import *
 
+# Devuelve una lista con los top k elementos más grandes de la lista pasada,
+# quitándolos de ella.
+# Le aplica heapify a la lista, a menos que es_heap sea True en cuyo caso
+# se asume que ya cumple condición de heap.
 def _top_k(lista, k, es_heap = False):
 	if not es_heap:
 		heapq.heapify(lista)
@@ -12,10 +16,11 @@ def _top_k(lista, k, es_heap = False):
 
 	return top
 
-
-def mensaje_camino(camino):
+# Arma el mensaje a imprimir correspondiente a la función de camino.
+# Recibe una lista de aristas ((v1, v2, peso)) con v = (ID_CANCION/ID_USUARIO, nombre)
+# La lista debe tener longitud impar
+def _mensaje_camino(camino):
 	msj = [None]*(len(camino)*4)
-	# x tiene forma ((v1, v2, peso)) con v = (ID_CANCION/ID_USUARIO, nombre)
 	msj[::4] = [x[0][1] for x in camino] # Agrego los nombres de los v1
 	msj[2::4] = [x[2] for x in camino] # Agrego los pesos (playlists)
 	msj[1::2] = CAM_MENSAJES*int(len(camino)/2) # Agrego las partes constantes del mensaje
@@ -35,7 +40,7 @@ def camino(parametros, grafo_usuarios):
 		print(SIN_RECORRIDO)
 		return
 
-	print(*mensaje_camino(camino_min), sep = FLECHA)
+	print(*_mensaje_camino(camino_min), sep = FLECHA)
 
 def ciclo(parametros, grafo_canciones):
 	n, _, cancion = parametros.partition(" ")
@@ -101,6 +106,13 @@ def clustering(parametros, grafo_canciones):
 
 	print(CLUST_FORMATO.format(float(grafo_util.clustering(grafo_canciones, vertice = parametros))))
 
+# Procesa los parámetros de la función recomendacion
+# Devuelve None si son inválidos, imprimiendo el mensaje de error
+# Sino, devuelve una tupla con:
+# * booleano pidio_canciones, true si se pidio canciones false si pidio usuarios
+# * entero n, la cantidad de recomendaciones pedidas
+# * lista_canciones, que contiene las canciones ingresadas ya como las tuplas 
+# del grafo grafo_usuarios
 def _procesar_param_recom(parametros, grafo_usuarios):
 	que_recomendar, _, resto_parametros = parametros.partition(" ")
 	pidio_canciones = que_recomendar == RECOM_CANCIONES 
@@ -124,6 +136,8 @@ def _procesar_param_recom(parametros, grafo_usuarios):
 
 	return pidio_canciones, n, lista_canciones
 
+# Devuelve si el vértice pasado es del tipo pedido por el usuario
+# (es decir, si es un usuario o una canción de acuerdo a lo que se pidio)
 def _es_recom_valida(pidio_canciones, vertice):
 	return (pidio_canciones and vertice[0] == ID_CANCION) or (not pidio_canciones and vertice[0] == ID_USUARIO)
 
