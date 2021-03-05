@@ -8,7 +8,7 @@ PR_MAX_ITER = 100
 # El error ajusta segun el orden del pagerank promedio 1/v. Es decir, si
 # hay 100 vértices, el pagerank promedio es 0,01 y el mínimo error promedio
 # tolerable será 0,01 * PR_TOL_ERR
-PR_TOL_ERR = 1.0e-3
+PR_TOL_ERR = 1.0e-2
 # Coeficiente de amortiguación utilizado en pagerank()
 PR_AMORT = 0.85
 
