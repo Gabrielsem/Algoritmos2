@@ -1,8 +1,11 @@
 from grafo import Grafo
 from collections import deque
 
+PR_MAX_ITER = 100
 PR_TOL_ERR = 1.0e-3
 PR_AMORT = 0.85
+PRRW_MAX_ITER = 100
+PRRW_LARGO_RW = 500
 
 # Hace un recorrido BFS desde el vértice de origen indicado. 
 # Devuelve los diccionarios de padres y ordenes, en ese orden
@@ -93,13 +96,13 @@ def rango(grafo, vertice, n):
 
 # devuelve el pagerank de los vertices del grafo pasado por parametro
 # pr(pi) = (1-d)/N + d. EE pr(pj)/ L(pj)
-def pagerank(grafo, max_iter=100):
+def pagerank(grafo):
 	N = len(grafo)
 	nstart = 1/N
 	d = PR_AMORT
 	dic_prs = dict((x, nstart) for x in grafo)
 
-	for i in range(max_iter):
+	for i in range(PR_MAX_ITER):
 		err = 0
 		for vertice in grafo:
 			aux = dic_prs[vertice]
@@ -136,3 +139,26 @@ def clustering(grafo, vertice = None):
 		c_total += clustering_v(grafo, v)
 
 	return c_total/len(grafo)
+
+#a_recomendar es el parametro de si tiene que recomendar canciones o usuarios
+def pr_rand_walk(grafo, lista_origenes):
+	dic_prs = dict((x, 0) for x in grafo)
+
+	for i in range(PRRW_MAX_ITER):
+		val_pr = 1 #valor con que se empieza a asignar prs
+		dic_actual = {}
+		actual = random.choice(lista_origenes)
+		for L in range(PRRW_LARGO_RW):
+			lista_ady = grafo.adyacentes(actual)
+			actual = random.choice(lista_ady)
+			len_ady = len(lista_ady)
+			dic_actual[actual] = dic_actual.get(actual, 0) + val_pr / len_ady
+			val_pr = dic_actual[actual]
+		sumar_dics(dic_prs, dic_actual)
+
+	return dic_prs
+
+
+def sumar_dics(dic_total, dic_actual):
+	for key, val in dic_actual:
+		dic_total[key] += val
