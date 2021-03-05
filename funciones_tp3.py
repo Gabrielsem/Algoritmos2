@@ -70,7 +70,22 @@ def rango(parametros, grafo_canciones):
 
 	print(grafo_util.rango(grafo_canciones, cancion, int(n)))
 
-def canciones_importantes(parametros, grafo_canciones, top_canciones):
+# Calcula el pagerank de todos los usuarios y canciones del grafo de
+# usuarios y devuelve una lista de tuplas de solo los vértices que
+# eran canciones con (-1*pagerank, nombre cancion)
+def _pagerank_canciones(grafo_usuarios):
+	pr = grafo_util.pagerank(grafo_usuarios)
+	lista = []
+	for v in grafo_usuarios:
+		if v[0] == ID_USUARIO:
+			pr.pop(v)
+		else:
+			lista.append((-1*pr[v], v[1]))
+
+	return lista
+
+
+def canciones_importantes(parametros, grafo_usuarios, top_canciones):
 	n, _, _ = parametros.partition(" ")
 	if not n.isdigit() or int(n) <= 0:
 		print(NO_NUMERO.format(n))
@@ -80,7 +95,7 @@ def canciones_importantes(parametros, grafo_canciones, top_canciones):
 
 	cant_canciones = len(top_canciones[0]) + len(top_canciones[1])
 	if cant_canciones == 0:
-		top_canciones[1].extend([(-1*pr, c) for c, pr in grafo_util.pagerank(grafo_canciones).items()]) 
+		top_canciones[1].extend(_pagerank_canciones(grafo_usuarios)) 
 		es_heap = False
 		cant_canciones = len(top_canciones[1])
 

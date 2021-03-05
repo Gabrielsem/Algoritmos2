@@ -13,8 +13,7 @@ def procesar_entrada(linea, grafo_usuarios, grafo_canciones, playlists, top_canc
 		funciones_tp3.camino(parametros, grafo_usuarios)
 
 	elif comando == CMD_CANCIONES_IMPORTANTES:
-		lectura_datos.cargar_grafo_canciones(playlists, grafo_canciones)
-		funciones_tp3.canciones_importantes(parametros, grafo_canciones, top_canciones)
+		funciones_tp3.canciones_importantes(parametros, grafo_usuarios, top_canciones)
 
 	elif comando == CMD_RECOMENDACION:
 		funciones_tp3.recomendacion(parametros, grafo_usuarios)
