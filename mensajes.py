@@ -21,7 +21,7 @@ SEPARADOR_CANCIONES = " >>>> "
 
 # Mensajes de salida y error para la función camino de funciones_tp3 
 CAM_ERROR = "Tanto el origen como el destino deben ser canciones."
-CAM_MENSAJES = ["aparece en la playlist", "de", "tiene una playlist", "donde aparece"]\
+CAM_MENSAJES = ["aparece en playlist", "de", "tiene una playlist", "donde aparece"]
 
 # Separador para la salida de listas de usuarios o canciones
 SEPARADOR = "; "
