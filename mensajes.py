@@ -13,14 +13,14 @@ NO_ARCHIVO = "No se pasó ruta del archivo de datos"
 # Mensajes de salida y de error para las funciones en funciones_tp3
 FLECHA = " --> "
 SIN_RECORRIDO = "No se encontro recorrido"
-NO_CANCION = "{} no es una canción válida."
-NO_NUMERO = "{} no es una cantidad válida."
+NO_CANCION = "{} no es una canción válida"
+NO_NUMERO = "{} no es una cantidad válida"
 
 # Separador de canciones para los parámetros de entrada
 SEPARADOR_CANCIONES = " >>>> "
 
 # Mensajes de salida y error para la función camino de funciones_tp3 
-CAM_ERROR = "Tanto el origen como el destino deben ser canciones."
+CAM_ERROR = "Tanto el origen como el destino deben ser canciones"
 CAM_MENSAJES = ["aparece en playlist", "de", "tiene una playlist", "donde aparece"]
 
 # Separador para la salida de listas de usuarios o canciones
