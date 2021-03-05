@@ -31,7 +31,7 @@ class Grafo:
 	def quitar_vertice(self, v):
 		"""quita el vertice del grafo y de todas las aristas con otros vertices """
 		self.vertices.pop(v)
-		for vertice, aristas in self.vertices.items():
+		for aristas in self.vertices.values():
 			if v in aristas:
 				aristas.pop(v)
 
