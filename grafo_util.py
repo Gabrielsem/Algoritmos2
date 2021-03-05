@@ -2,13 +2,8 @@ from grafo import Grafo
 from collections import deque
 import random
 
-# Cantidad de iteraciones máximas de pagerank()
-PR_MAX_ITER = 100
-# Mínimo error promedio tolerable para cortar las iteraciones de pagerank()
-# El error ajusta segun el orden del pagerank promedio 1/v. Es decir, si
-# hay 100 vértices, el pagerank promedio es 0,01 y el mínimo error promedio
-# tolerable será 0,01 * PR_TOL_ERR
-PR_TOL_ERR = 1.0e-2
+# Cantidad de iteraciones de pagerank()
+PR_ITER = 3
 # Coeficiente de amortiguación utilizado en pagerank()
 PR_AMORT = 0.85
 
@@ -110,18 +105,13 @@ def rango(grafo, vertice, n):
 def pagerank(grafo):
 	N = len(grafo)
 	nstart = 1/N
-	d = PR_AMORT
+	primer_term = (1 - PR_AMORT) / N 
 	dic_prs = dict((x, nstart) for x in grafo)
 
-	for i in range(PR_MAX_ITER):
-		err = 0
+	for i in range(PR_ITER):
 		for vertice in grafo:
-			aux = dic_prs[vertice]
-			dic_prs[vertice] = (1-d) / N + d * sum(dic_prs[ady] / len(grafo.adyacentes(ady)) for ady in grafo.adyacentes(vertice))
-			err += abs(dic_prs[vertice] - aux)
+			dic_prs[vertice] = primer_term + PR_AMORT * sum(dic_prs[ady] / len(grafo.adyacentes(ady)) for ady in grafo.adyacentes(vertice))
 
-		if err < PR_TOL_ERR:
-			return dic_prs
 	return dic_prs
 
 # Calcula el clustering de un vértice del grafo.

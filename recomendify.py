@@ -34,7 +34,6 @@ def procesar_entrada(linea, grafo_usuarios, grafo_canciones, playlists, top_canc
 	else:
 		print(CMD_INVALIDO.format(comando))
 
-
 def main():
 	if len(sys.argv) < 2:
 		print(NO_ARCHIVO)
