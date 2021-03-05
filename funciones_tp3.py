@@ -77,9 +77,7 @@ def _pagerank_canciones(grafo_usuarios):
 	pr = grafo_util.pagerank(grafo_usuarios)
 	lista = []
 	for v in grafo_usuarios:
-		if v[0] == ID_USUARIO:
-			pr.pop(v)
-		else:
+		if v[0] == ID_CANCION:
 			lista.append((-1*pr[v], v[1]))
 
 	return lista
