@@ -1,5 +1,6 @@
 from grafo import Grafo
 from collections import deque
+import random
 
 PR_MAX_ITER = 100
 PR_TOL_ERR = 1.0e-3
@@ -58,7 +59,7 @@ def camino_minimo(grafo, v_origen, v_destino, con_peso = False):
 
 	return lista
 
-def ciclo_aux(grafo, origen, actual, n, visitados):
+def _ciclo_aux(grafo, origen, actual, n, visitados):
 	if n <= 1:
 		if grafo.estan_unidos(origen, actual):
 			return [origen, actual]
@@ -68,7 +69,7 @@ def ciclo_aux(grafo, origen, actual, n, visitados):
 	for v in grafo.adyacentes(actual):
 		if v in visitados:
 			continue
-		lista = ciclo_aux(grafo, origen, v, n - 1, visitados)
+		lista = _ciclo_aux(grafo, origen, v, n - 1, visitados)
 		if len(lista) > 0:
 			lista.append(actual)
 			return lista
@@ -81,7 +82,7 @@ def ciclo_aux(grafo, origen, actual, n, visitados):
 # tal ciclo.
 def ciclo_n(grafo, origen, n):
 	visitados = set()
-	return ciclo_aux(grafo, origen, origen, n, visitados)
+	return _ciclo_aux(grafo, origen, origen, n, visitados)
 
 # Devuelve la cantidad de vértices que se encuenten a exactamente n saltos
 # del vértice pasado por parámetro.
@@ -114,7 +115,7 @@ def pagerank(grafo):
 	return dic_prs
 
 
-def clustering_v(grafo, v):
+def _clustering_v(grafo, v):
 	ady = grafo.adyacentes(v)
 	grado_sal = len(ady)
 	adyacentes_unidos = 0
@@ -132,11 +133,11 @@ def clustering(grafo, vertice = None):
 	if len(grafo) == 0:
 		return 0
 	if vertice:
-		return clustering_v(grafo, vertice)
+		return _clustering_v(grafo, vertice)
 
 	c_total = 0
 	for v in grafo:
-		c_total += clustering_v(grafo, v)
+		c_total += _clustering_v(grafo, v)
 
 	return c_total/len(grafo)
 
@@ -160,5 +161,5 @@ def pr_rand_walk(grafo, lista_origenes):
 
 
 def sumar_dics(dic_total, dic_actual):
-	for key, val in dic_actual:
+	for key, val in dic_actual.items():
 		dic_total[key] += val

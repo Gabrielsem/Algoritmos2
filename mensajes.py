@@ -13,16 +13,23 @@ SIN_RECORRIDO = "No se encontro recorrido"
 NO_CANCION = "{} no es una canción válida."
 NO_NUMERO = "{} no es una cantidad válida."
 
-# Separador de entrada y mensajes de salida y error para la función camino de funciones_tp3 
-CAM_SEPARADOR = " >>>> "
+# Separador de canciones para los parámetros de entrada
+SEPARADOR_CANCIONES = " >>>> "
+
+# Mensajes de salida y error para la función camino de funciones_tp3 
 CAM_ERROR = "Tanto el origen como el destino deben ser canciones."
 CAM_MENSAJES = ["aparece en la playlist", "de", "tiene una playlist", "donde aparece"]\
 
-# Separador para la salida de canciones de la función canciones_importantes de funciones_tp3
-TOPC_SEPARADOR = "; "
+# Separador para la salida de listas de usuarios o canciones
+SEPARADOR = "; "
 
 # Formato de salida para el resultado de la función clustering de funciones_tp3
 CLUST_FORMATO = "{:.3f}"
 
 # Formato de salida para las canciones (primero nombre de la canción, luego del arista)
 FORMATO_CANCION = "{} - {}"
+
+# Argumento para elegir que recomendar y mensajes de error en la función recomendacion de funciones_tp3
+RECOM_CANCIONES = "canciones"
+RECOM_USUARIOS = "usuarios"
+RECOM_ERROR = f"Se debe especificar si recomendar \"{RECOM_CANCIONES}\" o \"{RECOM_USUARIOS}\""

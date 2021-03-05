@@ -3,6 +3,15 @@ from lectura_datos import ID_CANCION, ID_USUARIO
 import heapq
 from mensajes import *
 
+def _top_k(lista, k, es_heap = False):
+	if not es_heap:
+		heapq.heapify(lista)
+	top = []
+	for i in range(k):
+		top.append(heapq.heappop(lista))
+
+	return top
+
 
 def mensaje_camino(camino):
 	msj = [None]*(len(camino)*4)
@@ -14,7 +23,7 @@ def mensaje_camino(camino):
 	return msj
 
 def camino(parametros, grafo_usuarios):
-	origen, _, destino = parametros.partition(CAM_SEPARADOR)
+	origen, _, destino = parametros.partition(SEPARADOR_CANCIONES)
 	origen = (ID_CANCION, origen)
 	destino = (ID_CANCION, destino)
 	if origen not in grafo_usuarios or destino not in grafo_usuarios:
@@ -30,14 +39,15 @@ def camino(parametros, grafo_usuarios):
 
 def ciclo(parametros, grafo_canciones):
 	n, _, cancion = parametros.partition(" ")
-	if not n.isdigit():
+	if not n.isdigit() or int(n) <= 0:
 		print(NO_NUMERO.format(n))
 		return
 	if cancion not in grafo_canciones:
 		print(NO_CANCION.format(cancion))
 		return
+	n = int(n)
 
-	lista_ciclo = grafo_util.ciclo_n(grafo_canciones, cancion, int(n))
+	lista_ciclo = grafo_util.ciclo_n(grafo_canciones, cancion, n)
 	if len(lista_ciclo) == 0:
 		print(SIN_RECORRIDO)
 		return
@@ -46,7 +56,7 @@ def ciclo(parametros, grafo_canciones):
 
 def rango(parametros, grafo_canciones):
 	n, _, cancion = parametros.partition(" ")
-	if not n.isdigit():
+	if not n.isdigit() or int(n) <= 0:
 		print(NO_NUMERO.format(n))
 		return
 	if cancion not in grafo_canciones:
@@ -57,27 +67,28 @@ def rango(parametros, grafo_canciones):
 
 def canciones_importantes(parametros, grafo_canciones, top_canciones):
 	n, _, _ = parametros.partition(" ")
-	if not n.isdigit():
+	if not n.isdigit() or int(n) <= 0:
 		print(NO_NUMERO.format(n))
 		return
 	n = int(n)
+	es_heap = True
 
 	cant_canciones = len(top_canciones[0]) + len(top_canciones[1])
 	if cant_canciones == 0:
 		top_canciones[1].extend([(-1*pr, c) for c, pr in grafo_util.pagerank(grafo_canciones).items()]) 
-		heapq.heapify(top_canciones[1])
+		es_heap = False
 		cant_canciones = len(top_canciones[1])
 
-	if cant_canciones < n:
+	if n > cant_canciones:
 		n = cant_canciones
 
-	if len(top_canciones[0]) < n:
-		cant_desencolar = n - len(top_canciones[0])
-		for i in range(0, cant_desencolar):
-			_, cancion = heapq.heappop(top_canciones[1])
-			top_canciones[0].append(cancion)
+	faltan_ordenar = n - len(top_canciones[0])
 
-	print(*top_canciones[0][:n], sep = TOPC_SEPARADOR)
+	if faltan_ordenar > 0:
+		ordenados = _top_k(top_canciones[1], faltan_ordenar, es_heap = es_heap)
+		top_canciones[0].extend([x[1] for x in ordenados])
+
+	print(*top_canciones[0][:n], sep = SEPARADOR)
 
 def clustering(parametros, grafo_canciones):
 	if parametros == "":
@@ -89,3 +100,49 @@ def clustering(parametros, grafo_canciones):
 		return
 
 	print(CLUST_FORMATO.format(float(grafo_util.clustering(grafo_canciones, vertice = parametros))))
+
+def _procesar_param_recom(parametros, grafo_usuarios):
+	que_recomendar, _, resto_parametros = parametros.partition(" ")
+	pidio_canciones = que_recomendar == RECOM_CANCIONES 
+	if not (pidio_canciones or que_recomendar == RECOM_USUARIOS):
+		print(RECOM_ERROR)
+		return None
+
+	n, _, canciones = resto_parametros.partition(" ")
+	if not n.isdigit() or int(n) <= 0:
+		print(NO_NUMERO.format(n))
+		return
+	n = int(n)
+
+	lista_canciones = canciones.split(SEPARADOR_CANCIONES)
+	for i in range(len(lista_canciones)):
+		c = lista_canciones[i]
+		lista_canciones[i] = (ID_CANCION, c)
+		if lista_canciones[i] not in grafo_usuarios:
+			print(NO_CANCION.format(c))
+			return None
+
+	return pidio_canciones, n, lista_canciones
+
+def _es_recom_valida(pidio_canciones, vertice):
+	return (pidio_canciones and vertice[0] == ID_CANCION) or (not pidio_canciones and vertice[0] == ID_USUARIO)
+
+def recomendacion(parametros, grafo_usuarios):
+	datos = _procesar_param_recom(parametros, grafo_usuarios)
+	if not datos:
+		return
+	pidio_canciones, n, lista_canciones = datos
+
+	pagerank = grafo_util.pr_rand_walk(grafo_usuarios, lista_canciones)
+	for c in lista_canciones:
+		pagerank.pop(c, None)
+
+	pagerank_lista = []
+	for v, pr in pagerank.items():
+		if _es_recom_valida(pidio_canciones, v):
+			pagerank_lista.append((pr, v[1]))
+
+	if n > len(pagerank_lista):
+		n = len(pagerank_lista)
+
+	print(*[x[1] for x in _top_k(pagerank_lista, n)], sep = SEPARADOR)
