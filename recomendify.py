@@ -42,6 +42,7 @@ def main():
 	grafo_canciones = Grafo() # Grafo de canciones cuyas aristas conectan canciones similares (se arma si se necesita)
 	grafo_usuarios, playlists = lectura_datos.leer_archivo(sys.argv[1])
 	# \-> Grafo bipartito entre usuarios y canciones, conectándo a los usuarios con las canciones que les gustan
+	# Este grafo contiene tuplas (ID_CANCION/ID_USUARIO, nombre), para identificar si es canción o usuario
 
 	top_canciones = ([], [])
 	# Cuando se ejecute la función de funciones_tp3.canciones_importantes(), va a tener:
