@@ -31,7 +31,7 @@ class Grafo:
 	def quitar_vertice(self, v):
 		"""quita el vertice del grafo y de todas las aristas con otros vertices """
 		self.vertices.pop(v)
-		for vertice, aristas in self.vertices.items():
+		for aristas in self.vertices.values():
 			if v in aristas:
 				aristas.pop(v)
 
@@ -66,6 +66,9 @@ class Grafo:
 	def adyacentes(self, v):
 		"""devuelve una lista con los vertices adyacentes """
 		return list(self.vertices[v].keys())
+
+	def aristas(self):
+		return [(v, *a) for v in self.vertices for a in self.vertices[v].items()]
 
 	def __iter__(self):
 		return iter(self.vertices.keys())
