@@ -2,26 +2,28 @@
 
 // Funciones a implementar.
 
-void vector_destruir(vector_t *vector){
+void vector_destruir(vector_t *vector) {
     free(vector->datos);
     free(vector);
 }
 
-bool vector_obtener(vector_t *vector, size_t pos, int *valor){
-    if( pos >= vector->tam )
+bool vector_obtener(vector_t *vector, size_t pos, int *valor) {
+    if (pos >= vector->tam)
         return false;
+
     *valor = vector->datos[pos];
     return true;
 }
 
-bool vector_guardar(vector_t *vector, size_t pos, int valor){
-    if( pos >= vector->tam )
+bool vector_guardar(vector_t *vector, size_t pos, int valor) {
+    if (pos >= vector->tam)
         return false;
+
     vector->datos[pos] = valor;
     return true;
 }
 
-size_t vector_largo(vector_t *vector){
+size_t vector_largo(vector_t *vector) {
     return vector->tam;
 }
 
@@ -29,13 +31,12 @@ size_t vector_largo(vector_t *vector){
 
 vector_t *vector_crear(size_t tam) {
     vector_t *vector = malloc(sizeof(vector_t));
-
-    if (vector == NULL) {
+    if (!vector)
         return NULL;
-    }
+
     vector->datos = malloc(tam * sizeof(int));
 
-    if (tam > 0 && vector->datos == NULL) {
+    if (tam > 0 && !vector->datos) {
         free(vector);
         return NULL;
     }
@@ -48,9 +49,8 @@ bool vector_redimensionar(vector_t *vector, size_t tam_nuevo) {
 
     // Cuando tam_nuevo es 0, es correcto si se devuelve NULL.
     // En toda otra situación significa que falló el realloc.
-    if (tam_nuevo > 0 && datos_nuevo == NULL) {
+    if (tam_nuevo > 0 && !datos_nuevo)
         return false;
-    }
 
     vector->datos = datos_nuevo;
     vector->tam = tam_nuevo;
