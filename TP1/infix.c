@@ -12,12 +12,12 @@ typedef struct calc_token tok_t;
 // Lee una línea del standard input, devolviendo un vector a memoria dinamica
 // con strings de cada caracter (menos espacios) de la línea por separado. Devuelve
 // NULL si falla. Se debe liberar el vector con free_strv() de strutil.h
-char** leer_linea(){
+char** leer_linea() {
 
 	char* linea = NULL;
 	size_t tam = 0;
 
-	if(getline(&linea, &tam, stdin) != -1){
+	if (getline(&linea, &tam, stdin) != -1){
 		char** vector = infix_split(linea);
 		free(linea);
 		return vector;
@@ -30,11 +30,11 @@ char** leer_linea(){
 // Desapila e imprime operadores hasta que la función continuar
 // de falso para un operador. No desapila ese operador.
 // El corte puede ser NULL, e imprime todos los elementos.
-void print_hasta(pila_t* operadores, bool (*continuar)(char* operador, char* extra), char* extra){
+void print_hasta(pila_t* operadores, bool (*continuar)(char* operador, char* extra), char* extra) {
 
 	char* op = pila_ver_tope(operadores);
 
-	while(op && (!continuar || continuar(op, extra))){
+	while (op && (!continuar || continuar(op, extra))) {
 		printf("%s ", op);
 		pila_desapilar(operadores);
 		op = pila_ver_tope(operadores);
@@ -46,9 +46,9 @@ void print_hasta(pila_t* operadores, bool (*continuar)(char* operador, char* ext
 // el actual (según algoritmo de Shunting-yard), sino false.
 // Pre: Los strings de los operadores deben ser parseables por
 // calc_parse() de calc_helper.h (el anterior puede ser NULL)
-bool debe_escribir_oper(char* op_anterior, char* op_actual){
+bool debe_escribir_oper(char* op_anterior, char* op_actual) {
 	
-	if(!op_anterior)
+	if (!op_anterior)
 		return false;
 
 	tok_t tok_ant;
@@ -67,7 +67,7 @@ bool debe_escribir_oper(char* op_anterior, char* op_actual){
 // Pre: el string del es un operador parseable por calc_parse() de calc_helper.h
 // El extra es solo para cumplir formato de la función print_hasta, se puede
 // pasar NULL.
-bool es_operador(char* operador, char* extra){
+bool es_operador(char* operador, char* extra) {
 
 	tok_t tok;
 	calc_parse(operador, &tok);
@@ -77,38 +77,38 @@ bool es_operador(char* operador, char* extra){
 // Imprime el string pasado en notación posfija.
 // Pre: El input es un string de elemtentos en orden de notación infija.
 // Imprime MSG_ERROR si falla.
-void print_postfix(char** input){
+void print_postfix(char** input) {
 
 	pila_t* operadores = pila_crear();
-	if(!operadores){
+	if (!operadores){
 		printf("%s\n", MSG_ERROR);
 		return;
 	}
 
-	while(*input){
+	while (*input) {
 		struct calc_token tok;
-		if(!calc_parse(*input, &tok)){
+		if (!calc_parse(*input, &tok)) {
 			pila_destruir(operadores);
 			printf("%s\n", MSG_ERROR);
 			return;
 		}
 
-		if(tok.type == TOK_NUM){
+		if (tok.type == TOK_NUM) {
 			printf("%s ", *input);
-		} else if (tok.type == TOK_OPER){
+		} else if (tok.type == TOK_OPER) {
 			print_hasta(operadores, debe_escribir_oper, *input);
-			if(!pila_apilar(operadores, (void*) *input)){
+			if (!pila_apilar(operadores, (void*) *input)){
 				pila_destruir(operadores);
 				printf("%s\n", MSG_ERROR);
 				return;
 			}
-		} else if (tok.type == TOK_LPAREN){
-			if(!pila_apilar(operadores, (void*) *input)){
+		} else if (tok.type == TOK_LPAREN) {
+			if (!pila_apilar(operadores, (void*) *input)){
 				pila_destruir(operadores);
 				printf("%s\n", MSG_ERROR);
 				return;
 			}
-		} else if (tok.type == TOK_RPAREN){
+		} else if (tok.type == TOK_RPAREN) {
 			print_hasta(operadores, es_operador, NULL);
 			pila_desapilar(operadores); //Descarto el paréntesis
 		}
@@ -121,9 +121,9 @@ void print_postfix(char** input){
 
 int main(){
 
-	while(!feof(stdin)){
+	while (!feof(stdin)) {
 		char** input = leer_linea();
-		if(input){
+		if (input){
 			print_postfix(input);
 			printf("\n");
 			free_strv(input);

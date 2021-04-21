@@ -7,14 +7,14 @@
 
 // Devuelve la cantidad de apariciones del caracter en el string.
 // Devuelve 0 si el caracter es '\0'.
-size_t apariciones(const char* str, char caracter){
+size_t apariciones(const char* str, char caracter) {
 
-	if(caracter == '\0')
+	if (caracter == '\0')
 		return 0;
 
 	size_t contador = 0;
 	char* sig_aparicion = strchr(str, caracter);
-	while(sig_aparicion){
+	while (sig_aparicion) {
 	    contador++;
 	    sig_aparicion = strchr(sig_aparicion+1, caracter);
 	}
@@ -30,13 +30,13 @@ size_t largo_join(char** strv, char sep){
 	size_t largo = 0;
 	size_t cantidad = 0;
 
-	while(actual){
+	while (actual) {
 	    largo += strlen(actual);
 	    cantidad++;
 	    actual = strv[cantidad];
 	}
 
-	if(sep && cantidad)
+	if (sep && cantidad)
 		largo += cantidad-1;
 
 	return largo;
@@ -46,32 +46,32 @@ size_t largo_join(char** strv, char sep){
 
 void free_strv(char *strv[]){
 
-	for(size_t i = 0; strv[i]; i++){
+	for (size_t i = 0; strv[i]; i++) {
 		free(strv[i]);
 	}
 	free(strv);
 }
 
-char *substr(const char *str, size_t n){
+char *substr(const char *str, size_t n) {
     return strndup(str, n);
 }
 
 
-char **split(const char *str, char sep){
+char **split(const char *str, char sep) {
 
     size_t cantidad_strings = apariciones(str, sep) + 1;
     char** vector = malloc((cantidad_strings+1)*sizeof(char*));
-    if(!vector)
+    if (!vector)
         return NULL;
 
     vector[cantidad_strings] = NULL;
 
     const char* actual = str;
     const char* sig_aparicion = strchr(actual, sep);
-    for(size_t i = 0; i < cantidad_strings-1; i++){
+    for (size_t i = 0; i < cantidad_strings-1; i++) {
 
     	vector[i] = strndup(actual, (size_t) (sig_aparicion-actual));
-        if(!vector[i]){
+        if (!vector[i]) {
         	free_strv(vector);
             return NULL;
         }
@@ -81,7 +81,7 @@ char **split(const char *str, char sep){
     }
 
     vector[cantidad_strings-1] = strdup(actual);
-	if(!vector[cantidad_strings-1]){
+	if (!vector[cantidad_strings-1]) {
        	free_strv(vector);
 		return NULL;
     }
@@ -94,15 +94,15 @@ char *join(char **strv, char sep){
     size_t largo = largo_join(strv, sep);
 
     char* string = malloc(sizeof(char)*(largo+1));
-    if(!string){
+    if (!string) {
         return NULL;
     }
 
     char* pos_actual = stpcpy(string, strv[0] ? strv[0] : "");
     size_t i = 1;
-    while(pos_actual-string < largo){
+    while (pos_actual-string < largo) {
 
-    	if(sep){
+    	if (sep){
     	    *pos_actual = sep;
     	    pos_actual++;
     	}
