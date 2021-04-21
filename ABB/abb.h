@@ -11,10 +11,14 @@
 
 typedef struct abb abb_t;
 
+
 // tipo de función para comparar claves (define el orden del abb)
 typedef int (*abb_comparar_clave_t) (const char *, const char *);
 // tipo de función para destruir dato
 typedef void (*abb_destruir_dato_t) (void *);
+// tipo de función para visitar en iterador in-order
+typedef bool (*abb_visitar_t)(const char *, void *, void *);
+typedef void (*abb_visitar_rng_t)(const char *, void *, void *);
 
 /* Crea el abb
  */
@@ -68,6 +72,13 @@ void abb_destruir(abb_t *arbol);
  * visitar. Si esta devuelve falso, se deja de recorrer el ABB.
  */
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra);
+
+/* Recorre los elementos del ABB in-order en un rango, aplicándoles la función
+ * visitar. Comienza a recorrer a partir de la clave ini hasta la clave fin.
+ * Si ini es NULL, recorre desde el inicio.
+ * Si fin es NULL, recorre hasta el final.
+ */
+void abb_in_order_rng(abb_t *arbol, abb_visitar_rng_t visitar, void *extra, const char* ini, const char* fin);
 
 
 /* ******************************************************************
