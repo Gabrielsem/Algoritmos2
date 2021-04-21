@@ -37,11 +37,11 @@ struct abb_iter {
  */
 nodo_t* crear_nodo(const char* clave, void* dato) {
 	nodo_t* nodo = malloc(sizeof(nodo_t));
-	if(!nodo)
+	if (!nodo)
 		return NULL;
 
 	nodo->clave = strdup(clave);
-	if(!nodo->clave) {
+	if (!nodo->clave) {
 		free(nodo);
 		return NULL;
 	}
@@ -62,15 +62,15 @@ nodo_t* crear_nodo(const char* clave, void* dato) {
    la clave a buscar y la función de comparación.
  */
 nodo_t** buscar_nodo(nodo_t** nodo, const char* clave, abb_comparar_clave_t cmp) {
-	if(!*nodo)
+	if (!*nodo)
 		return nodo;
 
 	int comparacion = cmp((*nodo)->clave, clave);
 
-	if(comparacion == 0)
+	if (comparacion == 0)
 		return nodo;
 
-	if(comparacion < 0)
+	if (comparacion < 0)
 		return buscar_nodo(&((*nodo)->der), clave, cmp);
 	return buscar_nodo(&((*nodo)->izq), clave, cmp);
 }
@@ -82,7 +82,7 @@ nodo_t** buscar_nodo(nodo_t** nodo, const char* clave, abb_comparar_clave_t cmp)
    Pre: el nodo recibido no es NULL. (*nodo != NULL)
  */
 nodo_t** buscar_mayor(nodo_t** nodo) {
-	if(!(*nodo)->der)
+	if (!(*nodo)->der)
 		return nodo;
 
 	return buscar_mayor(&(*nodo)->der);
@@ -101,21 +101,21 @@ void destruir_arbol_aux(nodo_t* nodo, abb_destruir_dato_t destruir_dato) {
 	destruir_arbol_aux(nodo->der, destruir_dato);
 
 	free(nodo->clave);
-	if(destruir_dato)
+	if (destruir_dato)
 		destruir_dato(nodo->dato);
 
 	free(nodo);
 }
 
 bool abb_in_order_rec(nodo_t* nodo, bool visitar(const char *, void *, void *), void *extra) {
-	if(!nodo) return true;
+	if (!nodo) return true;
 	return abb_in_order_rec(nodo->izq,visitar,extra) && visitar(nodo->clave,nodo->dato,extra)
 		&& abb_in_order_rec(nodo->der,visitar,extra);
 }
 
 //apila el nodo recibido y todos sus hijos izq.
 void apilar_izq(pila_t* pila, nodo_t* nodo) {
-	while(nodo) {
+	while (nodo) {
 		pila_apilar(pila, nodo);
 		nodo = nodo->izq;
 	}
@@ -127,7 +127,7 @@ void apilar_izq(pila_t* pila, nodo_t* nodo) {
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato) {
 	abb_t* abb = malloc(sizeof(abb_t));
-	if(!abb)
+	if (!abb)
 		return false;
 
 	abb->raiz = NULL;
@@ -140,7 +140,7 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato) {
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 	nodo_t** nodo = buscar_nodo(&(arbol->raiz), clave, arbol->cmp);
 
-	if(*nodo) {
+	if (*nodo) {
 		if(arbol->destruir_dato)
 			arbol->destruir_dato((*nodo)->dato);
 
@@ -158,11 +158,11 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 
 void *abb_borrar(abb_t *arbol, const char *clave) {
 	nodo_t** nodo = buscar_nodo(&(arbol->raiz), clave, arbol->cmp);
-	if(!*nodo)
+	if (!*nodo)
 		return NULL;
 
 	nodo_t* nuevo_hijo = NULL;
-	if((*nodo)->der && (*nodo)->izq) {
+	if ((*nodo)->der && (*nodo)->izq) {
 		nodo_t** pos_reemplazante = buscar_mayor(&(*nodo)->izq);
 		nuevo_hijo = *pos_reemplazante;
 		*pos_reemplazante = nuevo_hijo->izq;
@@ -184,7 +184,7 @@ void *abb_borrar(abb_t *arbol, const char *clave) {
 
 void *abb_obtener(const abb_t *arbol, const char *clave) {
 	nodo_t** nodo = buscar_nodo((nodo_t**) &(arbol->raiz), clave, arbol->cmp);
-	if(!*nodo)
+	if (!*nodo)
 		return NULL;
 	return (*nodo)->dato;
 }
@@ -207,7 +207,7 @@ void abb_destruir(abb_t *arbol) {
  * *****************************************************************/
 
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra) {
-	if(!visitar)
+	if (!visitar)
 		return;
 	
 	abb_in_order_rec(arbol->raiz, visitar, extra);
@@ -219,9 +219,9 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
 
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
 	abb_iter_t* iter = malloc(sizeof(abb_iter_t));
-	if(!iter) return NULL;
+	if (!iter) return NULL;
 	iter->pila = pila_crear();
-	if(!iter->pila) {
+	if (!iter->pila) {
 		free(iter);
 		return NULL;
 	}
@@ -230,16 +230,16 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
 }
 
 bool abb_iter_in_avanzar(abb_iter_t *iter) {
-	if(abb_iter_in_al_final(iter)) return false;
-	nodo_t* der = ((nodo_t*)pila_desapilar(iter->pila))->der;
-	if(der) apilar_izq(iter->pila, der);
+	if (abb_iter_in_al_final(iter)) return false;
+	nodo_t* der = ((nodo_t*) pila_desapilar(iter->pila))->der;
+	if (der) apilar_izq(iter->pila, der);
 	
 	return true;
 }
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter) {
-	if(abb_iter_in_al_final(iter)) return NULL;
-	return ((nodo_t*)pila_ver_tope(iter->pila))->clave;
+	if (abb_iter_in_al_final(iter)) return NULL;
+	return ((nodo_t*) pila_ver_tope(iter->pila))->clave;
 }
 
 bool abb_iter_in_al_final(const abb_iter_t *iter) {

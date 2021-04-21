@@ -19,8 +19,7 @@
  *                        PRUEBAS UNITARIAS
  * *****************************************************************/
 
-static void prueba_crear_abb_vacio(abb_comparar_clave_t cmp)
-{
+static void prueba_crear_abb_vacio(abb_comparar_clave_t cmp) {
     abb_t* abb = abb_crear(cmp, NULL);
 
     print_test("Prueba abb crear abb vacio", abb);
@@ -233,8 +232,7 @@ bool llenar_arbol_balanceado(abb_t* abb, size_t** valores, char (*claves)[LARGO_
 		llenar_arbol_balanceado(abb, valores, claves, medio+1, fin, inicializar);
 }
 
-static void prueba_abb_volumen(size_t largo)
-{
+static void prueba_abb_volumen(size_t largo) {
     abb_t* abb = abb_crear(strcmp, free);
 
     char (*claves)[LARGO_CLAVE] = malloc(largo * LARGO_CLAVE);
@@ -281,8 +279,7 @@ static void prueba_abb_volumen(size_t largo)
 }
 
 
-static void prueba_abb_iterar()
-{
+static void prueba_abb_iterar() {
     abb_t* abb = abb_crear(strcmp, NULL);
 
     char *claves[] = {"perro", "gato", "vaca"};
@@ -336,8 +333,7 @@ static void prueba_abb_iterar()
     abb_destruir(abb);
 }
 
-static void prueba_abb_iterar_volumen(size_t largo)
-{
+static void prueba_abb_iterar_volumen(size_t largo) {
     abb_t* abb = abb_crear(strcmp, free);
 
     char (*claves)[LARGO_CLAVE] = malloc(largo * LARGO_CLAVE);
@@ -470,8 +466,7 @@ void prueba_iterador_interno() {
  * *****************************************************************/
 
 
-void pruebas_abb_estudiante()
-{
+void pruebas_abb_estudiante() {
     /* Ejecuta todas las pruebas unitarias. */
     printf("\n\nPruebas con strcmp()\n");
     prueba_crear_abb_vacio(strcmp);
