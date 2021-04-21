@@ -14,9 +14,9 @@ struct cola {
 //Pre: -
 //Post:	Crea un nodo con el dato indicado, inicializando el siguiente en NULL.
 //		Devuelve NULL si falló la creación, sino un puntero al nodo.
-static nodo_t* crear_nodo(void* dato){
+static nodo_t* crear_nodo(void* dato) {
 	nodo_t* nodo = malloc(sizeof(nodo_t));
-	if(nodo == NULL)
+	if (!nodo)
 		return NULL;
 
 	nodo->dato = dato;
@@ -24,10 +24,10 @@ static nodo_t* crear_nodo(void* dato){
 	return nodo;
 }
 
-cola_t* cola_crear(){
+cola_t* cola_crear() {
 
 	cola_t* cola = malloc(sizeof(cola_t));
-	if(cola == NULL)
+	if (!cola)
 		return NULL;
 
 	cola->primero = NULL;
@@ -36,12 +36,12 @@ cola_t* cola_crear(){
 	return cola;
 }
 
-void cola_destruir(cola_t *cola, void (*destruir_dato)(void *)){
+void cola_destruir(cola_t *cola, void (*destruir_dato)(void *)) {
 
-	while(cola->primero){
+	while (cola->primero) {
 		
 		void* dato = cola_desencolar(cola);
-		if(destruir_dato != NULL)
+		if (destruir_dato)
 			destruir_dato(dato);
 
 	}
@@ -49,38 +49,38 @@ void cola_destruir(cola_t *cola, void (*destruir_dato)(void *)){
 	free(cola);
 }
 
-bool cola_esta_vacia(const cola_t *cola){
-	return cola->primero == NULL;
+bool cola_esta_vacia(const cola_t *cola) {
+	return !cola->primero;
 }
 
-bool cola_encolar(cola_t *cola, void *valor){
+bool cola_encolar(cola_t *cola, void *valor) {
 
 	nodo_t* nodo = crear_nodo(valor);
-	if(nodo == NULL)
+	if (!nodo)
 		return false;
 
-	if(cola->primero == NULL)
+	if (!cola->primero)
 		cola->primero = nodo;
 
-	if(cola->ultimo != NULL)
+	if (cola->ultimo)
 		cola->ultimo->siguiente = nodo;
 	cola->ultimo = nodo;
 
 	return true;
 }
 
-void *cola_ver_primero(const cola_t *cola){
-	return( cola->primero == NULL ? NULL : cola->primero->dato);
+void *cola_ver_primero(const cola_t *cola) {
+	return cola->primero ? cola->primero->dato : NULL;
 }
 
-void *cola_desencolar(cola_t *cola){
+void *cola_desencolar(cola_t *cola) {
 	
 	void* dato = cola_ver_primero(cola);
 
-	if(cola->ultimo == cola->primero)
+	if (cola->ultimo == cola->primero)
 		cola->ultimo = NULL;
 
-	if(cola->primero){
+	if (cola->primero) {
 		nodo_t* siguiente = cola->primero->siguiente;
 		free(cola->primero);
 		cola->primero = siguiente;

@@ -13,7 +13,7 @@ static void prueba_cola_vacia() {
 	//Se crea una cola
 	cola_t *cola = cola_crear();
 	print_test("Creando cola para probar cola_esta_vacia()", cola != NULL);
-    if(cola == NULL){
+    if (cola == NULL) {
 		printf("No se pudo crear cola para probar cola_esta_vacia()\n");
 		return;
 	}
@@ -36,22 +36,22 @@ static void prueba_cola_vacia() {
 }
 
 //Pruebas con CANTIDAD_VOLUMEN elementos
-static void pruebas_volumen(cola_t* cola){
+static void pruebas_volumen(cola_t* cola) {
 
 	bool pudo_encolar = true;
 	bool mantuvo_orden = false;
 
 	//Encolo CANTIDAD_VOLUMEN elementos
-	for(size_t i = 0; i < CANTIDAD_VOLUMEN; i++){
+	for (size_t i = 0; i < CANTIDAD_VOLUMEN; i++) {
 		if( !cola_encolar(cola, (void*) i) )
 			pudo_encolar = false;
 	}
 
 	//Desapilo los elementos y verifico que sea en el orden correcto
-	if(pudo_encolar){
+	if (pudo_encolar){
 		mantuvo_orden = true;
 
-		for(size_t i = 0; i < CANTIDAD_VOLUMEN; i++){
+		for (size_t i = 0; i < CANTIDAD_VOLUMEN; i++) {
 			mantuvo_orden = (cola_desencolar(cola) == (void*) i);
 		}
 	} 
@@ -62,12 +62,12 @@ static void pruebas_volumen(cola_t* cola){
 }
 
 //Pruebas para las funciones cola_encolar y cola_desencolar
-static void prueba_cola_encolar_desencolar(){
+static void prueba_cola_encolar_desencolar() {
 
 	//Se crea una cola
 	cola_t *cola = cola_crear();
 	print_test("Creando cola para probar cola_encolar() y cola_desencolar()", cola != NULL);
-	if(cola == NULL){
+	if (cola == NULL) {
 		printf("No se pudo crear cola para probar cola_encolar() y cola_desencolar()\n");
 		return;
 	}
@@ -92,12 +92,12 @@ static void prueba_cola_encolar_desencolar(){
 	cola_destruir(cola, NULL);
 }
 
-static void pruebas_cola_ver_primero(){
+static void pruebas_cola_ver_primero() {
 
 	//Se crea una cola
 	cola_t *cola = cola_crear();
 	print_test("Creando cola para probar cola_ver_primero()", cola != NULL);
-	if(cola == NULL){
+	if (cola == NULL) {
 		printf("No se pudo crear cola para probar cola_ver_primero()\n");
 		return;
 	}
@@ -121,19 +121,19 @@ static void pruebas_cola_ver_primero(){
 
 //Pre: i apunta a un size_t
 //Post: Duplica el size_t apuntado
-void duplicar(void* i){
+void duplicar(void* i) {
 	*((size_t*) i) *= 2;
 }
 
-static void pruebas_cola_destruir(){
+static void pruebas_cola_destruir() {
 
 	//Se crean dos colas para las pruebas
 	cola_t *cola_funcion = cola_crear();
 	cola_t *cola_null = cola_crear();
 	print_test("Creando colas para probar cola_destruir()", cola_funcion && cola_null);
-	if(!cola_funcion || !cola_null){
-		if(cola_funcion) cola_destruir(cola_funcion, NULL);
-		if(cola_null) cola_destruir(cola_null, NULL);
+	if (!cola_funcion || !cola_null) {
+		if (cola_funcion) cola_destruir(cola_funcion, NULL);
+		if (cola_null) cola_destruir(cola_null, NULL);
 		printf("No se pudo crear colas para probar cola_destruir()\n");
 		return;
 	}
@@ -141,10 +141,10 @@ static void pruebas_cola_destruir(){
 	//Encolo punteros a elementos de vectores en ambas colas e inicializo vectores
 	size_t vector_null[CANTIDAD_DESTRUIR];
 	size_t vector_funcion[CANTIDAD_DESTRUIR];
-	for(size_t i = 0; i < CANTIDAD_DESTRUIR; i++){
+	for (size_t i = 0; i < CANTIDAD_DESTRUIR; i++) {
 		vector_null[i] = i;
 		vector_funcion[i] = i;
-		if((!cola_encolar(cola_funcion, vector_funcion+i)) || (!cola_encolar(cola_null, vector_null+i))){
+		if (!cola_encolar(cola_funcion, vector_funcion+i) || !cola_encolar(cola_null, vector_null+i)) {
 			printf("No se pudo encolar elementos para probar cola_destruir()\n");
 			return;
 		}
@@ -153,7 +153,7 @@ static void pruebas_cola_destruir(){
 	//Verifico que cola_destruir pasando NULL no modifique elementos
 	cola_destruir(cola_null,NULL);
 	bool no_modifico = true;
-	for(size_t i = 0; i < CANTIDAD_DESTRUIR; i++)
+	for (size_t i = 0; i < CANTIDAD_DESTRUIR; i++)
 		no_modifico = (vector_null[i] == i);
 	print_test("No se modifican elementos al destruir pasando NULL", no_modifico);
 
@@ -161,7 +161,7 @@ static void pruebas_cola_destruir(){
 	cola_destruir(cola_funcion, duplicar);
 	bool aplico_funcion = true;
 	size_t elemento;
-	for(size_t i = 0; i < CANTIDAD_DESTRUIR; i++){
+	for (size_t i = 0; i < CANTIDAD_DESTRUIR; i++) {
 		elemento = i;
 		duplicar(&elemento);
 		aplico_funcion = (vector_funcion[i] == elemento);
@@ -170,32 +170,32 @@ static void pruebas_cola_destruir(){
 
 }
 
-static void pruebas_cola_destruir_free(){
+static void pruebas_cola_destruir_free() {
 
 	//Se crea una cola para las pruebas
 	cola_t *cola_free = cola_crear();
 	print_test("Creando cola para probar cola_destruir() con memoria dinámica", cola_free);
-	if(!cola_free){
+	if (!cola_free) {
 		printf("No se pudo crear cola para probar cola_destruir()\n");
 		return;
 	}
 	
 	//Se hace malloc de 2 caracteres, se encolan y luego se pasa free al destruir la cola
 	char* caracter_1 = malloc(sizeof(char));
-	if(!caracter_1){
+	if (!caracter_1) {
 		printf("No se pudo pedir memoria para probar cola_destruir()\n");
 		cola_destruir(cola_free, NULL);
 		return;
 	}
 	char* caracter_2 = malloc(sizeof(char));
-	if(!caracter_2){
+	if (!caracter_2) {
 		printf("No se pudo pedir memoria para probar cola_destruir()\n");
 		free(caracter_1);
 		cola_destruir(cola_free, NULL);
 		return;
 	}
 
-	if(!cola_encolar(cola_free, (void*) caracter_1) || !cola_encolar(cola_free, (void*) caracter_2)){
+	if (!cola_encolar(cola_free, (void*) caracter_1) || !cola_encolar(cola_free, (void*) caracter_2)) {
 		printf("No se pudo encolar elementos para probar cola_destruir()\n");
 		free(caracter_1);
 		free(caracter_2);
@@ -207,15 +207,15 @@ static void pruebas_cola_destruir_free(){
 	print_test("Destruir cola con 2 elementos pasandole free (ver valgrind)", true);
 }
 
-static void pila_destruir_wr(void* pila){
+static void pila_destruir_wr(void* pila) {
 	pila_destruir((pila_t*) pila);
 }
 
-static void pruebas_cola_destruir_pila(){
+static void pruebas_cola_destruir_pila() {
 	//Se crea una cola para las pruebas
 	cola_t *cola_pila = cola_crear();
 	print_test("Creando cola para probar cola_destruir() con pilas", cola_pila);
-	if(!cola_pila){
+	if (!cola_pila) {
 		printf("No se pudo crear cola para probar cola_destruir()\n");
 		return;
 	}
@@ -223,19 +223,19 @@ static void pruebas_cola_destruir_pila(){
 	//Se hace crean 2 pilas, se apila un elemento en una de ellas,
 	//se encolan y luego se pasa destruir_pila al destruir la cola
 	pila_t* pila_1 = pila_crear();
-	if(!pila_1){
+	if (!pila_1) {
 		printf("Error creando pilas para probar cola_destruir()\n");
 		cola_destruir(cola_pila, NULL);
 		return;
 	}
 	pila_t* pila_2 = pila_crear();
-	if(!pila_1){
+	if (!pila_1) {
 		printf("Error creando pilas para probar cola_destruir()\n");
 		cola_destruir(cola_pila, NULL);
 		pila_destruir(pila_1);
 		return;
 	}
-	if(!pila_apilar(pila_1, (void*) 123)){
+	if (!pila_apilar(pila_1, (void*) 123)) {
 		printf("Error apilando un elemento para probar cola_destruir()\n");
 		cola_destruir(cola_pila, NULL);
 		pila_destruir(pila_1);
@@ -243,7 +243,7 @@ static void pruebas_cola_destruir_pila(){
 		return;
 	}
 
-	if(!cola_encolar(cola_pila, (void*) pila_1) || !cola_encolar(cola_pila, (void*) pila_2)){
+	if(!cola_encolar(cola_pila, (void*) pila_1) || !cola_encolar(cola_pila, (void*) pila_2)) {
 		printf("No se pudo encolar pilas para probar cola_destruir()\n");
 		pila_destruir(pila_1);
 		pila_destruir(pila_2);
@@ -259,13 +259,13 @@ static void pruebas_cola_null(){
 	//Se crea una cola
 	cola_t *cola = cola_crear();
 	print_test("Creando cola para probar encolar NULL", cola != NULL);
-	if(cola == NULL){
+	if(cola == NULL) {
 		printf("No se pudo crear cola para probar encolar NULL\n");
 		return;
 	}
 
 	//Pruebo que encolar y desencolar NULL sea válido
-	print_test("Se puede encolar NULL", cola_encolar(cola, NULL) );
+	print_test("Se puede encolar NULL", cola_encolar(cola, NULL));
 
 	//Pruebo que cola con NULL apilado no este vacía
 	print_test("Cola con NULL no esta vacía", !cola_esta_vacia(cola));
