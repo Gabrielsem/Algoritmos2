@@ -11,7 +11,7 @@ int cmp_int(const void* int_1, const void* int_2) {
 
 void prueba_heap_vacio() {
 	heap_t* heap = heap_crear(cmp_int);
-	if(!heap) return;
+	if (!heap) return;
 	print_test("se creo heap y esta vacio",heap_esta_vacio(heap) && (heap_cantidad(heap) == 0));
 	print_test("desencolar devuelve NULL",!heap_desencolar(heap));
 	heap_destruir(heap, NULL);
@@ -19,12 +19,12 @@ void prueba_heap_vacio() {
 
 void prueba_heap_encolar() {
 	heap_t* heap = heap_crear(cmp_int);
-	if(!heap) return;
+	if (!heap) return;
 	int arr_int[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	int* arr[] = {arr_int, arr_int + 1, arr_int + 2, arr_int + 3, arr_int + 4, arr_int + 5, 
 		arr_int + 6, arr_int + 7, arr_int + 8, arr_int + 9};
 
-	for(size_t i = 0; i < 8; i++) {
+	for (size_t i = 0; i < 8; i++) {
 		heap_encolar(heap, arr[i]);
 	}
 
@@ -39,19 +39,21 @@ void prueba_heap_encolar() {
 
 void prueba_heap_desencolar() {
 	heap_t* heap = heap_crear(cmp_int);
-	if(!heap) return;
+	if (!heap) return;
 	int arr_int[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	int* arr[] = {arr_int, arr_int + 1, arr_int + 2, arr_int + 3, arr_int + 4, arr_int + 5, 
 		arr_int + 6, arr_int + 7, arr_int + 8, arr_int + 9};
-	for(size_t i=0; i<9; i++) {
+
+	for (size_t i=0; i<9; i++) {
 		heap_encolar(heap, arr[i]);
 	}
+
 	print_test("desencolar correcto", *(int*) heap_desencolar(heap) == 8);
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 8);
 	print_test("desencolar correcto", *(int*) heap_desencolar(heap) == 7);
 	print_test("cantidad de elementos correcta", heap_cantidad(heap) == 7);
 	print_test("no esta vacio", !heap_esta_vacio(heap));
-	while(!heap_esta_vacio(heap)) {
+	while (!heap_esta_vacio(heap)) {
 		heap_desencolar(heap);
 	}
 	print_test("se vació el heap", heap_esta_vacio(heap));
@@ -68,7 +70,7 @@ int strcmp_wr(const void* str_1, const void* str_2){
 
 void prueba_heap_destruir() {
 	heap_t* heap = heap_crear(strcmp_wr);
-	if(!heap) return;
+	if (!heap) return;
 
 	char str_1[] = "Hola";
 	char str_2[] = "Chau";
@@ -79,7 +81,7 @@ void prueba_heap_destruir() {
 	print_test("Prueba destruir, ejecuta función pasada", !str_1[0] && !str_2[0]);
 
 	heap = heap_crear(cmp_int);
-	if(!heap) return;
+	if (!heap) return;
 
 	for (int i = 0; i < 5; i++) {
 		int* dato = malloc(sizeof(int));
